@@ -1,6 +1,6 @@
 #include "myapplication.h"
 #include <mmsystem.h>
-
+//hello world
 myApplication * myApplication::s_pInstance = NULL;
 
 //Constructor
