@@ -1,0 +1,12 @@
+//Jump
+	if(myKeys[' '])
+	{
+		int checkPosition_X = (int) ceil((float)(mapOffset_x+theHero->GetPos().x) / TILE_SIZE);
+		int checkPosition_Y = (int) floor( ((float)theHero->GetPos().y-theHero->GetJumpspeed()) / TILE_SIZE);
+
+		if (!(theMap->theScreenMap[checkPosition_Y][checkPosition_X] == 1 || 
+			(theMap->theScreenMap[checkPosition_Y][checkPosition_X-1] == 1 && 
+			CheckCollision(theHero->GetPos(), true, false, false, false) &&
+			!CheckCollision(theHero->GetPos(), false, true, false, false))))
+				moveMeJump();
+	}

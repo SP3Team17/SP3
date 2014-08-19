@@ -1,0 +1,28 @@
+#ifndef DEFINITIONS_H
+#define DEFINITIONS_H
+
+//Windows 
+#define SCREEN_WIDTH glutGet(GLUT_WINDOW_WIDTH)
+#define SCREEN_HEIGHT glutGet(GLUT_WINDOW_HEIGHT)
+#define RESOLUTION_WIDTH 1024
+#define RESOLUTION_HEIGHT 800
+
+//Map
+#define MAP_SCREEN_WIDTH 700
+#define MAP_SCREEN_HEIGHT 700
+
+//Tile
+#define TILE_SIZE 32
+#define MAX_TILE 17
+#define LEFT_BORDER TILE_SIZE*2
+#define BOTTOM_BORDER TILE_SIZE*3
+
+//Sprite Animation
+#define SPRITE_FRAMES_PLAYER 6.0f
+#define SPRITE_FRAMES_ENEMY 6.0f
+
+//Player
+#define MAX_PLAYER_HP 6
+#define HP_MULTIPLIER 15
+
+#endif
