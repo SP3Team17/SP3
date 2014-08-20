@@ -14,6 +14,10 @@
 #include "TextureImage.h"
 #include "definitions.h"
 
+#include "Skills.h"
+#include "Monster.h"
+#include "MVCtime.h"
+
 //Mouse Info
 typedef struct {
 	bool mLButtonUp;
@@ -45,6 +49,10 @@ public:
 
 private:
 	
+	vector<MobInfo*> something;
+
+	Skills testSkill;
+
 	static myApplication *s_pInstance;
 
 	//Camera

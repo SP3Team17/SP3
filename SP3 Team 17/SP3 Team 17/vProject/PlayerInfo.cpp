@@ -160,6 +160,16 @@ void CPlayerInfo::SetJumpspeed(int jumpspeed)
 	this->jumpspeed = jumpspeed;
 }
 
+Vector3D CPlayerInfo::getDir()
+{
+	return dir;
+}
+
+void CPlayerInfo::setDir(Vector3D dir)
+{
+	this->dir=dir;
+}
+
 //Stop the player's movement
 void CPlayerInfo::SetToStop()
 {

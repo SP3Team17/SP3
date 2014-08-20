@@ -11,6 +11,9 @@
 *.lastbuildstate
 *.rc
 *.idb
+*.vcxproj
+*.vcxfilters
+
 
 # Build results
 [Dd]ebug/
@@ -218,3 +221,6 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+SP3 Team 17/SP3 Team 17/vProject/vProject.vcxproj.filters
+*.vcxproj
+*.filters

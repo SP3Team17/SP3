@@ -59,6 +59,11 @@ void myApplication::Update(void)
 	if (theHero->GetHp() <= 0)
 		bGameOver = true;
 
+	mvcTime* timer =mvcTime::getInstance();
+	timer->updateTime();
+
+	testSkill.Update(something,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y);
+
 	//Update Hero
 	HeroUpdate();
 
@@ -81,6 +86,7 @@ void myApplication::Update(void)
 
 void myApplication::HeroUpdate()
 {
+	Vector3D temp;
 	//Check Collision of the hero before moving Up
 	if (!CheckCollision(theHero->GetPos(), true, false, false, false, theMap))
 	{
@@ -88,6 +94,7 @@ void myApplication::HeroUpdate()
 		{
 			moveMeUpDown(true, 1.0f);
 			bMoving = true;
+			temp.y=-1;
 		}
 
 		//Check if the user is standing still
@@ -102,6 +109,7 @@ void myApplication::HeroUpdate()
 		{
 			moveMeUpDown(false, 1.0f);
 			bMoving = true;
+			temp.y=1;
 		}
 
 		//Check if the user is standing still
@@ -118,6 +126,7 @@ void myApplication::HeroUpdate()
 		{
 			moveMeLeftRight(true, 1.0f);
 			bMoving = true;
+			temp.x=-1;
 		}
 
 		//Check if the user is standing still
@@ -134,12 +143,15 @@ void myApplication::HeroUpdate()
 		{
 			moveMeLeftRight(false, 1.0f);
 			bMoving = true;
+			temp.x=1;
 		}
 		
 		//Check if the user is standing still
 		else
 			bMoving = false;
 	}
+	if(temp.Length()!=0)
+		theHero->setDir(temp);
 }
 
 void myApplication::renderScene(void)
@@ -172,8 +184,11 @@ void myApplication::renderScene(void)
 	else if (currentLevel == 2)
 		LoadLevel(2);
 
+
 	//Render Hero
 	theHero->RenderHero();
+
+	testSkill.render();
 
 	//Display Game Over Screen
 	if (bGameOver)
@@ -276,6 +291,10 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		currentLevel = 2;
 
 		break;
+
+	case 'z':
+		testSkill.procSkills(theHero->GetPos(),theHero->GetPos());
+		break;
 	}
 }
 
@@ -357,6 +376,11 @@ bool myApplication::Init(void)
 	LoadTGA(&HpBar[4], "images/HP_4.tga");
 	LoadTGA(&HpBar[5], "images/HP_5.tga");
 	LoadTGA(&HpBar[6], "images/HP_6.tga");
+
+	if(!LoadTGA(&testSkill.skillTex[0],"images/placeholder.tga"))
+		return false;
+	if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
+		return false;
 
 	//Create Hero
 	theHero = CPlayerInfo::getInstance();

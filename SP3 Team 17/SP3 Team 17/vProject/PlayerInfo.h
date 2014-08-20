@@ -24,6 +24,9 @@ public:
 	//Render the Hero onto the screen
 	void RenderHero();
 
+	Vector3D getDir();
+	void setDir(Vector3D nDir);
+
 	//Initialise this class instance
 	void Init();
 	//Returns true if the player is on ground
@@ -85,6 +88,7 @@ private:
 
 	// Hero's information
 	Vector3D pos;
+	Vector3D dir;
 	int jumpspeed;
 	bool hero_inMidAir_Up;
 	bool hero_inMidAir_Down;
