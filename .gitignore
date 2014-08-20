@@ -5,6 +5,12 @@
 *.suo
 *.user
 *.sln.docstates
+*.tlog
+*.manifest
+*.res
+*.lastbuildstate
+*.rc
+*.idb
 
 # Build results
 [Dd]ebug/
