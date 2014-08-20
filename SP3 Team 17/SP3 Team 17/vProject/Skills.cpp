@@ -34,12 +34,23 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir)
 	{
 		SkillPhase=1;
 		offset_x=offset_y=0;
+		mvcTime* timer=mvcTime::getInstance();
 		this->Pos=pos;
 		this->Dir=Dir;
-		mvcTime* timer=mvcTime::getInstance();
 		switch(ID)
 		{
 		case ATTACK:
+			if(timeRef==-1)
+			{
+				timeRef=timer->insertNewTime(1000);
+			}
+			else
+			{
+				timer->resetTime(timeRef);
+				timer->changeLimit(timeRef,1000);
+			}
+			break;
+		case RANGE:
 			if(timeRef==-1)
 			{
 				timeRef=timer->insertNewTime(1000);
@@ -90,6 +101,28 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 			}
 			break;
 		case RANGE:
+			switch(SkillPhase)
+			{
+			case 1://attack duration
+				if(timer->testTime(timeRef))
+				{
+					cout<<"skill phase 1 ended\n";
+					SkillPhase=2;
+					timer->changeLimit(timeRef,1500);
+				}
+				else
+				{
+					Pos=Pos+Dir*timer->getDelta();
+				}
+				break;
+			case 2://cooldown
+				if(timer->testTime(timeRef))
+				{
+					cout<<"skill phase 2 ended\n";
+					SkillPhase=0;
+				}
+				break;
+			}
 			break;
 		}
 	}
