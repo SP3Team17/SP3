@@ -1,7 +1,8 @@
 #include "vector3D.h"
-#include "Skills.h"
 #include "MonsterAI.h"
+#include "MobInfo.h"
 #include <vector>
+#include "Skills.h"
 
 #ifndef MONSTER_H
 #define MONSTER_H
@@ -16,17 +17,16 @@ public:
 	{
 		DEFAULT=0,
 	};
-	Vector3D GetPos(void);
-	Vector3D GetDir(void);
 	void render(void);
-	int action;
-	//void update(float dt,player Hero);
-	//void OnDeath(map World,ItemFactory spawner)
+	int action;//current action its taking(AI)
 
-	private;
+	//void update(float dt,player Hero);//should call ai to do stuff
+
+	//void OnDeath(map World,ItemFactory spawner)//spawns items
+
+private:
 	MobType type;
-	Vector3D pos;
-	Vector3D dir;
+	MobInfo stats;
 	std::vector<Skills*> SkillList;
 	void MoveUpDown(bool mode,float dt);
 	void MoveLeftRight(bool mode,float dt);

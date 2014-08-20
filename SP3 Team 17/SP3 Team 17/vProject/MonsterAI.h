@@ -3,15 +3,24 @@
 
 #ifndef MOBAI_H
 #define MOBAI_H 
+
+class pathing
+{
+public:
+	Vector3D GetTurnPoints(int num);
+	Vector3D GetTurnDir(int num);
+	float GetTurnDur(int num);
+	void push(Vector3D turnPoint,float dur,Vector3D turnDir);
+private:
+	std::vector<Vector3D> turnPoints;
+	std::vector<Vector3D> turnDir;
+	std::vector<float> duration;
+};
+
+
 class MonsterAI
 {
 public:
-	MonsterAI(void);
-	~MonsterAI(void);
-	int update(Vector3D mob,Vector3D dir,Vector3D hero);
-	pathing getPath(void);
-private:
-	pathing path;
 	enum State
 	{
 		IDLE=0,
@@ -33,20 +42,15 @@ private:
 		MOVETO1,
 		MOVETO2,
 	};
-	//void calPath(map world,Vector3D pos,Vector3D target)
-};
-
-class pathing
-{
-public:
-	Vector3D GetTurnPoints(int num);
-	Vector3D GetTurnDir(int num);
-	float GetTurnDur(int num);
-	void push(Vector3D turnPoint,float dur,Vector3D turnDir);
+	MonsterAI(void);
+	~MonsterAI(void);
+	int update(Vector3D mob,Vector3D dir,Vector3D hero);
+	pathing* getPath(void);
 private:
-	std::vector<Vector3D> turnPoints;
-	std::vector<Vector3D> turnDir;
-	std::vector<float> duration;
-}
-
+	pathing* path;
+	State currentState;
+	atkSS atkState;
+	patrolSS patrolState;
+	//void calPath(Vector3D pos,Vector3D target)//CMap is a singleton
+};
 #endif 
