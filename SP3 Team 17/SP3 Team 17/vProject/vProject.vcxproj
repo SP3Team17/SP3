@@ -86,8 +86,12 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MobInfo.cpp" />
+    <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="MonsterAI.cpp" />
     <ClCompile Include="myapplication.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="Skills.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -95,8 +99,12 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="MobInfo.h" />
+    <ClInclude Include="Monster.h" />
+    <ClInclude Include="MonsterAI.h" />
     <ClInclude Include="myapplication.h" />
     <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="Skills.h" />
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="vector3D.h" />
   </ItemGroup>
