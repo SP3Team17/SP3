@@ -25,6 +25,7 @@ bool Sprite::ImageInit(void)
 	//LoadTGA(&mahjongfiend[0], "images/");
 	//LoadTGA(&pokerfiend[0], "images/");
 	//LoadTGA(&boss[0], "images/");
+	return true;
 }
 
 //softcode for sprites
