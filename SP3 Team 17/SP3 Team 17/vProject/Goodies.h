@@ -13,8 +13,8 @@ public:
 	enum GoodieType {
 		GOODIE_NONE = 0,
 		HEALTH,
-		SHURIKEN,
-		FIRE,
+		ARMOR,
+		INVINC,
 		LEVEL,
 		GOODIE_TOTAL
 	};

@@ -84,6 +84,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Goodies.cpp" />
+    <ClCompile Include="GoodiesFactory.cpp" />
+    <ClCompile Include="Health.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MobInfo.cpp" />
@@ -97,6 +101,10 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="definitions.h" />
+    <ClInclude Include="Goodies.h" />
+    <ClInclude Include="GoodiesFactory.h" />
+    <ClInclude Include="Health.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Math.h" />
