@@ -2,7 +2,7 @@
 #include <iostream>
 #include <GL/glut.h>
 
-CPlayerInfo* CPlayerInfo::instance = NULL;
+CPlayerInfo* CPlayerInfo::instance = 0;
 
 CPlayerInfo::CPlayerInfo() {}
 

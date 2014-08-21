@@ -430,12 +430,6 @@ bool myApplication::Init(void)
 	theCamera->SetPosition( 0.0, 2.0, -5.0 );
 	theCamera->SetDirection( 0.0, 0.0, 1.0 );
 
-	//Init Inventory
-	myInventory = CInventory::getInstance();
-
-	//Create Goodies Factory
-	theGoodiesFactory = CGoodiesFactory::getInstance();
-
 	//Enable Texture Mapping
 	glEnable(GL_TEXTURE_2D); 
 
