@@ -18,7 +18,7 @@ public:
 	~CInventory();
 
 	void addItem(CGoodies *item);
-	void deleteItem(short slot);
+	void deleteItem(CGoodies::GoodieType Type);
 	short potion, armor, invinc, level;
 };
 

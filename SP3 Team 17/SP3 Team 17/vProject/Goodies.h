@@ -5,6 +5,9 @@
 #include "definitions.h"
 #include "TextureImage.h"
 
+#include <iostream>
+using namespace std;
+
 class CGoodies
 {
 public:
@@ -22,6 +25,8 @@ public:
 	static CGoodies* getInstance();
 	CGoodies();
 	~CGoodies();
+
+	virtual void ExecuteBonus() {}
 
 private:
 

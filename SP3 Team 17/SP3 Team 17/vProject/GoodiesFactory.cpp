@@ -23,6 +23,7 @@ CGoodies* CGoodiesFactory::Create(CGoodies::GoodieType Type)
 	case CGoodies::HEALTH:
 		theNewGoodies = new CHealth;
 		theNewGoodies->SetType(CGoodies::HEALTH);
+		break;
 	case CGoodies::GOODIE_NONE:
 		theNewGoodies = new CGoodies;
 		theNewGoodies->SetType(CGoodies::GOODIE_NONE);
