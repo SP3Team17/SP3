@@ -89,6 +89,7 @@
     <ClCompile Include="MobInfo.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="MonsterAI.cpp" />
+    <ClCompile Include="MVCtime.cpp" />
     <ClCompile Include="myapplication.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Skills.cpp" />
@@ -102,6 +103,7 @@
     <ClInclude Include="MobInfo.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="MonsterAI.h" />
+    <ClInclude Include="MVCtime.h" />
     <ClInclude Include="myapplication.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Skills.h" />

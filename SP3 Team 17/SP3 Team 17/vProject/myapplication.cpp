@@ -68,6 +68,8 @@ void myApplication::Update(void)
 	if (theHero->GetHp() <= 0)
 		bGameOver = true;
 
+	
+
 	//Update Hero
 	HeroUpdate();
 
@@ -174,6 +176,9 @@ void myApplication::renderScene(void)
 		if (gameStart && !gamePause)
 			Update();
 	}
+	mvcTime* timer=mvcTime::getInstance();
+
+	timer->updateTime();
 
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
@@ -794,7 +799,7 @@ void myApplication::renderStartScene()
 			glPopMatrix();
 		}
 
-		if (bFlash && counterFlash <= 50)
+		if (bFlash && counterFlash <= 250)
 		{
 			//Draw Flash
 			glBindTexture(GL_TEXTURE_2D, Flash[0].texID);
@@ -816,17 +821,22 @@ void myApplication::renderStartScene()
 	   Dialogue Transition Update
 	 ****************************************************************************************************/
 	//Patient 1 Trans
+	mvcTime* timer = mvcTime::getInstance();
+	float dt=timer->getDelta();
+
+	if (!startDialogue2)
+	{
 	if (dTrans1 >= 0)
 		dTrans1 = 0;
 	else
-		dTrans1 += 0.4;
+		dTrans1 += 400*dt;
 	//Stacey 1 Trans
 	if (dTrans1 == 0)
 	{
 		if (dTrans2 <= 0)
 			dTrans2 = 0;
 		else
-			dTrans2 -= 0.4;
+			dTrans2 -= 400*dt;
 	}
 	//Patient 2 Trans
 	if (dTrans2 == 0)
@@ -834,7 +844,7 @@ void myApplication::renderStartScene()
 		if (dTrans3 >= 0)
 			dTrans3 = 0;
 		else
-			dTrans3 += 0.4;
+			dTrans3 += 400*dt;
 	}
 	//Troy 1 Trans
 	if (dTrans3 == 0)
@@ -842,7 +852,8 @@ void myApplication::renderStartScene()
 		if (dTrans4 <= 0)
 			dTrans4 = 0;
 		else
-			dTrans4 -= 0.4;
+			dTrans4 -= 400*dt;
+	}
 	}
 
 	//Dialogue Scene 2
@@ -852,19 +863,19 @@ void myApplication::renderStartScene()
 		if (dTrans4 >= 610)
 			dTrans4 = 610;
 		else
-			dTrans4 += 2;
+			dTrans4 += 400*dt;
 		if (dTrans2 >= 610)
 			dTrans2 = 610;
 		else
-			dTrans2 += 2;
+			dTrans2 += 400*dt;
 		if (dTrans3 <= -600)
 			dTrans3 = -600;
 		else 
-			dTrans3 -= 2;
+			dTrans3 -= 400*dt;
 		if (dTrans1 <= -600)
 			dTrans1 = -600;
 		else
-			dTrans1 -= 2;
+			dTrans1 -= 400*dt;
 
 		//Transition
 		if (dTrans1 == -600)
@@ -873,7 +884,7 @@ void myApplication::renderStartScene()
 			if (dTrans5 >= 0)
 				dTrans5 = 0;
 			else
-				dTrans5 += 0.8;
+				dTrans5 += 400*dt;
 
 			//Patient Dialogue 3 Trans
 			if (dTrans5 == 0)
@@ -881,7 +892,7 @@ void myApplication::renderStartScene()
 				if (dTrans6 <= 0)
 					dTrans6 = 0;
 				else
-					dTrans6 -= 0.8;
+					dTrans6 -= 400*dt;
 			}
 		}
 	}
@@ -893,13 +904,15 @@ void myApplication::renderStartScene()
 	//Flash Effect
 	if (bFlash)
 	{
-		++counterFlash;
-		++counterTime;
-		if (counterFlash >= 100)
+		int dt2=dt*1000;
+		counterFlash+=dt2;
+		counterTime+=dt2;
+		if (counterFlash >= 500)
 			counterFlash = 0;
+		cout<<counterFlash<<" "<<counterTime<<endl;
 
 		//Stop flash after some time
-		if (counterTime >= 800)
+		if (counterTime >= 16000)
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;
