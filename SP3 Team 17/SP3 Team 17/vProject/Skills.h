@@ -20,7 +20,7 @@ public:
 	~Skills(void);
 	void Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y);//,player* hero
 	void render();
-	void procSkills(Vector3D pos,Vector3D Dir,SkillType ID);
+	void procSkills(Vector3D pos,Vector3D Dir);
 	int getPhase();
 	TextureImage skillTex[TOTAL];
 private:
