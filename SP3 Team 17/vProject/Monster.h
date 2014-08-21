@@ -1,12 +1,11 @@
-#ifndef MONSTER_H
-#define MONSTER_H
-
 #include "vector3D.h"
 #include "MonsterAI.h"
 #include "MobInfo.h"
 #include <vector>
 #include "Skills.h"
 
+#ifndef MONSTER_H
+#define MONSTER_H
 class Monster
 {
 public:
