@@ -16,6 +16,7 @@
 
 #include "Goodies.h"
 #include "GoodiesFactory.h"
+#include "Inventory.h"
 
 #include "MVCtime.h"
 
@@ -63,6 +64,12 @@ private:
 	TextureImage ground[1];
 	TextureImage PauseTex[1];
 	TextureImage StartScreen[2];
+
+	//Inventory
+	CInventory* myInventory;
+
+	//Goodies Factory
+	CGoodiesFactory* theGoodiesFactory;
 
 	//Shop
 	TextureImage shop[1];

@@ -19,7 +19,7 @@ public:
 
 	void addItem(CGoodies *item);
 	void deleteItem(short slot);
-	short potion, shuriken, fire, level;
+	short potion, armor, invinc, level;
 };
 
 #endif

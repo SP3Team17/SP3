@@ -4,7 +4,7 @@ CInventory* CInventory::instance = NULL;
 
 CInventory::CInventory()
 {
-	potion = level = shuriken = fire = 0;
+	potion = level = armor = invinc = 0;
 
 	for (int i = 0; i < INVENTORY_VARIETY; ++i)
 	{
@@ -13,6 +13,14 @@ CInventory::CInventory()
 }
 
 CInventory::~CInventory() {}
+
+CInventory* CInventory::getInstance()
+{
+	if (instance == NULL)
+		instance = new CInventory;
+
+	return instance;
+}
 
 //Add an item
 void CInventory::addItem(CGoodies *item)
@@ -37,10 +45,10 @@ void CInventory::addItem(CGoodies *item)
 		//increment potion number
 		++potion;
 
-	case CGoodies::FIRE:
+	case CGoodies::INVINC:
 
-		//Check if there is already a fire
-		if (fire == 0)
+		//Check if there is already an invinc
+		if (invinc == 0)
 		{
 			//Loop through array
 			for (int i = 0; i < INVENTORY_VARIETY; ++i)
@@ -48,12 +56,12 @@ void CInventory::addItem(CGoodies *item)
 				//Check for empty slot
 				if (itemsArray[i]->GetType() == CGoodies::GOODIE_NONE)
 				{
-					itemsArray[i]->SetType(CGoodies::FIRE);
+					itemsArray[i]->SetType(CGoodies::INVINC);
 				}
 			}
 		}
-		//increment fire number
-		++fire;
+		//increment invinc number
+		++invinc;
 
 	case CGoodies::LEVEL:
 
@@ -73,10 +81,10 @@ void CInventory::addItem(CGoodies *item)
 		//increment level number
 		++level;
 
-	case CGoodies::SHURIKEN:
+	case CGoodies::ARMOR:
 
-		//Check if there is already a shuriken
-		if (shuriken == 0)
+		//Check if there is already a armor
+		if (armor == 0)
 		{
 			//Loop through array
 			for (int i = 0; i < INVENTORY_VARIETY; ++i)
@@ -84,12 +92,12 @@ void CInventory::addItem(CGoodies *item)
 				//Check for empty slot
 				if (itemsArray[i]->GetType() == CGoodies::GOODIE_NONE)
 				{
-					itemsArray[i]->SetType(CGoodies::SHURIKEN);
+					itemsArray[i]->SetType(CGoodies::ARMOR);
 				}
 			}
 		}
-		//increment level number
-		++shuriken;
+		//increment armor number
+		++armor;
 	}
 
 }
@@ -97,4 +105,47 @@ void CInventory::addItem(CGoodies *item)
 //Delete an Item
 void CInventory::deleteItem(short slot) 
 {
+	//Health
+	if (itemsArray[slot]->GetType() == CGoodies::HEALTH)
+	{
+		//Decrease Amount
+		--potion;
+		
+		//Last item removed, set slot to empty
+		if (potion == 0)
+			itemsArray[slot]->SetType(CGoodies::GOODIE_NONE);
+	}
+
+	//Armor
+	if (itemsArray[slot]->GetType() == CGoodies::ARMOR)
+	{
+		//Decrease Amount
+		--armor;
+		
+		//Last item removed, set slot to empty
+		if (armor == 0)
+			itemsArray[slot]->SetType(CGoodies::GOODIE_NONE);
+	}
+
+	//Level
+	if (itemsArray[slot]->GetType() == CGoodies::LEVEL)
+	{
+		//Decrease Amount
+		--level;
+		
+		//Last item removed, set slot to empty
+		if (level == 0)
+			itemsArray[slot]->SetType(CGoodies::GOODIE_NONE);
+	}
+
+	//Invinc
+	if (itemsArray[slot]->GetType() == CGoodies::INVINC)
+	{
+		//Decrease Amount
+		--invinc;
+		
+		//Last item removed, set slot to empty
+		if (invinc == 0)
+			itemsArray[slot]->SetType(CGoodies::GOODIE_NONE);
+	}
 }

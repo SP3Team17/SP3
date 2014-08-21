@@ -7,6 +7,14 @@ CGoodiesFactory::CGoodiesFactory() {}
 
 CGoodiesFactory::~CGoodiesFactory() {}
 
+CGoodiesFactory* CGoodiesFactory::getInstance()
+{
+	if (instance == NULL)
+		instance = new CGoodiesFactory;
+
+	return instance;
+}
+
 CGoodies* CGoodiesFactory::Create(CGoodies::GoodieType Type)
 {
 	CGoodies* theNewGoodies = NULL;
