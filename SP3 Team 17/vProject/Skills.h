@@ -13,6 +13,7 @@ public:
 	{
 		ATTACK=0,
 		RANGE,
+		LINE,
 		TOTAL,
 	};
 	Skills(void);
@@ -20,17 +21,17 @@ public:
 	~Skills(void);
 	void Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y);//,player* hero
 	void render();
-	void procSkills(Vector3D pos,Vector3D Dir);
+	void procSkills(Vector3D pos,Vector3D Dir,SkillType ID);
 	int getPhase();
 	TextureImage skillTex[TOTAL];
 private:
 	float offset_x,offset_y,Poffset_x,Poffset_y;
 	SkillType ID;
+	std::vector<Vector3D> Pos;
 	//Sprite skillSprite;
-	Vector3D Pos;
 	Vector3D Dir;
+	std::vector<int> timeRef;
 	int SkillPhase;
 	int SkillLevel;
-	int timeRef;
 };
 #endif

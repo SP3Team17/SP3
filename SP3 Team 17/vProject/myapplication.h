@@ -19,6 +19,8 @@
 #include "Inventory.h"
 
 #include "MVCtime.h"
+#include "Skills.h"
+#include "Monster.h"
 
 //Mouse Info
 typedef struct {
@@ -52,6 +54,13 @@ public:
 private:
 	
 	static myApplication *s_pInstance;
+
+	//kennard testing stuff
+	vector<MobInfo*> something;
+
+	Skills testSkill;
+
+	//end of kennard testing stuff
 
 	//Camera
 	Vector3D theCameraPosition;
