@@ -48,7 +48,8 @@ mvcTime::mvcTime()
 
 void mvcTime::init()
 {
-	frameCount=currentTime=previousTime=0;
+	previousTime=timeGetTime();
+	frameCount=currentTime=0;
 	fps=0.0f;
 	
 }
@@ -68,7 +69,8 @@ int mvcTime::insertNewTime(int limit)
 	timeKeeper* Ntime=new timeKeeper;
 	Ntime->limiter=limit;
 	Ntime->active=true;
-	Ntime->previousTime=Ntime->timeInterval=0;
+	Ntime->previousTime=timeGetTime();
+	Ntime->timeInterval=0;
 	timer.push_back(Ntime);
 	std::cout<<"new time inserted at"<<timer.size();
 	return timer.size()-1;

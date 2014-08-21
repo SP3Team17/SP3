@@ -28,15 +28,17 @@ Skills::~Skills(void)
 {
 }
 
-void Skills::procSkills(Vector3D pos,Vector3D Dir)
+void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 {
 	if(SkillPhase==0)
 	{
 		SkillPhase=1;
-		offset_x=offset_y=0;
+		//offset_x=offset_y=0;
+		//Poffset_x=Poffset_y=0;
 		mvcTime* timer=mvcTime::getInstance();
 		this->Pos=pos;
 		this->Dir=Dir;
+		this->ID=ID;
 		switch(ID)
 		{
 		case ATTACK:
@@ -69,11 +71,16 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 {
 	if(SkillPhase!=0)
 	{
-		this->Pos.x=Pos.x-offset_x+Poffset_x;
-		Poffset_x=offset_x;
 		
-		this->Pos.y=Pos.y-offset_y+Poffset_y;
-		Poffset_y=offset_y;
+		this->Pos.x=this->Pos.x-this->offset_x+Poffset_x;
+		
+		this->Pos.y=this->Pos.y-this->offset_y+Poffset_y;
+
+		Poffset_y=this->offset_y;
+		Poffset_x=this->offset_x;
+
+		this->offset_x=offset_x;
+		this->offset_y=offset_y;
 
 		mvcTime* timer=mvcTime::getInstance();
 		switch(ID)
@@ -86,7 +93,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 			case 1://attack duration
 				if(timer->testTime(timeRef))
 				{
-					cout<<"skill phase 1 ended\n";
+					cout<<"skill attack phase 1 ended\n";
 					SkillPhase=2;
 					timer->changeLimit(timeRef,1500);
 				}
@@ -94,7 +101,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 			case 2://cooldown
 				if(timer->testTime(timeRef))
 				{
-					cout<<"skill phase 2 ended\n";
+					cout<<"skill attack phase 2 ended\n";
 					SkillPhase=0;
 				}
 				break;
@@ -106,19 +113,19 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 			case 1://attack duration
 				if(timer->testTime(timeRef))
 				{
-					cout<<"skill phase 1 ended\n";
+					cout<<"skill Ranged phase 1 ended\n";
 					SkillPhase=2;
 					timer->changeLimit(timeRef,1500);
 				}
 				else
 				{
-					Pos=Pos+Dir*timer->getDelta();
+					this->Pos=this->Pos+this->Dir*timer->getDelta()*500;
 				}
 				break;
 			case 2://cooldown
 				if(timer->testTime(timeRef))
 				{
-					cout<<"skill phase 2 ended\n";
+					cout<<"skill Ranged phase 2 ended\n";
 					SkillPhase=0;
 				}
 				break;
@@ -139,6 +146,7 @@ void Skills::render()
 		switch(ID)
 		{
 		case ATTACK:
+		case RANGE:
 			switch(SkillPhase)
 			{
 			case 1:
