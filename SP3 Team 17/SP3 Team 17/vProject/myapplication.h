@@ -14,9 +14,8 @@
 #include "TextureImage.h"
 #include "definitions.h"
 
-#include "Skills.h"
-#include "Monster.h"
-#include "MVCtime.h"
+#include "Goodies.h"
+#include "GoodiesFactory.h"
 
 //Mouse Info
 typedef struct {
@@ -49,10 +48,6 @@ public:
 
 private:
 	
-	vector<MobInfo*> something;
-
-	Skills testSkill;
-
 	static myApplication *s_pInstance;
 
 	//Camera
@@ -64,14 +59,40 @@ private:
 	TextureImage GameOver[1];
 	TextureImage LevelComplete[1];
 	TextureImage ground[1];
+	TextureImage PauseTex[1];
+	TextureImage StartScreen[2];
+
+	//Shop
+	TextureImage shop[1];
+	void renderShop();
+	bool bShop;
+
+	//Scenes
+	bool gameStart, gamePause, startDialogue2, bFlash;
+	bool trigger8, trigger9;
+	void renderStartScene();
+	float dTrans1, dTrans2, dTrans3, dTrans4, dTrans5, dTrans6, dTrans7, dTrans8, dTrans9;
+	int counterFlash, counterTime;
+
+	//Dialogue
+	TextureImage dialogueBG[1];
+	TextureImage Stacey[5];
+	TextureImage Patient[3];
+	TextureImage Troy[2];
+	TextureImage Flash[1];
 
 	//Std Variables
-	bool bGameOver, bComplete;
+	bool bGameOver, bComplete, stopMovement, bTutorial, 
+		 tutorialEnd, programInit, menuHover;
+	int AGCredits;
 
 	//Std Functions
 	void renderComplete();
 	void renderGameOver();
 	void renderGround();
+	void renderPause();
+	void renderTutorial();
+	void renderStartScreen(bool hover);
 
 	void Update();
 
