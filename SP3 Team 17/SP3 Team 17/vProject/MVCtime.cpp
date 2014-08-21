@@ -1,5 +1,6 @@
-#include"MVCtime.h"
-#include<iostream>
+#include "MVCtime.h"
+#include <iostream>
+
 void mvcTime::updateTime()
 {
 	//increase frame count
@@ -35,10 +36,7 @@ void mvcTime::updateTime()
 	}
 }
 
-mvcTime::~mvcTime()
-{
-
-}
+mvcTime::~mvcTime() {}
 
 mvcTime::mvcTime()
 {
@@ -50,7 +48,6 @@ void mvcTime::init()
 {
 	frameCount=currentTime=previousTime=0;
 	fps=0.0f;
-	
 }
 
 float mvcTime::getDelta()

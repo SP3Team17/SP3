@@ -1,10 +1,9 @@
+#ifndef MVCTIME_H
+#define MVCTIME_H
+
 #include <Windows.h>//for timeGetTime
 #include <string>
 #include <vector>
-
-
-#ifndef MVCTIME_H
-#define MVCTIME_H
 
 class mvcTime
 {

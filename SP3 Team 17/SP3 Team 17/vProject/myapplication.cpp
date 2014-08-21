@@ -799,7 +799,7 @@ void myApplication::renderStartScene()
 			glPopMatrix();
 		}
 
-		if (bFlash && counterFlash <= 250)
+		if (bFlash && counterFlash <= 175)
 		{
 			//Draw Flash
 			glBindTexture(GL_TEXTURE_2D, Flash[0].texID);
@@ -824,36 +824,41 @@ void myApplication::renderStartScene()
 	mvcTime* timer = mvcTime::getInstance();
 	float dt=timer->getDelta();
 
+	//Movement Speed
+	int speed1 = 350;
+	int speed2 = 650;
+
+	//Dialogue Scene 1
 	if (!startDialogue2)
 	{
-	if (dTrans1 >= 0)
-		dTrans1 = 0;
-	else
-		dTrans1 += 400*dt;
-	//Stacey 1 Trans
-	if (dTrans1 == 0)
-	{
-		if (dTrans2 <= 0)
-			dTrans2 = 0;
+		if (dTrans1 >= 0)
+			dTrans1 = 0;
 		else
-			dTrans2 -= 400*dt;
-	}
-	//Patient 2 Trans
-	if (dTrans2 == 0)
-	{
-		if (dTrans3 >= 0)
-			dTrans3 = 0;
-		else
-			dTrans3 += 400*dt;
-	}
-	//Troy 1 Trans
-	if (dTrans3 == 0)
-	{
-		if (dTrans4 <= 0)
-			dTrans4 = 0;
-		else
-			dTrans4 -= 400*dt;
-	}
+			dTrans1 += speed1*dt;
+		//Stacey 1 Trans
+		if (dTrans1 == 0)
+		{
+			if (dTrans2 <= 0)
+				dTrans2 = 0;
+			else
+				dTrans2 -= speed1*dt;
+		}
+		//Patient 2 Trans
+		if (dTrans2 == 0)
+		{
+			if (dTrans3 >= 0)
+				dTrans3 = 0;
+			else
+				dTrans3 += speed1*dt;
+		}
+		//Troy 1 Trans
+		if (dTrans3 == 0)
+		{
+			if (dTrans4 <= 0)
+				dTrans4 = 0;
+			else
+				dTrans4 -= speed1*dt;
+		}
 	}
 
 	//Dialogue Scene 2
@@ -863,19 +868,19 @@ void myApplication::renderStartScene()
 		if (dTrans4 >= 610)
 			dTrans4 = 610;
 		else
-			dTrans4 += 400*dt;
+			dTrans4 += speed2*dt;
 		if (dTrans2 >= 610)
 			dTrans2 = 610;
 		else
-			dTrans2 += 400*dt;
+			dTrans2 += speed2*dt;
 		if (dTrans3 <= -600)
 			dTrans3 = -600;
 		else 
-			dTrans3 -= 400*dt;
+			dTrans3 -= speed2*dt;
 		if (dTrans1 <= -600)
 			dTrans1 = -600;
 		else
-			dTrans1 -= 400*dt;
+			dTrans1 -= speed2*dt;
 
 		//Transition
 		if (dTrans1 == -600)
@@ -884,7 +889,7 @@ void myApplication::renderStartScene()
 			if (dTrans5 >= 0)
 				dTrans5 = 0;
 			else
-				dTrans5 += 400*dt;
+				dTrans5 += speed1*dt;
 
 			//Patient Dialogue 3 Trans
 			if (dTrans5 == 0)
@@ -892,7 +897,7 @@ void myApplication::renderStartScene()
 				if (dTrans6 <= 0)
 					dTrans6 = 0;
 				else
-					dTrans6 -= 400*dt;
+					dTrans6 -= speed1*dt;
 			}
 		}
 	}
@@ -907,12 +912,11 @@ void myApplication::renderStartScene()
 		int dt2=dt*1000;
 		counterFlash+=dt2;
 		counterTime+=dt2;
-		if (counterFlash >= 500)
+		if (counterFlash >= 350)
 			counterFlash = 0;
-		cout<<counterFlash<<" "<<counterTime<<endl;
 
 		//Stop flash after some time
-		if (counterTime >= 16000)
+		if (counterTime >= 3000)
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;

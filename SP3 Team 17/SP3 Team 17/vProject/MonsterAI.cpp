@@ -1,12 +1,10 @@
 #include "MonsterAI.h"
 
-
-MonsterAI::MonsterAI(void)
+MonsterAI::MonsterAI()
 {
 }
 
-
-MonsterAI::~MonsterAI(void)
+MonsterAI::~MonsterAI()
 {
 }
 

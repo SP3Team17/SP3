@@ -1,12 +1,10 @@
 #include "MobInfo.h"
 
-
-MobInfo::MobInfo(void)
+MobInfo::MobInfo()
 {
 }
 
-
-MobInfo::~MobInfo(void)
+MobInfo::~MobInfo()
 {
 }
 
