@@ -4,6 +4,9 @@
 #include "TextureImage.h"
 #include "definitions.h"
 #include "vector3D.h"
+#include <string>
+
+using namespace std;
 
 class CPlayerInfo
 {
@@ -57,6 +60,11 @@ public:
 	//Set Hp of the player
 	void SetHp(short hp);
 
+	//Get Name of the player
+	string getName();
+	//Set Name of the player
+	void setName(string N);
+
 	//Update Jump Upwards
 	void UpdateJumpUpwards();
 	//Update FreeFall
@@ -91,6 +99,7 @@ private:
 	bool heroAnimationInvert;
 	int heroAnimationCounter;
 	short hp;
+	string name;
 };
 
 #endif

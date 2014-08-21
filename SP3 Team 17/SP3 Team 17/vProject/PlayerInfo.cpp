@@ -2,7 +2,7 @@
 #include <iostream>
 #include <GL/glut.h>
 
-CPlayerInfo* CPlayerInfo::instance = 0;
+CPlayerInfo* CPlayerInfo::instance = NULL;
 
 CPlayerInfo::CPlayerInfo() {}
 
@@ -37,6 +37,16 @@ bool CPlayerInfo::GetActive()
 void CPlayerInfo::SetActive(bool active)
 {
 	this->active = active;
+}
+
+string CPlayerInfo::getName()
+{
+	return name;
+}
+
+void CPlayerInfo::setName(string N)
+{
+	name = N;
 }
 
 /****************************************************************************************************
