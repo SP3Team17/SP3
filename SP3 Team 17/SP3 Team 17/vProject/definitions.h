@@ -25,4 +25,7 @@
 #define MAX_PLAYER_HP 6
 #define HP_MULTIPLIER 15
 
+//Inventory
+#define INVENTORY_VARIETY 4
+
 #endif

@@ -8,10 +8,19 @@ myApplication::myApplication()
 : theCamera(NULL)
 , theMap(NULL)
 , theBorder(NULL)
-, bGameOver(false)
-, heroInit(false)
-, bComplete(false)
-{}
+, AGCredits(NULL)
+{
+	bGameOver = heroInit = bComplete = bShop
+    = stopMovement = gameStart = startDialogue2 
+	= bFlash = gamePause = bTutorial = tutorialEnd
+	= trigger8 = trigger9 = programInit = menuHover = false;
+
+	counterFlash = counterTime = 0;
+
+	dTrans7 = dTrans8 = dTrans9 = 
+	dTrans1 = dTrans3 = dTrans5 = -600;
+	dTrans2 = dTrans4 = dTrans6 = 610;
+}
 
 //Destructor
 myApplication::~myApplication()
@@ -59,11 +68,6 @@ void myApplication::Update(void)
 	if (theHero->GetHp() <= 0)
 		bGameOver = true;
 
-	mvcTime* timer =mvcTime::getInstance();
-	timer->updateTime();
-
-	testSkill.Update(something,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y);
-
 	//Update Hero
 	HeroUpdate();
 
@@ -86,15 +90,14 @@ void myApplication::Update(void)
 
 void myApplication::HeroUpdate()
 {
-	Vector3D temp;
 	//Check Collision of the hero before moving Up
 	if (!CheckCollision(theHero->GetPos(), true, false, false, false, theMap))
 	{
-		if(myKeys['w'] || myKeys['W'])
+		//Do not allow movement when stopMovement is true
+		if((myKeys['w'] || myKeys['W']) && !stopMovement)
 		{
 			moveMeUpDown(true, 1.0f);
 			bMoving = true;
-			temp.y=-1;
 		}
 
 		//Check if the user is standing still
@@ -105,11 +108,11 @@ void myApplication::HeroUpdate()
 	//Check Collision of the hero before moving down
 	if (!CheckCollision(theHero->GetPos(), false, true, false, false, theMap))
 	{
-		if(myKeys['s'] || myKeys['S'])
+		//Do not allow movement when stopMovement is true
+		if((myKeys['s'] || myKeys['S']) && !stopMovement)
 		{
 			moveMeUpDown(false, 1.0f);
 			bMoving = true;
-			temp.y=1;
 		}
 
 		//Check if the user is standing still
@@ -122,11 +125,11 @@ void myApplication::HeroUpdate()
 	posL.Set(theHero->GetPos().x-5, theHero->GetPos().y); //Buffer of 5
 	if (!CheckCollision(posL, false, false, true, false, theMap))
 	{
-		if(myKeys['a'] || myKeys['A'])
+		//Do not allow movement when stopMovement is true
+		if((myKeys['a'] || myKeys['A']) && !stopMovement)
 		{
 			moveMeLeftRight(true, 1.0f);
 			bMoving = true;
-			temp.x=-1;
 		}
 
 		//Check if the user is standing still
@@ -139,19 +142,17 @@ void myApplication::HeroUpdate()
 	posR.Set(theHero->GetPos().x+5, theHero->GetPos().y); //Buffer of 5
 	if (!CheckCollision(posR, false, false, false, true, theMap))
 	{
-		if(myKeys['d'] || myKeys['D'])
+		//Do not allow movement when stopMovement is true
+		if((myKeys['d'] || myKeys['D']) && !stopMovement)
 		{
 			moveMeLeftRight(false, 1.0f);
 			bMoving = true;
-			temp.x=1;
 		}
 		
 		//Check if the user is standing still
 		else
 			bMoving = false;
 	}
-	if(temp.Length()!=0)
-		theHero->setDir(temp);
 }
 
 void myApplication::renderScene(void)
@@ -170,25 +171,48 @@ void myApplication::renderScene(void)
 		timelastcall=timeGetTime();
 
 		//Update Function
-		Update();
+		if (gameStart && !gamePause)
+			Update();
 	}
 
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
 
-	//Load Level 1
-	if (currentLevel == 1)
-		LoadLevel(1);
+	//Game has yet to start
+	if (!gameStart && programInit)
+		renderStartScene();
 
-	//Load Level 2
-	else if (currentLevel == 2)
-		LoadLevel(2);
+	//Render Start Screen
+	if (!programInit)
+	{
+		if (!menuHover)
+			renderStartScreen(false);
+		else
+			renderStartScreen(true);
+	}
 
+	//Game has Started
+	if (gameStart)
+	{
+		//Load Level 1
+		if (currentLevel == 1)
+			LoadLevel(1);
 
-	//Render Hero
-	theHero->RenderHero();
+		//Load Level 2
+		else if (currentLevel == 2)
+			LoadLevel(2);
 
-	testSkill.render();
+		//Render Hero
+		theHero->RenderHero();
+	}
+
+	//Game is Paused
+	if (gamePause)
+		renderPause();
+
+	//Stacey's Tutorial
+	if (bTutorial)
+		renderTutorial();
 
 	//Display Game Over Screen
 	if (bGameOver)
@@ -198,11 +222,16 @@ void myApplication::renderScene(void)
 	if (bComplete)
 		renderComplete();
 
-	//Do not render over the Game Over and Level Complete screen
-	if (!bGameOver && !bComplete)
+	//Open Shop
+	if (bShop)
+		renderShop();
+
+	//Do not render over these screens
+	if (!bGameOver && !bComplete && gameStart)
 	{
 		//Display framerate
-		drawFPS();
+		if (!bShop)
+			drawFPS();
 
 		//Display Text On Screen
 		DisplayText();
@@ -275,6 +304,21 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 	case 27: 
 		exit(0);
 		break;
+		
+	//Open Shop
+	case 'u':
+	case 'U':
+		if (!bTutorial && gameStart)
+		{
+			//Stop movement when Shop is open
+			if (bShop)
+				gamePause = false;
+			else
+				gamePause = true;
+
+			bShop = !bShop;
+		}
+		break;
 
 	//Load Level 1
 	case '1':
@@ -291,10 +335,6 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		currentLevel = 2;
 
 		break;
-
-	case 'z':
-		testSkill.procSkills(theHero->GetPos(),theHero->GetPos());
-		break;
 	}
 }
 
@@ -307,6 +347,13 @@ void myApplication::MouseMove (int x, int y)
 {
 	mouseInfo.lastX = x;
 	mouseInfo.lastY = y;
+
+	//Check if user is hovering over Start Button
+	if (x >= SCREEN_WIDTH/2.6597 && x <= SCREEN_WIDTH/1.5238 && //385, 672
+		y >= SCREEN_HEIGHT/1.352 && y <= SCREEN_HEIGHT/1.103) //554, 679
+		menuHover = true;
+	else
+		menuHover = false;
 }
 
 void myApplication::MouseClick(int button, int state, int x, int y) 
@@ -326,6 +373,31 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 				if (bGameOver)
 					exit(0);
 
+				//Initiate Program if user clicks Start
+				if (menuHover)
+					programInit = true;
+
+				//Start Dialogue Scene 2
+				if (dTrans4 == 0)
+					startDialogue2 = true;
+
+				//Trigger Dialogue8
+				if (dTrans7 == 0)
+					trigger8 = true;
+
+				//Trigger Dialogue9
+				if (dTrans8 == 0)
+				{
+					trigger8 = false;
+					trigger9 = true;
+				}
+
+				//Remove Dialogue9
+				if (dTrans9 == 0)
+				{
+					trigger9 = false;
+					tutorialEnd = true;
+				}
 			}
 
 			break;
@@ -362,11 +434,28 @@ bool myApplication::Init(void)
 	//Load Textures
 	LoadTGA(&BackgroundTexture[0], "images/background4.tga");
 	LoadTGA(&TileMapTexture[0], "images/tile0_blank.tga");
-	LoadTGA(&TileMapTexture[1], "images/rocktexture.tga");
+	LoadTGA(&TileMapTexture[1], "images/rocktexture1.tga");
 	LoadTGA(&GameOver[0], "images/gameover.tga");
 	LoadTGA(&LevelComplete[0], "images/levelcomplete.tga");
 	LoadTGA(&border[0], "images/border.tga");
-	LoadTGA(&ground[0], "images/ground4.tga");
+	LoadTGA(&ground[0], "images/ground.tga");
+	LoadTGA(&shop[0], "images/shop.tga");
+	LoadTGA(&PauseTex[0], "images/gamePause.tga");
+	LoadTGA(&StartScreen[0], "images/startScreen.tga");
+	LoadTGA(&StartScreen[1], "images/startScreenHover.tga");
+
+	//Dialogue
+	LoadTGA(&dialogueBG[0], "images/dialogueBG.tga");
+	LoadTGA(&Stacey[0], "images/staceyDialogue1.tga");
+	LoadTGA(&Stacey[1], "images/staceyDialogue2.tga");
+	LoadTGA(&Stacey[2], "images/staceyDialogue3.tga");
+	LoadTGA(&Stacey[3], "images/staceyDialogue4.tga");
+	LoadTGA(&Stacey[4], "images/staceyDialogue5.tga");
+	LoadTGA(&Patient[0], "images/patientDialogue1.tga");
+	LoadTGA(&Patient[1], "images/patientDialogue2.tga");
+	LoadTGA(&Patient[2], "images/patientDialogue3.tga");
+	LoadTGA(&Troy[0], "images/troyDialogue1.tga");
+	LoadTGA(&Flash[0], "images/flashRed.tga");
 
 	//Hp Bar Textures
 	LoadTGA(&HpBar[0], "images/HP_0.tga");
@@ -376,11 +465,6 @@ bool myApplication::Init(void)
 	LoadTGA(&HpBar[4], "images/HP_4.tga");
 	LoadTGA(&HpBar[5], "images/HP_5.tga");
 	LoadTGA(&HpBar[6], "images/HP_6.tga");
-
-	if(!LoadTGA(&testSkill.skillTex[0],"images/placeholder.tga"))
-		return false;
-	if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
-		return false;
 
 	//Create Hero
 	theHero = CPlayerInfo::getInstance();
@@ -496,9 +580,21 @@ void myApplication::DisplayText()
 	glLoadIdentity();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-		//Display Health Bar Text
-		glColor3f(1.0f, 0.0f, 0.0f);
-		printw (35.0, 23.0, 0, "Health Bar");
+		//Do not render these text over screens
+		if (!bComplete && !bGameOver && !bShop)
+		{
+			//Display Health Bar Text
+			glColor3f(1.0f, 0.0f, 0.0f);
+			printw (35.0, 23.0, 0, "Health Bar");
+
+			//Display Level
+			glColor3f(0.0f, 1.0f, 1.0f);
+			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
+
+			//Display Level
+			glColor3f(0.0f, 1.0f, 1.0f);
+			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
+		}
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glPopAttrib();
@@ -550,13 +646,441 @@ void myApplication::renderComplete()
 	glDisable(GL_TEXTURE_2D);
 }
 
+void myApplication::renderShop()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	//Draw Shop
+	glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBindTexture(GL_TEXTURE_2D, shop[0].texID);
+		glPushMatrix();
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH,0);
+				glTexCoord2f(0,1); glVertex2f(0,0);				
+			glEnd();
+		glPopMatrix();
+		glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+}
+
+void myApplication::renderPause() {
+	glEnable(GL_TEXTURE_2D);
+
+	
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		//Draw Pause Image
+		glBindTexture(GL_TEXTURE_2D, PauseTex[0].texID);
+		glPushMatrix();
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
+				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH, 0);
+				glTexCoord2f(0,1); glVertex2f(0, 0);				
+			glEnd();
+		glPopMatrix();
+
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+}
+
+void myApplication::renderStartScene()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	int height = 163.6;
+	int width = 600;
+
+		//Draw Background
+		glBindTexture(GL_TEXTURE_2D, dialogueBG[0].texID);
+		glPushMatrix();
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH,0);
+				glTexCoord2f(0,1); glVertex2f(0,0);				
+			glEnd();
+		glPopMatrix();
+
+		if (dTrans1 != -600)
+		{
+			//Draw Patient Dialogue 1
+			glBindTexture(GL_TEXTURE_2D, Patient[0].texID);
+			glPushMatrix();
+				glTranslatef(0+dTrans1,0,0);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0,height);
+					glTexCoord2f(1,0); glVertex2f(width,height);
+					glTexCoord2f(1,1); glVertex2f(width,0);
+					glTexCoord2f(0,1); glVertex2f(0,0);				
+				glEnd();
+			glPopMatrix();
+
+			//Draw Stacey Dialogue 1
+			glBindTexture(GL_TEXTURE_2D, Stacey[0].texID);
+			glPushMatrix();
+				glTranslatef(423+dTrans2,200,0);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0,height);
+					glTexCoord2f(1,0); glVertex2f(width,height);
+					glTexCoord2f(1,1); glVertex2f(width,0);
+					glTexCoord2f(0,1); glVertex2f(0,0);				
+				glEnd();
+			glPopMatrix();
+
+			//Draw Patient Dialogue 2
+			glBindTexture(GL_TEXTURE_2D, Patient[1].texID);
+			glPushMatrix();
+				glTranslatef(0+dTrans3,400,0);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0,height);
+					glTexCoord2f(1,0); glVertex2f(width,height);
+					glTexCoord2f(1,1); glVertex2f(width,0);
+					glTexCoord2f(0,1); glVertex2f(0,0);				
+				glEnd();
+			glPopMatrix();
+
+			//Draw Troy Dialogue 1
+			glBindTexture(GL_TEXTURE_2D, Troy[0].texID);
+			glPushMatrix();
+				glTranslatef(423+dTrans4,600,0);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0,height);
+					glTexCoord2f(1,0); glVertex2f(width,height);
+					glTexCoord2f(1,1); glVertex2f(width,0);
+					glTexCoord2f(0,1); glVertex2f(0,0);				
+				glEnd();
+			glPopMatrix();
+		}
+
+		if (startDialogue2)
+		{
+			//Draw Stacey Dialogue 2
+			glBindTexture(GL_TEXTURE_2D, Stacey[1].texID);
+			glPushMatrix();
+				glTranslatef(0+dTrans5,200,0);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0,height);
+					glTexCoord2f(1,0); glVertex2f(width,height);
+					glTexCoord2f(1,1); glVertex2f(width,0);
+					glTexCoord2f(0,1); glVertex2f(0,0);				
+				glEnd();
+			glPopMatrix();
+
+			//Draw Patient Dialogue 3
+			glBindTexture(GL_TEXTURE_2D, Patient[2].texID);
+			glPushMatrix();
+				glTranslatef(423+dTrans6,400,0);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0,height);
+					glTexCoord2f(1,0); glVertex2f(width,height);
+					glTexCoord2f(1,1); glVertex2f(width,0);
+					glTexCoord2f(0,1); glVertex2f(0,0);				
+				glEnd();
+			glPopMatrix();
+		}
+
+		if (bFlash && counterFlash <= 50)
+		{
+			//Draw Flash
+			glBindTexture(GL_TEXTURE_2D, Flash[0].texID);
+			glPushMatrix();
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);
+					glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH,RESOLUTION_HEIGHT);
+					glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH,0);
+					glTexCoord2f(0,1); glVertex2f(0,0);				
+				glEnd();
+			glPopMatrix();
+		}
+
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+
+	 /****************************************************************************************************
+	   Dialogue Transition Update
+	 ****************************************************************************************************/
+	//Patient 1 Trans
+	if (dTrans1 >= 0)
+		dTrans1 = 0;
+	else
+		dTrans1 += 0.4;
+	//Stacey 1 Trans
+	if (dTrans1 == 0)
+	{
+		if (dTrans2 <= 0)
+			dTrans2 = 0;
+		else
+			dTrans2 -= 0.4;
+	}
+	//Patient 2 Trans
+	if (dTrans2 == 0)
+	{
+		if (dTrans3 >= 0)
+			dTrans3 = 0;
+		else
+			dTrans3 += 0.4;
+	}
+	//Troy 1 Trans
+	if (dTrans3 == 0)
+	{
+		if (dTrans4 <= 0)
+			dTrans4 = 0;
+		else
+			dTrans4 -= 0.4;
+	}
+
+	//Dialogue Scene 2
+	if (startDialogue2)
+	{
+		//Remove previous Dialogue Scenes upon Mouse Click
+		if (dTrans4 >= 610)
+			dTrans4 = 610;
+		else
+			dTrans4 += 2;
+		if (dTrans2 >= 610)
+			dTrans2 = 610;
+		else
+			dTrans2 += 2;
+		if (dTrans3 <= -600)
+			dTrans3 = -600;
+		else 
+			dTrans3 -= 2;
+		if (dTrans1 <= -600)
+			dTrans1 = -600;
+		else
+			dTrans1 -= 2;
+
+		//Transition
+		if (dTrans1 == -600)
+		{
+			//Stacey Dialogue 2 Trans
+			if (dTrans5 >= 0)
+				dTrans5 = 0;
+			else
+				dTrans5 += 0.8;
+
+			//Patient Dialogue 3 Trans
+			if (dTrans5 == 0)
+			{
+				if (dTrans6 <= 0)
+					dTrans6 = 0;
+				else
+					dTrans6 -= 0.8;
+			}
+		}
+	}
+
+	//Triger Flash
+	if (dTrans6 == 0)
+		bFlash = true;
+
+	//Flash Effect
+	if (bFlash)
+	{
+		++counterFlash;
+		++counterTime;
+		if (counterFlash >= 100)
+			counterFlash = 0;
+
+		//Stop flash after some time
+		if (counterTime >= 800)
+		{
+			bFlash = false;
+			gamePause = bTutorial = gameStart = true;
+		}
+	}	
+}
+
+void myApplication::renderTutorial()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	int height = 163.6;
+	int width = 600;
+
+		//Draw Stacey Dialogue 3
+		glBindTexture(GL_TEXTURE_2D, Stacey[2].texID);
+		glPushMatrix();
+			glTranslatef(0+dTrans7,600,0);
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0,height);
+				glTexCoord2f(1,0); glVertex2f(width,height);
+				glTexCoord2f(1,1); glVertex2f(width,0);
+				glTexCoord2f(0,1); glVertex2f(0,0);				
+			glEnd();
+		glPopMatrix();
+
+		//Draw Stacey Dialogue 4
+		glBindTexture(GL_TEXTURE_2D, Stacey[3].texID);
+		glPushMatrix();
+			glTranslatef(0+dTrans8,600,0);
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0,height);
+				glTexCoord2f(1,0); glVertex2f(width,height);
+				glTexCoord2f(1,1); glVertex2f(width,0);
+				glTexCoord2f(0,1); glVertex2f(0,0);				
+			glEnd();
+		glPopMatrix();
+
+		//Draw Stacey Dialogue 5
+		glBindTexture(GL_TEXTURE_2D, Stacey[4].texID);
+		glPushMatrix();
+			glTranslatef(0+dTrans9,600,0);
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0,height);
+				glTexCoord2f(1,0); glVertex2f(width,height);
+				glTexCoord2f(1,1); glVertex2f(width,0);
+				glTexCoord2f(0,1); glVertex2f(0,0);				
+			glEnd();
+		glPopMatrix();
+
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	/****************************************************************************************************
+	   Dialogue (Tutorial) Transition Update
+	 ****************************************************************************************************/
+	//Stacey Tutorial Dialogue (3)
+	if (!trigger8 && !trigger9 && !tutorialEnd)
+	{
+		if (dTrans7 >= 0)
+			dTrans7 = 0;
+		else 
+			dTrans7 += 2;
+	}
+
+	//Stacey Tutorial Dialogue (4)
+	if (trigger8)
+	{
+		//Translate Previous Dialogue Back
+		if (dTrans7 <= -600)
+			dTrans7 = -600;
+		else
+			dTrans7 -= 2;
+
+		//Translate Current Dialogue Forward
+		if (dTrans7 == -600)
+		{
+			if (dTrans8 >= 0)
+				dTrans8 = 0;
+			else
+				dTrans8 += 2;
+		}
+	}
+
+	//Stacey Tutorial Dialogue (5)
+	if (trigger9)
+	{
+		//Translate Previous Dialogue Back
+		if (dTrans8 <= -600)
+			dTrans8 = -600;
+		else
+			dTrans8 -= 2;
+
+		//Translate Current Dialogue Forward
+		if (dTrans8 == -600)
+		{
+			if (dTrans9 >= 0)
+				dTrans9 = 0;
+			else
+				dTrans9 += 2;
+		}
+	}
+
+	//End Tutorial
+	if (tutorialEnd)
+	{
+		//Translate Previous Dialogue Back
+		if (dTrans9 <= -600)
+			dTrans9 = -600;
+		else
+			dTrans9 -= 2;
+
+		//End Tutorial
+		if (dTrans9 == -600)
+		{
+			bTutorial = gamePause = false;
+		}
+	}
+}
+
+void myApplication::renderStartScreen(bool hover) {
+	glEnable(GL_TEXTURE_2D);
+
+	//Mouse is hovering over Start Button
+	if (hover)
+	{
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			//Draw image
+			glBindTexture(GL_TEXTURE_2D, StartScreen[1].texID);
+			glPushMatrix();
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
+					glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+					glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH, 0);
+					glTexCoord2f(0,1); glVertex2f(0, 0);				
+				glEnd();
+			glPopMatrix();
+
+		glDisable(GL_BLEND);
+		glPopMatrix();
+	}
+
+	//Mouse is not hovering over Start Button
+	else
+	{
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			//Draw image
+			glBindTexture(GL_TEXTURE_2D, StartScreen[0].texID);
+			glPushMatrix();
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
+					glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+					glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH, 0);
+					glTexCoord2f(0,1); glVertex2f(0, 0);				
+				glEnd();
+			glPopMatrix();
+
+		glDisable(GL_BLEND);
+		glPopMatrix();
+	}
+
+	glDisable(GL_TEXTURE_2D);
+}
+
 void myApplication::renderGround()
 {
 	glEnable(GL_TEXTURE_2D);
 
 	//Draw Ground
 	glPushMatrix();
-		glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glTranslatef(LEFT_BORDER, BOTTOM_BORDER, 0);
 		glBindTexture(GL_TEXTURE_2D, ground[0].texID);
@@ -582,10 +1106,12 @@ void myApplication::renderGround()
 void myApplication::RenderBackground() {
 	glEnable(GL_TEXTURE_2D);
 
-	//Draw Background image
+	
 	glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		//Draw Background image
 		glBindTexture(GL_TEXTURE_2D, BackgroundTexture[0].texID);
 		glPushMatrix();
 			glBegin(GL_QUADS);
@@ -595,7 +1121,8 @@ void myApplication::RenderBackground() {
 				glTexCoord2f(0,1); glVertex2f(0, 0);				
 			glEnd();
 		glPopMatrix();
-		glDisable(GL_BLEND);
+
+	glDisable(GL_BLEND);
 	glPopMatrix();
 
 	glDisable(GL_TEXTURE_2D);
