@@ -68,7 +68,7 @@ void myApplication::Update(void)
 	if (theHero->GetHp() <= 0)
 		bGameOver = true;
 
-	testSkill.Update(something,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y);
+	
 
 	//Update Hero
 	HeroUpdate();
@@ -92,7 +92,6 @@ void myApplication::Update(void)
 
 void myApplication::HeroUpdate()
 {
-	Vector3D temp;
 	//Check Collision of the hero before moving Up
 	if (!CheckCollision(theHero->GetPos(), true, false, false, false, theMap))
 	{
@@ -101,7 +100,6 @@ void myApplication::HeroUpdate()
 		{
 			moveMeUpDown(true, 1.0f);
 			bMoving = true;
-			temp.y=-1;
 		}
 
 		//Check if the user is standing still
@@ -117,7 +115,6 @@ void myApplication::HeroUpdate()
 		{
 			moveMeUpDown(false, 1.0f);
 			bMoving = true;
-			temp.y=1;
 		}
 
 		//Check if the user is standing still
@@ -135,7 +132,6 @@ void myApplication::HeroUpdate()
 		{
 			moveMeLeftRight(true, 1.0f);
 			bMoving = true;
-			temp.x=-1;
 		}
 
 		//Check if the user is standing still
@@ -153,15 +149,12 @@ void myApplication::HeroUpdate()
 		{
 			moveMeLeftRight(false, 1.0f);
 			bMoving = true;
-			temp.x=1;
 		}
 		
 		//Check if the user is standing still
 		else
 			bMoving = false;
 	}
-	if(temp.Length()!=0)
-		theHero->setDir(temp);
 }
 
 void myApplication::renderScene(void)
@@ -191,18 +184,17 @@ void myApplication::renderScene(void)
 	theCamera->SetHUD(true);
 
 	//Game has yet to start
-	//if (!gameStart && programInit)
-	//	renderStartScene();
+	if (!gameStart && programInit)
+		renderStartScene();
 
-	////Render Start Screen
-	//if (!programInit)
-	//{
-	//	if (!menuHover)
-	//		renderStartScreen(false);
-	//	else
-	//		renderStartScreen(true);
-	//}
-	gameStart=true;
+	//Render Start Screen
+	if (!programInit)
+	{
+		if (!menuHover)
+			renderStartScreen(false);
+		else
+			renderStartScreen(true);
+	}
 
 	//Game has Started
 	if (gameStart)
@@ -217,7 +209,6 @@ void myApplication::renderScene(void)
 
 		//Render Hero
 		theHero->RenderHero();
-		testSkill.render();
 	}
 
 	//Game is Paused
@@ -349,13 +340,6 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		currentLevel = 2;
 
 		break;
-
-	case 'z':
-		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::ATTACK);
-		break;
-	case 'x':
-		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGE);
-	break;
 	}
 }
 
@@ -507,14 +491,6 @@ bool myApplication::Init(void)
 	theBorder = new CMap;
 	theBorder->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
 	theBorder->LoadMap("Border.csv");
-
-	if(!LoadTGA(&testSkill.skillTex[0],"images/placeholder.tga"))
-		return false;
-	if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
-		return false;
-
-	mvcTime* timer=mvcTime::getInstance();
-	timer->init();
 
 	//Initialise Level to 1
 	currentLevel = 1;
