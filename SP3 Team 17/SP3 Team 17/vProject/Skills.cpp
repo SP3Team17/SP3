@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Skills::Skills(void)
+Skills::Skills()
 {
 	this->ID=ATTACK;
 	timeRef=-1;

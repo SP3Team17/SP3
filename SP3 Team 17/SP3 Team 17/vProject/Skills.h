@@ -1,10 +1,11 @@
+#ifndef SKILLS_H
+#define SKILLS_H
+
 #include "vector3D.h"
 #include <vector>
 #include "MobInfo.h"
 #include "TextureImage.h"
 
-#ifndef SKILLS_H
-#define SKILLS_H
 class Skills
 {
 public:

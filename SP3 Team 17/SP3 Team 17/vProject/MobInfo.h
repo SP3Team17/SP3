@@ -1,10 +1,7 @@
-#include "vector3D.h"
-
-
 #ifndef MOBINFO_H
 #define MOBINFO_H
 
-
+#include "vector3D.h"
 
 class MobInfo
 {
