@@ -11,8 +11,6 @@
 *.lastbuildstate
 *.rc
 *.idb
-*.vcxproj
-*.vcxfilters
 *.exe
 
 
