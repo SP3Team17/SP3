@@ -60,6 +60,9 @@
     <ClCompile Include="physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -116,7 +119,11 @@
     <ClInclude Include="Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="physics.h">
+=======
+    <ClInclude Include="Sprite.h">
+>>>>>>> origin/Main
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

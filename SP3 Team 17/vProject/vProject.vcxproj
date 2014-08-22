@@ -98,6 +98,7 @@
     <ClCompile Include="physics.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Skills.cpp" />
+    <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="physics.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Skills.h" />
+    <ClInclude Include="Sprite.h" />
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="vector3D.h" />
   </ItemGroup>
