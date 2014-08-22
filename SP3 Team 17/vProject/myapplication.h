@@ -21,6 +21,7 @@
 #include "MVCtime.h"
 #include "Skills.h"
 #include "Monster.h"
+#include "physics.h"
 
 //Mouse Info
 typedef struct {
@@ -59,6 +60,8 @@ private:
 	vector<MobInfo*> something;
 
 	Skills testSkill;
+
+	std::vector<physicObj*> wallList;
 
 	//end of kennard testing stuff
 

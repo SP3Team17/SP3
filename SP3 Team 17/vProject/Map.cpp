@@ -1,5 +1,10 @@
 #include "Map.h"
 
+#include <iostream>
+
+using namespace std;
+
+
 CMap* CMap::instance = 0;
 
 CMap::CMap()
@@ -38,7 +43,10 @@ void CMap::Init(const int theScreen_Height, const int theScreen_Width,
 
 	theScreenMap.resize(theNumOfTiles_MapHeight);
 	for (int i = 0; i < theNumOfTiles_MapHeight; ++i)
+	{
 		theScreenMap[i].resize(theNumOfTiles_MapWidth);
+	}
+	
 }
 
 CMap* CMap::getInstance()
@@ -49,6 +57,30 @@ CMap* CMap::getInstance()
 	}
 
 	return instance;
+}
+
+bool CMap::LoadMap(const string mapName, std::vector<physicObj*> wallList)
+{
+	if (LoadFile(mapName) == true)
+	{
+		printf("Map (%s) has been successfully loaded!\n", mapName.c_str());
+		for(int j=0;j<theNumOfTiles_MapHeight;++j)
+		{
+			for(int i=0;i<theNumOfTiles_MapWidth;++i)
+			{
+				if(theScreenMap[j][i]!=0)
+				{
+					Vector3D temp((i)*theTileSize,j*theTileSize);
+					std::cout<<temp.x<<" "<<temp.y<<std::endl;
+					physicObj* temp2=new physicObj(temp,theTileSize);
+					wallList.push_back(temp2);
+				}
+			}
+		}
+		return true;
+	}
+
+	return false;
 }
 
 bool CMap::LoadMap(const string mapName)

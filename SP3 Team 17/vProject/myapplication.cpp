@@ -355,7 +355,10 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		break;
 	case 'x':
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGE);
-	break;
+		break;
+	case 'c':
+		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::LINE);
+		break;
 	}
 }
 
@@ -501,7 +504,7 @@ bool myApplication::Init(void)
 	//Set up Map
 	theMap = new CMap;
 	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-	theMap->LoadMap("MapDesign.csv");
+	theMap->LoadMap("MapDesign.csv",wallList);
 
 	//Set up Border
 	theBorder = new CMap;
