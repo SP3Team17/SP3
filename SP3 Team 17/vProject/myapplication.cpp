@@ -68,12 +68,16 @@ void myApplication::Update(void)
 	if (theHero->GetHp() <= 0)
 		bGameOver = true;
 
+	//Kennard's test skill
 	testSkill.Update(something,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y);
 
 	//Update Hero
 	HeroUpdate();
 
-	//Constrain Hero to middle of screen (unless he reaches the border
+	//Update Exp System
+	theHero->getExp()->Update();
+
+	//Constrain Hero to middle of screen (unless he reaches the border)
 	theHero->ConstrainHero(MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, 
 						   MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER, MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER,
 						   1.0f, mapOffset_x, mapOffset_y);
@@ -92,6 +96,9 @@ void myApplication::Update(void)
 
 void myApplication::HeroUpdate()
 {
+	//Update Function from Player Class
+	theHero->Update();
+
 	Vector3D temp;
 	//Check Collision of the hero before moving Up
 	if (!CheckCollision(theHero->GetPos(), true, false, false, false, theMap))
@@ -183,26 +190,26 @@ void myApplication::renderScene(void)
 		if (gameStart && !gamePause)
 			Update();
 	}
-	mvcTime* timer=mvcTime::getInstance();
 
+	//Update Time
+	mvcTime* timer=mvcTime::getInstance();
 	timer->updateTime();
 
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
 
 	//Game has yet to start
-	//if (!gameStart && programInit)
-	//	renderStartScene();
+	if (!gameStart && programInit)
+		renderStartScene();
 
-	////Render Start Screen
-	//if (!programInit)
-	//{
-	//	if (!menuHover)
-	//		renderStartScreen(false);
-	//	else
-	//		renderStartScreen(true);
-	//}
-	gameStart=true;
+	//Render Start Screen
+	if (!programInit)
+	{
+		if (!menuHover)
+			renderStartScreen(false);
+		else
+			renderStartScreen(true);
+	}
 
 	//Game has Started
 	if (gameStart)
@@ -274,17 +281,26 @@ void myApplication::LoadLevel(short level)
 	{
 		RenderBackground();
 		renderGround();
+
+		//Re-Init Map 
 		RenderTileMap(theMap);
 		RenderMapBorder();
+
 		RenderHpBar();
 	}
 
 	//Load Level 2
-	//else if (level == 2)
-	//{
-		//Do Something
-		//...
-	//}
+	else if (level == 2)
+	{
+		RenderBackground();
+		renderGround();
+
+		//Re-Init Map 
+		RenderTileMap(theMap);
+		RenderMapBorder();
+
+		RenderHpBar();
+	}
 }
 
 void myApplication::changeSize(int w, int h) 
@@ -318,6 +334,15 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 	case 27: 
 		exit(0);
 		break;
+
+	//Skip Start Scene
+	case ' ':
+		if (programInit)
+		{
+			gameStart = true;
+			gamePause = false;
+		}
+		break;
 		
 	//Open Shop
 	case 'u':
@@ -336,18 +361,34 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 	//Load Level 1
 	case '1':
-		heroInit = false;
+		{
+			//Trigger Hero Init
+			heroInit = false;
 
-		currentLevel = 1;
+			//Re-Init Map
+			mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
+			theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
+			theMap->LoadMap("MapDesign.csv");
 
+			//Set Level to 1
+			currentLevel = 1;
+		}
 		break;
 
 	//Load Level 2
 	case '2':
-		heroInit = false;
+		{
+			//Trigger Hero Init
+			heroInit = false;
 
-		currentLevel = 2;
+			//Re-Init Map
+			mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
+			theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
+			theMap->LoadMap("MapDesign2.csv");
 
+			//Set Level to 1
+			currentLevel = 2;
+		}
 		break;
 
 	case 'z':
@@ -355,7 +396,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		break;
 	case 'x':
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGE);
-	break;
+		break;
 	}
 }
 
@@ -446,9 +487,6 @@ bool myApplication::Init(void)
 	theCamera->SetPosition( 0.0, 2.0, -5.0 );
 	theCamera->SetDirection( 0.0, 0.0, 1.0 );
 
-	//Init Inventory
-	myInventory = CInventory::getInstance();
-
 	//Create Goodies Factory
 	theGoodiesFactory = CGoodiesFactory::getInstance();
 
@@ -499,7 +537,7 @@ bool myApplication::Init(void)
 	LoadTGA(&(theHero->HeroTexture[0]), "images/keldeo.tga");
 
 	//Set up Map
-	theMap = new CMap;
+	theMap = CMap::getInstance();
 	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
 	theMap->LoadMap("MapDesign.csv");
 
@@ -513,6 +551,7 @@ bool myApplication::Init(void)
 	if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
 		return false;
 
+	//Init Timer
 	mvcTime* timer=mvcTime::getInstance();
 	timer->init();
 

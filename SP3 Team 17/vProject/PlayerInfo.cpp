@@ -4,27 +4,42 @@
 
 CPlayerInfo* CPlayerInfo::instance = NULL;
 
-CPlayerInfo::CPlayerInfo() {}
+CPlayerInfo::CPlayerInfo() 
+	: playerLevel(2)
+	, active(true)
+	, jumpspeed(0)
+	, heroAnimationCounter(0)
+	, hp(MAX_PLAYER_HP * HP_MULTIPLIER)
+{
+	//Init C.Classes
+	playerExp = CExpSystem::getInstance();
+	playerInventory = CInventory::getInstance();
+}
 
 CPlayerInfo::~CPlayerInfo() {}
 
-// Initialise this class instance
+//Initialise this class instance
 void CPlayerInfo::Init()
 {
-	pos.Set(100,450);
-	jumpspeed = 0;
-	hp = MAX_PLAYER_HP * HP_MULTIPLIER;
-	active = true;
+	//Init Variables
+	pos.Set(100,400);
 	hero_inMidAir_Up = hero_inMidAir_Down = heroAnimationInvert = false;
-	heroAnimationCounter = 0;
 }
 
 CPlayerInfo* CPlayerInfo::getInstance()
 {
+	//Singleton Structure
 	if(instance == NULL)
 		instance = new CPlayerInfo();
-
 	return instance;
+}
+
+//Update
+void CPlayerInfo::Update()
+{
+	//Level up player if requirements are met
+	if (playerExp->getExp() >= playerExp->getExpToLevel())
+		++playerLevel;
 }
 
 //Get Active State
@@ -37,6 +52,30 @@ bool CPlayerInfo::GetActive()
 void CPlayerInfo::SetActive(bool active)
 {
 	this->active = active;
+}
+
+//Get Level
+int CPlayerInfo::getLevel()
+{
+	return playerLevel;
+}
+
+//Set Level
+void CPlayerInfo::setLevel(short level)
+{
+	level = playerLevel;
+}
+
+//Get Inventory
+CInventory* CPlayerInfo::getInventory()
+{
+	return playerInventory;
+}
+
+//Get Exp
+CExpSystem* CPlayerInfo::getExp()
+{
+	return playerExp;
 }
 
 /****************************************************************************************************

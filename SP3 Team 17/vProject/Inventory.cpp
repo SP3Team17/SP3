@@ -4,8 +4,10 @@ CInventory* CInventory::instance = NULL;
 
 CInventory::CInventory()
 {
+	//Set all slots to 0
 	potion = level = armor = invinc = 0;
 
+	//Initialise all Goodies
 	for (int i = 0; i < INVENTORY_VARIETY; ++i)
 	{
 		itemsArray[i] = new CGoodies; //GOODIE_NONE
@@ -16,9 +18,10 @@ CInventory::~CInventory() {}
 
 CInventory* CInventory::getInstance()
 {
+	//Only one instance of Inventory 
+	//since there is only one player 
 	if (instance == NULL)
 		instance = new CInventory;
-
 	return instance;
 }
 

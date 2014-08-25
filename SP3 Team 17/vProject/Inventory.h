@@ -10,6 +10,7 @@ class CInventory {
 private:
 	static CInventory *instance;
 
+	//INVENTORY_VARIETY = No of diff items
 	CGoodies* itemsArray[INVENTORY_VARIETY];
 
 public:

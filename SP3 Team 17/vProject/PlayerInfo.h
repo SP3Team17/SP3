@@ -5,8 +5,38 @@
 #include "definitions.h"
 #include "vector3D.h"
 
+#include "Inventory.h"
+#include "ExpSystem.h"
+
+//Class Composition Prototype
+class CExpSystem;
+class CInventory;
+
 class CPlayerInfo
 {
+private:
+	static CPlayerInfo *instance;
+
+	//Active State
+	bool active;
+
+	//Hero's information
+	Vector3D pos;
+	Vector3D dir;
+	int jumpspeed;
+	bool hero_inMidAir_Up;
+	bool hero_inMidAir_Down;
+	bool heroAnimationInvert;
+	int heroAnimationCounter;
+	short hp;
+
+	//Class Composition
+	CInventory* playerInventory;
+	CExpSystem* playerExp;
+
+	//Level
+	short playerLevel;
+
 public:
 	CPlayerInfo();
 	~CPlayerInfo();
@@ -17,6 +47,9 @@ public:
 	void SetActive(bool active);
 
 	static CPlayerInfo* getInstance();
+
+	//Update
+	void Update();
 
 	//Hero's information
 	TextureImage HeroTexture[1];
@@ -65,6 +98,11 @@ public:
 	//Update FreeFall
 	void UpdateFreeFall();
 
+	//Set Level of Player
+	void setLevel(short level);
+	//Get Level of Player
+	int getLevel();
+
 	//Set Animation Invert status of the player
 	void SetAnimationInvert(bool heroAnimationInvert);
 	//Get Animation Invert status of the player
@@ -74,27 +112,15 @@ public:
 	//Get Animation Counter of the player
 	int GetAnimationCounter();
 
+	//Get Functions for Composition Classes
+	CInventory* getInventory();
+	CExpSystem* getExp();
+
 	//Constrain the position of the Hero to within the border
 	void ConstrainHero(const int leftBorder, const int rightBorder, 
 					   const int topBorder, const int bottomBorder, 
 					   float timeDiff,
 					   int& mapOffset_x, int& mapOffset_y);
-
-private:
-	static CPlayerInfo *instance;
-
-	//Active State
-	bool active;
-
-	// Hero's information
-	Vector3D pos;
-	Vector3D dir;
-	int jumpspeed;
-	bool hero_inMidAir_Up;
-	bool hero_inMidAir_Down;
-	bool heroAnimationInvert;
-	int heroAnimationCounter;
-	short hp;
 };
 
 #endif
