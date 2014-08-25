@@ -7,22 +7,34 @@ using namespace std;
 
 Skills::Skills()
 {
-	this->ID=ATTACK;
-	timeRef.push_back(-1);
-	Pos.push_back(Vector3D(0,0,0));
-	SkillPhase=0;
+	SkillData temp;
+	temp.ID=ATTACK;
+	temp.timeRef=-1;
+	temp.Pos=(Vector3D(0,0,0));
+	temp.SkillPhase=0;
+	temp.active=false;
+	data.push_back(temp);
 	offset_x=offset_y=0;
 	Poffset_x=Poffset_y=0;
+	cool=false;
+	mvcTime* timer=mvcTime::getInstance();
+	coolRef=timer->insertNewTime(1000);
 }
 
 Skills::Skills(SkillType ID)
 {
-	this->ID=ID;
-	timeRef.push_back(-1);
-	Pos.push_back(Vector3D(0,0,0));
-	SkillPhase=0;
+	SkillData temp;
+	temp.ID=ATTACK;
+	temp.timeRef=-1;
+	temp.Pos=(Vector3D(0,0,0));
+	temp.SkillPhase=0;
+	temp.active=false;
+	data.push_back(temp);
 	offset_x=offset_y=0;
 	Poffset_x=Poffset_y=0;
+	cool=false;
+	mvcTime* timer=mvcTime::getInstance();
+	coolRef=timer->insertNewTime(1000);
 }
 
 
@@ -32,56 +44,113 @@ Skills::~Skills(void)
 
 void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 {
-	if(SkillPhase==0)
-	{
-		SkillPhase=1;
-		//offset_x=offset_y=0;
-		//Poffset_x=Poffset_y=0;
-		mvcTime* timer=mvcTime::getInstance();
-		this->Pos[0]=pos;
-		this->Dir=Dir;
-		this->ID=ID;
-		switch(ID)
+	if(!cool)
+	{	
+		for(vector<SkillData>::iterator it=data.begin();it!=data.end();++it)
 		{
-		case ATTACK:
-			if(timeRef[0]==-1)
+			SkillData* temp=&*it;
+			if(!temp->active)
 			{
-				timeRef[0]=timer->insertNewTime(1000);
-			}
-			else
-			{
-				timer->resetTime(timeRef[0]);
-				timer->changeLimit(timeRef[0],1000);
-			}
-			break;
-		case RANGE:
-			if(timeRef[0]==-1)
-			{
-				timeRef[0]=timer->insertNewTime(1000);
-			}
-			else
-			{
-				timer->resetTime(timeRef[0]);
-				timer->changeLimit(timeRef[0],1000);
-			}
-			break;
-		case LINE:
-			if(timeRef.size()==1)
-			{
-				timeRef.push_back(timer->insertNewTime(500));
-			}
-			
-			if(timeRef[0]==-1)
-			{
-				timeRef[0]=timer->insertNewTime(1000);
-			}
-			else
-			{
-				timer->resetTime(timeRef[0]);
-				timer->changeLimit(timeRef[0],1000);
+				mvcTime* timer=mvcTime::getInstance();
+				temp->SkillPhase=1;
+				//offset_x=offset_y=0;
+				//Poffset_x=Poffset_y=0;
+				temp->Pos=pos;
+				temp->Dir=Dir;
+				temp->ID=ID;
+				cool=true;
+
+				switch(ID)
+				{
+				case ATTACK:
+					if(temp->timeRef==-1)
+					{
+						temp->timeRef=timer->insertNewTime(1000);
+					}
+					else
+					{
+						timer->resetTime(temp->timeRef);
+						timer->changeLimit(temp->timeRef,1000);
+					}
+					timer->resetTime(coolRef);
+					timer->changeLimit(coolRef,2500);
+					temp->active=true;
+					return;
+					break;
+				case RANGE:
+					if(!temp->active)
+					{
+						if(temp->timeRef==-1)
+						{
+							temp->timeRef=timer->insertNewTime(1000);
+						}
+						else
+						{
+							timer->resetTime(temp->timeRef);
+							timer->changeLimit(temp->timeRef,1000);
+						}
+						timer->resetTime(coolRef);
+						timer->changeLimit(coolRef,750);
+						temp->active=true;
+						return;
+					}
+					break;
+				case LINE:
+					if(!temp->active)
+					{
+						if(temp->timeRef==-1)
+						{
+							temp->timeRef=timer->insertNewTime(50);
+						}
+						else
+						{
+							timer->resetTime(temp->timeRef);
+							timer->changeLimit(temp->timeRef,50);
+						}
+						timer->resetTime(coolRef);
+						timer->changeLimit(coolRef,4000);
+						temp->active=true;
+					}
+					return;
+					break;
+				}
+				temp->active=true;
 			}
 		}
+		if(!cool)
+		{
+			SkillData temp;
+			cool=true;
+			mvcTime* timer=mvcTime::getInstance();
+			temp.SkillPhase=1;
+			//offset_x=offset_y=0;
+			//Poffset_x=Poffset_y=0;
+			temp.Pos=pos;
+			temp.Dir=Dir;
+			temp.ID=ID;
+			switch(ID)
+			{
+			case ATTACK:
+				timer->resetTime(coolRef);
+				temp.timeRef=timer->insertNewTime(1000);
+				timer->changeLimit(coolRef,2500);
+				break;
+			case RANGE:
+				timer->resetTime(coolRef);
+				timer->changeLimit(coolRef,1000);
+				temp.timeRef=timer->insertNewTime(1000);
+				break;
+			case LINE:
+				timer->resetTime(coolRef);
+				timer->changeLimit(coolRef,4000);
+				temp.timeRef=timer->insertNewTime(50);
+				break;
+			}
+			temp.active=true;
+			data.push_back(temp);
+		}
 	}
+
 }
 
 void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y)
@@ -91,113 +160,186 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 
 	this->offset_x=offset_x;
 	this->offset_y=offset_y;
-
-	if(SkillPhase!=0)
+	mvcTime* timer=mvcTime::getInstance();
+	bool misc;
+	SkillData temp3;
+	temp3.active=false;
+	if(timer->testTime(coolRef))
 	{
-		
-		this->Pos[0].x=this->Pos[0].x-this->offset_x+Poffset_x;
-		
-		this->Pos[0].y=this->Pos[0].y-this->offset_y+Poffset_y;
-
-
-		mvcTime* timer=mvcTime::getInstance();
-		switch(ID)
+		cool=false;
+	}
+	for(vector<SkillData>::iterator it=data.begin();it!=data.end();++it)
+	{
+		SkillData* temp=&*it;
+		if(temp->active==true)
 		{
-		case ATTACK:
-			this->Pos[0]=Pos;
-			this->Dir=Dir;
-			switch(SkillPhase)
-			{
-			case 1://attack duration
-				if(timer->testTime(timeRef[0]))
-				{
-					cout<<"skill attack phase 1 ended\n";
-					SkillPhase=2;
-					timer->changeLimit(timeRef[0],1500);
-				}
-				break;
-			case 2://cooldown
-				if(timer->testTime(timeRef[0]))
-				{
-					cout<<"skill attack phase 2 ended\n";
-					SkillPhase=0;
-				}
-				break;
-			}
-			break;
-		case RANGE:
-			switch(SkillPhase)
-			{
-			case 1://attack duration
-				if(timer->testTime(timeRef[0]))
-				{
-					cout<<"skill Ranged phase 1 ended\n";
-					SkillPhase=2;
-					timer->changeLimit(timeRef[0],1500);
-				}
-				else
-				{
-					this->Pos[0]=this->Pos[0]+this->Dir*timer->getDelta()*500;
-				}
-				break;
-			case 2://cooldown
-				if(timer->testTime(timeRef[0]))
-				{
-					cout<<"skill Ranged phase 2 ended\n";
-					SkillPhase=0;
-				}
-				break;
-			}
-			break;
-		case LINE:
-			switch(SkillPhase)
-			{
-			case 1:
-				break;
-			}
+		
+			temp->Pos.x=temp->Pos.x-this->offset_x+Poffset_x;
+		
+			temp->Pos.y=temp->Pos.y-this->offset_y+Poffset_y;
 
+			switch(temp->ID)
+			{
+			case ATTACK:
+				temp->Pos=Pos;
+				temp->Dir=Dir;
+				switch(temp->SkillPhase)
+				{
+				case 1://attack duration
+					if(timer->testTime(temp->timeRef))
+					{
+						cout<<"skill attack phase 1 ended\n";
+						temp->SkillPhase=2;
+						timer->changeLimit(temp->timeRef,1000);
+					}
+					break;
+				case 2://cooldown
+					if(timer->testTime(temp->timeRef))
+					{
+						cout<<"skill attack phase 2 ended\n";
+						temp->SkillPhase=0;
+						temp->active=false;
+					}
+					break;
+				}
+				break;
+			case RANGE:
+				switch(temp->SkillPhase)
+				{
+				case 1://attack duration
+					if(timer->testTime(temp->timeRef))
+					{
+						cout<<"skill Ranged phase 1 ended\n";
+						temp->SkillPhase=2;
+						timer->changeLimit(temp->timeRef,500);
+					}
+					else
+					{
+						temp->Pos=temp->Pos+temp->Dir*timer->getDelta()*500;
+					}
+					break;
+				case 2://cooldown
+					if(timer->testTime(temp->timeRef))
+					{
+						cout<<"skill Ranged phase 2 ended\n";
+						temp->SkillPhase=0;
+						temp->active=false;
+					}
+					break;
+				}
+				break;
+			case LINE:
+				switch(temp->SkillPhase)
+				{
+				default:
+					if(timer->testTime(temp->timeRef))
+					{
+						if(temp->SkillPhase<9&&temp->SkillPhase>0)
+						{
+							misc=false;
+							temp->Pos=temp->Pos+temp->Dir*32;
+							cout<<"line spawn\n";
+							++temp->SkillPhase;
+							timer->changeLimit(temp->timeRef,250);
+							for(vector<SkillData>::iterator it2=data.begin();it2!=data.end();++it2)
+							{
+								SkillData* temp2=&*it2;
+								if(!temp2->active&&!misc)
+								{
+									temp2->active=true;
+									temp2->Pos=temp->Pos;
+									temp2->SkillPhase=-1;
+									timer->resetTime(temp2->timeRef);
+									timer->changeLimit(temp2->timeRef,1000);
+									misc=true;
+								}
+							}
+							if(!misc)
+							{
+								temp3.active=true;
+								temp3.Pos=temp->Pos;
+								temp3.SkillPhase=-1;
+								temp3.timeRef=timer->insertNewTime(1000);
+								temp3.ID=LINE;
+							}
+						}
+						else
+						{
+							temp->active=false;
+						}
+					}
+					break;
+				case -1:
+					if(timer->testTime(temp->timeRef))
+					{
+						temp->active=false;
+					}
+					break;
+				}
+			}
 		}
+	}
+	if(temp3.active)
+	{
+		data.push_back(temp3);
 	}
 }
 
 void Skills::render()
 {
-	if(SkillPhase!=0)
+	for(vector<SkillData>::iterator it=data.begin();it!=data.end();++it)
 	{
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glBindTexture(GL_TEXTURE_2D,skillTex[SkillPhase].texID);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		switch(ID)
+		SkillData temp=*it;
+		if(temp.active)
 		{
-		case ATTACK:
-		case RANGE:
-			switch(SkillPhase)
+			glPushMatrix();
+			glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
+			switch(temp.ID)
 			{
-			case 1:
-			case 2:
-				glTranslatef(Pos[0].x+16*(1+Dir.x),Pos[0].y+16*(1+Dir.y),0);
-				glScalef(32,32,0);
+			case ATTACK:
+			case RANGE:
+				switch(temp.SkillPhase)
+				{
+				case 1:
+				case 2:
+					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
+					glScalef(32,32,0);
+					break;
+				}
+				break;
+			case LINE:
+				switch(temp.SkillPhase)
+				{
+				defualt:
+					return;
+				case -1:
+					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
+					glScalef(32,32,0);
+					break;
+				}
 				break;
 			}
-			break;
-		}
-		glPushMatrix();
-		glBegin (GL_TRIANGLE_STRIP);
-			glTexCoord2f(0,0);
-			glVertex3f(-0.5, 0.5, 0);
+			glEnable(GL_TEXTURE_2D);
+			glEnable(GL_BLEND);
+			glBindTexture(GL_TEXTURE_2D,skillTex[temp.SkillPhase].texID);
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+			glBegin (GL_TRIANGLE_STRIP);
+				glTexCoord2f(0,0);
+				glVertex3f(-0.5, 0.5, 0);
 		
-			glTexCoord2f(0,1.0);
-			glVertex3f(-0.5,-0.5,0);
+				glTexCoord2f(0,1.0);
+				glVertex3f(-0.5,-0.5,0);
 
-			glTexCoord2f(1.0,0.0);
-			glVertex3f(0.5,0.5,0);
+				glTexCoord2f(1.0,0.0);
+				glVertex3f(0.5,0.5,0);
 
-			glTexCoord2f(1.0,1.0);
-			glVertex3f(0.5,-0.5,0);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
+				glTexCoord2f(1.0,1.0);
+				glVertex3f(0.5,-0.5,0);
+			glEnd();
+			glPopMatrix();
+			glDisable(GL_BLEND);
+			glDisable(GL_TEXTURE_2D);
+			glColor3f(1,1,1);
+		}
 	}
 }

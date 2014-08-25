@@ -16,22 +16,28 @@ public:
 		LINE,
 		TOTAL,
 	};
+	typedef struct
+	{
+		int timeRef;
+		int SkillPhase;
+		Vector3D Pos;
+		Vector3D Dir;
+		SkillType ID;
+		bool active;
+	}SkillData;
 	Skills(void);
 	Skills(SkillType ID);
 	~Skills(void);
 	void Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y);//,player* hero
 	void render();
 	void procSkills(Vector3D pos,Vector3D Dir,SkillType ID);
-	int getPhase();
 	TextureImage skillTex[TOTAL];
+	int coolRef;
 private:
 	float offset_x,offset_y,Poffset_x,Poffset_y;
-	SkillType ID;
-	std::vector<Vector3D> Pos;
 	//Sprite skillSprite;
-	Vector3D Dir;
-	std::vector<int> timeRef;
-	int SkillPhase;
+	std::vector<SkillData> data;
 	int SkillLevel;
+	bool cool;
 };
 #endif

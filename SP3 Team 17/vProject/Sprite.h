@@ -15,27 +15,21 @@ public:
 	~Sprite();
 
 	// Therapist
-	TextureImage player[1];
+	TextureImage Images;
 	// Anti-Gambling Credits
-	TextureImage credit[1];
 	// Shooting particle
-	TextureImage particle[1];
 	// Money Bag enemy
-	TextureImage bag[1];
 	// Dollar note
-	TextureImage note[1];
 	// Mahjong enemy
-	TextureImage mahjongfiend[1];
 	// Poker enemy
-	TextureImage pokerfiend[1];
 	// Du Shen
-	TextureImage boss[1];
 	// LoadTGA
+	bool Stop;
 	bool ImageInit(void);
-	bool LoadTGA(TextureImage *texture, char *filename);
+	bool LoadTGA( char *filename);
 	void update(void);
 	void changeVariation(int newVar);
-	void render(void);
+	void render(int Image);
 	void changeStop(bool nStop);
 	// Set Animation Invert status of the sprite
 	void SetAnimationInvert(bool AnimationInvert);
@@ -48,7 +42,7 @@ private:
 	int CurrentVar;
 	int AnimationCounter;
 	bool AnimationInvert;
-	bool Stop;
+
 
 };
 #endif

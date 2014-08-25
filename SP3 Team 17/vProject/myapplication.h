@@ -22,6 +22,7 @@
 #include "MVCtime.h"
 #include "Skills.h"
 #include "Monster.h"
+#include "physics.h"
 
 //Mouse Info
 typedef struct {
@@ -60,6 +61,8 @@ private:
 	vector<MobInfo*> something;
 
 	Skills testSkill;
+
+	std::vector<physicObj*> wallList;
 
 	//end of kennard testing stuff
 
@@ -181,7 +184,7 @@ private:
 	//Check for collision of hero with obstacles in a certain position
 	bool CheckCollision(Vector3D pos, 
 						bool m_bCheckUpwards, bool m_bCheckDownwards, 
-						bool m_bCheckLeft, bool m_bCheckRight, CMap* map);
+						bool m_bCheckLeft, bool m_bCheckRight, CMap* map,int x_offset,int y_offset);
 
 	//Hp Bar
 	TextureImage HpBar[7];
