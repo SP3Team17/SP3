@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "definitions.h"
+
 using namespace std;
 
 
@@ -70,7 +72,7 @@ bool CMap::LoadMap(const string mapName, std::vector<physicObj*> wallList)
 			{
 				if(theScreenMap[j][i]!=0)
 				{
-					Vector3D temp((i)*theTileSize,j*theTileSize);
+					Vector3D temp((i)*theTileSize+LEFT_BORDER,j*theTileSize+BOTTOM_BORDER);
 					std::cout<<temp.x<<" "<<temp.y<<std::endl;
 					physicObj* temp2=new physicObj(temp,theTileSize);
 					wallList.push_back(temp2);

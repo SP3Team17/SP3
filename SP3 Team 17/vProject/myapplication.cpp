@@ -94,7 +94,7 @@ void myApplication::HeroUpdate()
 {
 	Vector3D temp;
 	//Check Collision of the hero before moving Up
-	if (!CheckCollision(theHero->GetPos(), true, false, false, false, theMap))
+	if (!CheckCollision(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['w'] || myKeys['W']) && !stopMovement)
@@ -110,7 +110,7 @@ void myApplication::HeroUpdate()
 	}
 
 	//Check Collision of the hero before moving down
-	if (!CheckCollision(theHero->GetPos(), false, true, false, false, theMap))
+	if (!CheckCollision(theHero->GetPos()+Vector3D(0,5,0), false, true, false, false, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['s'] || myKeys['S']) && !stopMovement)
@@ -127,8 +127,8 @@ void myApplication::HeroUpdate()
 
 	//Check Collision of the hero before moving left
 	Vector3D posL; //Fixes the Collision 
-	posL.Set(theHero->GetPos().x-5, theHero->GetPos().y); //Buffer of 5
-	if (!CheckCollision(posL, false, false, true, false, theMap))
+	posL.Set(theHero->GetPos().x-7, theHero->GetPos().y); //Buffer of 5
+	if (!CheckCollision(posL, false, false, true, false, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['a'] || myKeys['A']) && !stopMovement)
@@ -145,8 +145,8 @@ void myApplication::HeroUpdate()
 
 	//Check Collision of the hero before moving right
 	Vector3D posR; //Fixes the Collision 
-	posR.Set(theHero->GetPos().x+5, theHero->GetPos().y); //Buffer of 5
-	if (!CheckCollision(posR, false, false, false, true, theMap))
+	posR.Set(theHero->GetPos().x+7, theHero->GetPos().y); //Buffer of 5
+	if (!CheckCollision(posR, false, false, false, true, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['d'] || myKeys['D']) && !stopMovement)
@@ -311,7 +311,6 @@ void myApplication::changeSize(int w, int h)
 void myApplication::KeyboardDown(unsigned char key, int x, int y)
 {
 	myKeys[key]= true;
-
 	switch(key) {
 
 	//Exit Program
@@ -504,7 +503,7 @@ bool myApplication::Init(void)
 	//Set up Map
 	theMap = new CMap;
 	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-	theMap->LoadMap("MapDesign.csv",wallList);
+	theMap->LoadMap("mapDesign.csv",wallList);
 
 	//Set up Border
 	theBorder = new CMap;
@@ -1396,36 +1395,90 @@ void myApplication::printw (float x, float y, float z, char* format, ...)
 //Check for collision of hero with obstacles in a certain position
 bool myApplication::CheckCollision(Vector3D pos, 
 								   bool m_bCheckUpwards, bool m_bCheckDownwards, 
-								   bool m_bCheckLeft, bool m_bCheckRight, CMap* map)
+								   bool m_bCheckLeft, bool m_bCheckRight, CMap* map,int x_offset,int y_offset)
 {
 	//The pos.x and pos.y are the top left corner of the hero, so we find the tile which this position occupies.
 	int tile_topleft_x = (int)floor((float)(mapOffset_x+pos.x-LEFT_BORDER) / TILE_SIZE);
 	int tile_topleft_y = (int)floor((float)(mapOffset_y+pos.y-BOTTOM_BORDER)/ TILE_SIZE);
+	int proceed=false;
+	Vector3D reference[9];
+	int j=0;
 	
 	if (m_bCheckLeft)
+	{
 		if (map->theScreenMap[tile_topleft_y][tile_topleft_x] == 1)
-			return true;
+		{
+			proceed=true;
+			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
+			j++;
+		}
+		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x] == 1)
+		{
+			proceed=true;
+			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
+			j++;
+		}
+	}
 
 	if (m_bCheckRight)
+	{
 		if (map->theScreenMap[tile_topleft_y][tile_topleft_x+1] == 1)
-			return true;
+		{
+			proceed=true;
+			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
+			j++;
+		}
+		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x+1] == 1)
+		{
+			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
+			proceed=true;
+			j++;
+		}
+	}
 
 	if (m_bCheckUpwards)
 	{
 		if (map->theScreenMap[tile_topleft_y][tile_topleft_x] == 1)
-			return true;
+		{
+			proceed=true;
+			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
+			j++;
+		}
 		if (map->theScreenMap[tile_topleft_y][tile_topleft_x+1] == 1)
-			return true;
+		{
+			proceed=true;
+			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
+			j++;
+		}
 	}
 
 	if (m_bCheckDownwards)
 	{
 		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x] == 1)
-			return true;
+		{
+			proceed=true;
+			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
+			j++;
+		}
 		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x+1] == 1)
-			return true;
+		{
+			proceed=true;
+			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
+			j++;
+		}
 	}
 
+	if(proceed)
+	{
+		for(int i=0;i<j;++i)
+		{
+			//if((pos - reference[i]).Length() < TILE_SIZE)
+			if(abs(reference[i].x-x_offset-pos.x)<TILE_SIZE-2 && abs(reference[i].y-y_offset-pos.y)<TILE_SIZE-2)
+			{
+				return true;
+			}
+		}
+	}
 	return false;
 }
 

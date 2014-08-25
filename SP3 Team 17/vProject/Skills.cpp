@@ -183,7 +183,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 			case ATTACK:
 				temp->Pos=Pos;
 				temp->Dir=Dir;
-				cout<<Pos.x<<" "<<Pos.y<<"\n";
 				switch(temp->SkillPhase)
 				{
 				case 1://attack duration
@@ -294,7 +293,7 @@ void Skills::render()
 		if(temp.active)
 		{
 			glPushMatrix();
-			//glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
+			glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
 			switch(temp.ID)
 			{
 			case ATTACK:
