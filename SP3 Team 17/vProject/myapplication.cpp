@@ -68,7 +68,6 @@ void myApplication::Update(void)
 	if (theHero->GetHp() <= 0)
 		bGameOver = true;
 
-	testSkill.Update(something,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y);
 
 	//Update Hero
 	HeroUpdate();
@@ -78,6 +77,9 @@ void myApplication::Update(void)
 						   MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER, MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER,
 						   1.0f, mapOffset_x, mapOffset_y);
 	
+	testSkill.Update(something,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y,*theMap);
+	
+	testMob.update(mvcTime::getInstance()->getDelta(),*theHero,wallList,mapOffset_x,mapOffset_y);
 	//Update Tile Offset
 	tileOffset_x = (int)(mapOffset_x / TILE_SIZE);
 	tileOffset_y = (int)(mapOffset_y / TILE_SIZE);
@@ -94,7 +96,7 @@ void myApplication::HeroUpdate()
 {
 	Vector3D temp;
 	//Check Collision of the hero before moving Up
-	if (!CheckCollision(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
+	if (!physics::testColMap(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['w'] || myKeys['W']) && !stopMovement)
@@ -110,7 +112,7 @@ void myApplication::HeroUpdate()
 	}
 
 	//Check Collision of the hero before moving down
-	if (!CheckCollision(theHero->GetPos()+Vector3D(0,5,0), false, true, false, false, theMap,mapOffset_x,mapOffset_y))
+	if (!physics::testColMap(theHero->GetPos()+Vector3D(0,5,0), false, true, false, false, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['s'] || myKeys['S']) && !stopMovement)
@@ -128,7 +130,7 @@ void myApplication::HeroUpdate()
 	//Check Collision of the hero before moving left
 	Vector3D posL; //Fixes the Collision 
 	posL.Set(theHero->GetPos().x-7, theHero->GetPos().y); //Buffer of 5
-	if (!CheckCollision(posL, false, false, true, false, theMap,mapOffset_x,mapOffset_y))
+	if (!physics::testColMap(posL, false, false, true, false, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['a'] || myKeys['A']) && !stopMovement)
@@ -146,7 +148,7 @@ void myApplication::HeroUpdate()
 	//Check Collision of the hero before moving right
 	Vector3D posR; //Fixes the Collision 
 	posR.Set(theHero->GetPos().x+7, theHero->GetPos().y); //Buffer of 5
-	if (!CheckCollision(posR, false, false, false, true, theMap,mapOffset_x,mapOffset_y))
+	if (!physics::testColMap(posR, false, false, false, true, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['d'] || myKeys['D']) && !stopMovement)
@@ -187,6 +189,7 @@ void myApplication::renderScene(void)
 
 	timer->updateTime();
 
+
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
 
@@ -217,6 +220,7 @@ void myApplication::renderScene(void)
 
 		//Render Hero
 		theHero->RenderHero();
+		testMob.render();
 		testSkill.render();
 	}
 
@@ -459,6 +463,9 @@ bool myApplication::Init(void)
 
 	//Init Random Seed
 	Math::InitRNG();
+
+	testMob.init(Vector3D(180,200),MobType::DEFAULT);
+	LoadTGA(&testMob.MobTex,"images/placeplaceholder2.tga");
 	
 	//Load Textures
 	LoadTGA(&BackgroundTexture[0], "images/background4.tga");
@@ -503,7 +510,9 @@ bool myApplication::Init(void)
 	//Set up Map
 	theMap = new CMap;
 	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-	theMap->LoadMap("mapDesign.csv",wallList);
+	theMap->LoadMap("test.csv",&wallList);
+
+	
 
 	//Set up Border
 	theBorder = new CMap;
@@ -631,6 +640,12 @@ void myApplication::DisplayText()
 			//Display Level
 			glColor3f(0.0f, 1.0f, 1.0f);
 			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
+
+			glColor3f(0.0f, 1.0f, 1.0f);
+			printw (700,80.0, 0, "playerPos: %.2f,%.2f", theHero->GetPos().x,theHero->GetPos().y);
+
+			
+			printw (700,120.0, 0, "MobPos: %.2f,%.2f", testMob.stats.getPos().x,testMob.stats.getPos().y);
 		}
 
 	glColor3f(1.0f, 1.0f, 1.0f);

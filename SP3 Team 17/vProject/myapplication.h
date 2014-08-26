@@ -59,6 +59,8 @@ private:
 	//kennard testing stuff
 	vector<MobInfo*> something;
 
+	Monster testMob;
+
 	Skills testSkill;
 
 	std::vector<physicObj*> wallList;

@@ -117,6 +117,7 @@
     <ClInclude Include="MonsterAI.h" />
     <ClInclude Include="MVCtime.h" />
     <ClInclude Include="myapplication.h" />
+    <ClInclude Include="physicObj.h" />
     <ClInclude Include="physics.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="Skills.h" />

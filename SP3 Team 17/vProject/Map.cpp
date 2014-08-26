@@ -61,7 +61,7 @@ CMap* CMap::getInstance()
 	return instance;
 }
 
-bool CMap::LoadMap(const string mapName, std::vector<physicObj*> wallList)
+bool CMap::LoadMap(const string mapName, std::vector<physicObj*>* wallList)
 {
 	if (LoadFile(mapName) == true)
 	{
@@ -75,7 +75,7 @@ bool CMap::LoadMap(const string mapName, std::vector<physicObj*> wallList)
 					Vector3D temp((i)*theTileSize+LEFT_BORDER,j*theTileSize+BOTTOM_BORDER);
 					std::cout<<temp.x<<" "<<temp.y<<std::endl;
 					physicObj* temp2=new physicObj(temp,theTileSize);
-					wallList.push_back(temp2);
+					wallList->push_back(temp2);
 				}
 			}
 		}

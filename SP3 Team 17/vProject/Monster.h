@@ -3,6 +3,8 @@
 #include "MobInfo.h"
 #include <vector>
 #include "Skills.h"
+#include "PlayerInfo.h"
+#include "physics.h"
 
 #ifndef MONSTER_H
 #define MONSTER_H
@@ -13,24 +15,22 @@ public:
 	int HP;
 	Monster(void);
 	~Monster(void);
-	enum MobType
-	{
-		DEFAULT=0,
-	};
 	void render(void);
-	int action;//current action its taking(AI)
+	void init(Vector3D pos,MobType type);
 
-	//void update(float dt,player Hero);//should call ai to do stuff
+	void update(float dt,CPlayerInfo Hero,std::vector<physicObj*> wallList,float offset_x,float offset_y);//should call ai to do stuff
+
+	TextureImage MobTex;
 
 	//void OnDeath(map World,ItemFactory spawner)//spawns items
 
-private:
-	MobType type;
 	MobInfo stats;
-	std::vector<Skills*> SkillList;
+private:
+	float offset_x,offset_y,Poffset_x,Poffset_y;
+	Skills skillList;
 	void MoveUpDown(bool mode,float dt);
 	void MoveLeftRight(bool mode,float dt);
-	void ProcSkill(int skillNo);
+	void ProcSkill(Skills::SkillType skilltype);
 };
 
 #endif
