@@ -92,7 +92,6 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MobInfo.cpp" />
     <ClCompile Include="Monster.cpp" />
-    <ClCompile Include="MonsterAI.cpp" />
     <ClCompile Include="MVCtime.cpp" />
     <ClCompile Include="myapplication.cpp" />
     <ClCompile Include="physics.cpp" />

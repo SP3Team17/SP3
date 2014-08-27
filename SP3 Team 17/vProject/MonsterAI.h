@@ -1,14 +1,14 @@
 #include <vector>
 #include "vector3D.h"
 #include "definitions.h"
-
+#include "physics.h"
 #include "Map.h"
 
 #ifndef MOBAI_H
 #define MOBAI_H 
 
 
-class MonsterAI
+struct MonsterAI
 {
 public:
 	enum State
@@ -31,11 +31,7 @@ public:
 		MOVETO1,
 		MOVETO2,
 	};
-	MonsterAI(void);
-	~MonsterAI(void);
-	int update(Vector3D* mobPos,Vector3D* mobDir,Vector3D heroPos,CMap map);
 	//pathing* getPath(void);
-private:
 	std::vector<Vector3D> HeroPoints;
 	Vector3D point1;
 	Vector3D point2;

@@ -174,17 +174,6 @@ void myApplication::renderScene(void)
 	glLoadIdentity();
 	theCamera->Update();
 
-	if ((timeGetTime()-timelastcall)>1000/frequency)
-	{
-		//Calculate the framerate
-		calculateFPS();
-
-		timelastcall=timeGetTime();
-
-		//Update Function
-		if (gameStart && !gamePause)
-			Update();
-	}
 	mvcTime* timer=mvcTime::getInstance();
 
 	timer->updateTime();
@@ -223,7 +212,17 @@ void myApplication::renderScene(void)
 		testMob.render();
 		testSkill.render();
 	}
+	if ((timeGetTime()-timelastcall)>1000/frequency)
+	{
+		//Calculate the framerate
+		calculateFPS();
 
+		timelastcall=timeGetTime();
+
+		//Update Function
+		if (gameStart && !gamePause)
+			Update();
+	}
 	//Game is Paused
 	if (gamePause)
 		renderPause();
@@ -464,7 +463,7 @@ bool myApplication::Init(void)
 	//Init Random Seed
 	Math::InitRNG();
 
-	testMob.init(Vector3D(180,200),MobType::DEFAULT);
+	testMob.init(Vector3D(180,200),MobType::DEFAULT,Vector3D(150,200),Vector3D(250,200));
 	LoadTGA(&testMob.MobTex,"images/placeplaceholder2.tga");
 	
 	//Load Textures
@@ -510,7 +509,7 @@ bool myApplication::Init(void)
 	//Set up Map
 	theMap = new CMap;
 	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-	theMap->LoadMap("test.csv",&wallList);
+	theMap->LoadMap("mapDesign.csv",&wallList);
 
 	
 

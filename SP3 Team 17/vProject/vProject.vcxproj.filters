@@ -28,9 +28,6 @@
     <ClCompile Include="Monster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterAI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MVCtime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
