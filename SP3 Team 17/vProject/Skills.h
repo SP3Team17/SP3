@@ -5,6 +5,7 @@
 #include <vector>
 #include "MobInfo.h"
 #include "TextureImage.h"
+#include "Sprite.h"
 #include "physics.h"
 #include "Map.h"
 
@@ -37,7 +38,7 @@ public:
 	int coolRef;
 private:
 	float offset_x,offset_y,Poffset_x,Poffset_y;
-	//Sprite skillSprite;
+	Sprite skillSprite;
 	std::vector<SkillData> data;
 	int SkillLevel;
 	bool cool;

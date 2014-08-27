@@ -31,46 +31,40 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 	return true;
 }
 
-//softcode for sprites
-
-void Sprite::animation(void)
-{
-	glPushMatrix();
-
-	glPopMatrix();
-}
-
 void Sprite::render(void)
 {
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
+	//glEnable(GL_BLEND);
 	
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, Images.texID);
 
-	//glBegin(GL_TRIANGLE_STRIP);
+	glBegin (GL_TRIANGLE_STRIP);
+		glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar);
+		glVertex3f(-0.5, 0.5, 0);
+		
+		glTexCoord2f(ratio_x * SubImage, ratio_y * (ImageVar+1));
+		glVertex3f(-0.5,-0.5,0);
 
-	//	//float ratio = 1/4;
-	//	glTexCoord2f(ratio * SubImage, 0); glVertex2f(-TILE_SIZE/2,TILE_SIZE/2);
-	//	glTexCoord2f(ratio * SubImage, 1); glVertex2f(-TILE_SIZE/2,-TILE_SIZE/2);
-	//	glTexCoord2f(ratio * (SubImage + 1), 0); glVertex2f(TILE_SIZE/2,TILE_SIZE/2);
-	//	glTexCoord2f(ratio * (SubImage + 1), 1); glVertex2f(TILE_SIZE/2,-TILE_SIZE/2);
+		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * ImageVar);
+		glVertex3f(0.5,0.5,0);
 
+		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * (ImageVar+1));
+		glVertex3f(0.5,-0.5,0);
+	glEnd();
+
+	//glBegin(GL_QUADS);
+
+	//		// this is (x(SubImage), y(ImageVar))
+	//		glTexCoord2f(ratio_x * SubImage, ratio_y * (ImageVar+1)); glVertex2f(0,0);
+	//		glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar); glVertex2f(0,1);
+	//		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * ImageVar); glVertex2f(1,1);
+	//		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * (ImageVar+1)); glVertex2f(1,0);
 	//	
 	//glEnd();
 
-	glBegin(GL_QUADS);
-
-			// this is (x(SubImage), y(ImageVar))
-			glTexCoord2f(ratio_x * SubImage, ratio_y * (ImageVar+1)); glVertex2f(0,0);
-			glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar); glVertex2f(0,1);
-			glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * ImageVar); glVertex2f(1,1);
-			glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * (ImageVar+1)); glVertex2f(1,0);
-		
-	glEnd();
-
-	glDisable( GL_BLEND );
+	//glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glPopMatrix();
 }
@@ -155,12 +149,6 @@ bool Sprite::LoadTGA(char *filename)			// Loads A TGA File Into Memory
 	return true;				// Texture Building Went Ok, Return True
 }
 
-void Sprite::moveMeJump()
-{
-	//if (object->isOnGround())
-	//	theHero->SetToJumpUpwards(true);
-}
-
 //void Sprite::moveMeUpDown(bool mode, float timeDiff)
 //{
 //	//Down
@@ -219,7 +207,15 @@ void Sprite::changeVariation(int newVar)
 {
 	if (newVar >= ImageVar)
 	{
-		newVar = ImageVar;
+		CurrentVar = ImageVar-1;
+	}
+	else if(newVar<0)
+	{
+		CurrentVar = 0;
+	}
+	else
+	{
+		CurrentVar = newVar;
 	}
 }
 
@@ -228,14 +224,25 @@ void Sprite::changeSubImage(int newSub)
 	//input
 	if (newSub >= SubImage)
 	{
-		newSub = SubImage;
+		CurSubImage = SubImage-1;
+	}
+	else if(newSub<0)
+	{
+		CurSubImage = 0;
+	}
+	else
+	{
+		CurSubImage = newSub;
 	}
 }
 
 void Sprite::update(void)
 {
 	//call upon animation fuction here
-	animation();
+	//animation();
 	//What else do i need to add in here??
 	//Check for hero & monster movt?
+	CurSubImage++;
+	if(CurSubImage>ImageVar-1)
+		CurSubImage=0;
 }

@@ -19,6 +19,10 @@ Skills::Skills()
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
+	if(!skillSprite.LoadTGA("images/player.tga"))
+		std::cout<<"failed\n";
+	skillSprite.ImageInit(4,4);
+	skillSprite.changeVariation(0);
 }
 
 Skills::Skills(SkillType ID)
@@ -35,6 +39,10 @@ Skills::Skills(SkillType ID)
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
+	if(!skillSprite.LoadTGA("images/player.tga"))
+		std::cout<<"failed\n";
+	skillSprite.ImageInit(4,4);
+	skillSprite.changeVariation(0);
 }
 
 
@@ -160,6 +168,9 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 
 	this->offset_x=offset_x;
 	this->offset_y=offset_y;
+
+	skillSprite.update();
+
 	mvcTime* timer=mvcTime::getInstance();
 	bool misc;
 	SkillData temp3;
@@ -312,7 +323,7 @@ void Skills::render()
 		if(temp.active)
 		{
 			glPushMatrix();
-			glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
+			//glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
 			switch(temp.ID)
 			{
 			case ATTACK:
@@ -338,11 +349,11 @@ void Skills::render()
 				}
 				break;
 			}
-			glEnable(GL_TEXTURE_2D);
+			/*glEnable(GL_TEXTURE_2D);
 			glEnable(GL_BLEND);
 			glBindTexture(GL_TEXTURE_2D,skillTex[temp.SkillPhase].texID);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-			glBegin (GL_TRIANGLE_STRIP);
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);*/
+			/*glBegin (GL_TRIANGLE_STRIP);
 				glTexCoord2f(0,0);
 				glVertex3f(-0.5, 0.5, 0);
 		
@@ -354,10 +365,11 @@ void Skills::render()
 
 				glTexCoord2f(1.0,1.0);
 				glVertex3f(0.5,-0.5,0);
-			glEnd();
+			glEnd();*/
+			skillSprite.render();
 			glPopMatrix();
-			glDisable(GL_BLEND);
-			glDisable(GL_TEXTURE_2D);
+			/*glDisable(GL_BLEND);
+			glDisable(GL_TEXTURE_2D);*/
 			glColor3f(1,1,1);
 		}
 	}

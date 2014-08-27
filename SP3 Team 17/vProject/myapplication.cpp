@@ -518,10 +518,10 @@ bool myApplication::Init(void)
 	theBorder->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
 	theBorder->LoadMap("Border.csv");
 
-	if(!LoadTGA(&testSkill.skillTex[0],"images/placeholder.tga"))
-		return false;
-	if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
-		return false;
+	//if(!LoadTGA(&testSkill.skillTex[0],"images/placeholder.tga"))
+	//	return false;
+	//if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
+	//	return false;
 
 	mvcTime* timer=mvcTime::getInstance();
 	timer->init();
