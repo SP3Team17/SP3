@@ -3,8 +3,7 @@
 
 using namespace std;
 
-float ratio_x = 1.f / 4.f; // Sprites view may vary
-float ratio_y = 1.f / 4.f;
+
 
 Sprite::Sprite()
 {
@@ -18,7 +17,6 @@ Sprite::~Sprite()
 
 bool Sprite::ImageInit(int SubImage, int ImageVar)
 {
-	glEnable(GL_TEXTURE_2D);
 
 		//Load Textures
 
@@ -27,12 +25,20 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 		this->ImageVar = ImageVar;
 		CurrentVar = 0;
 		CurSubImage = 0;
+		ratio_x = 1 / SubImage;
+		ratio_y = 1 / ImageVar;
 
-	glDisable(GL_TEXTURE_2D);
 	return true;
 }
 
 //softcode for sprites
+
+void Sprite::animation(void)
+{
+	glPushMatrix();
+
+	glPopMatrix();
+}
 
 void Sprite::render(void)
 {
@@ -149,8 +155,87 @@ bool Sprite::LoadTGA(char *filename)			// Loads A TGA File Into Memory
 	return true;				// Texture Building Went Ok, Return True
 }
 
+void Sprite::moveMeJump()
+{
+	//if (object->isOnGround())
+	//	theHero->SetToJumpUpwards(true);
+}
+
+//void Sprite::moveMeUpDown(bool mode, float timeDiff)
+//{
+//	//Down
+//	if (mode)
+//	{
+//		theHero->SetPosY(theHero->GetPos().y-(int)(5.0f * timeDiff));
+//
+//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
+//		if (theHero->GetAnimationCounter()==0)
+//			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
+//	}
+//
+//	//Up
+//	else
+//	{
+//		theHero->SetPosY(theHero->GetPos().y+(int)(5.0f * timeDiff));
+//
+//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
+//		if (theHero->GetAnimationCounter()==0)
+//			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
+//	}
+//}
+//
+//void Sprite::moveMeLeftRight(bool mode, float timeDiff)
+//{
+//	//Left
+//	if (mode)
+//	{
+//		bLeft = true;
+//		bRight = false;
+//
+//		theHero->SetPosX(theHero->GetPos().x - (int) (5.0f * timeDiff));
+//
+//		theHero->SetAnimationInvert(true);
+//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
+//		if (theHero->GetAnimationCounter()==0)
+//			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
+//	}
+//
+//	//Right
+//	else
+//	{
+//		bLeft = false;
+//		bRight = true;
+//
+//		theHero->SetPosX(theHero->GetPos().x + (int) (5.0f * timeDiff));
+//
+//		theHero->SetAnimationInvert(false);
+//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()+1);
+//		if (theHero->GetAnimationCounter() > SPRITE_FRAMES_PLAYER)
+//			theHero->SetAnimationCounter(0);
+//	}
+//}
+
+void Sprite::changeVariation(int newVar)
+{
+	if (newVar >= ImageVar)
+	{
+		newVar = ImageVar;
+	}
+}
+
+void Sprite::changeSubImage(int newSub)
+{
+	//input
+	if (newSub >= SubImage)
+	{
+		newSub = SubImage;
+	}
+}
+
 void Sprite::update(void)
 {
-	//have every active sprite update here
-
+	//call upon animation fuction here
+	animation();
+	//What else do i need to add in here??
+	//Check for hero & monster movt?
 }

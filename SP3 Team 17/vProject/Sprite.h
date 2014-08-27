@@ -2,6 +2,7 @@
 #include <iostream>
 #include "definitions.h"
 
+#include "PlayerInfo.h"
 #include "TextureImage.h"
 
 #ifndef SPRITE_H
@@ -20,6 +21,8 @@ public:
 	bool LoadTGA( char *filename);
 	void update(void);
 	void changeVariation(int newVar);
+	void changeSubImage(int newSub);
+	void animation (void);
 	void render(void);
 	void changeStop(bool nStop);
 	// Set Animation Invert status of the sprite
@@ -32,8 +35,14 @@ private:
 	int ImageVar; 
 	int CurrentVar;
 	int CurSubImage;
-	/*bool AnimationInvert;*/
-
+	float ratio_x;
+	float ratio_y;
+	bool AnimationInvert;
+	bool jump, bLeft, bRight, bMoving;
+	void moveMeJump();
+	void moveMeUpDown(bool mode, float timeDiff);
+	void moveMeLeftRight(bool mode, float timeDiff);
+	Sprite *object;
 
 };
 #endif
