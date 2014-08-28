@@ -10,10 +10,19 @@ class CUI
 public:
 	CUI();
 	~CUI();
-
+	void renderBackpanel (void);
+	void renderPause (void);
+	void renderSettings (void);
+	bool LoadTGA(TextureImage *texture, char *filename);
+	void render (void);
+	//ui functions
+	TextureImage UI[10];
 private:
-	int height;
-	int width;
+	bool ui_panel;
+	bool ui_pause;
+	bool menu;
+	//bool whatever
+
 };
 
 #endif 

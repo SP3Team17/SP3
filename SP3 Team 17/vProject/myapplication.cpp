@@ -211,6 +211,7 @@ void myApplication::renderScene(void)
 		theHero->RenderHero();
 		testMob.render();
 		testSkill.render();
+		testUI.renderBackpanel();
 	}
 	if ((timeGetTime()-timelastcall)>1000/frequency)
 	{
@@ -225,7 +226,8 @@ void myApplication::renderScene(void)
 	}
 	//Game is Paused
 	if (gamePause)
-		renderPause();
+		//renderPause();
+		testUI.renderPause();
 
 	//Stacey's Tutorial
 	if (bTutorial)
@@ -335,7 +337,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 			bShop = !bShop;
 		}
 		break;
-
+	case'p':
+		gamePause = !gamePause;
+		break;
 	//Load Level 1
 	case '1':
 		heroInit = false;

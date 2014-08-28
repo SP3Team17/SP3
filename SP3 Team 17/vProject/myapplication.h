@@ -23,6 +23,8 @@
 #include "Monster.h"
 #include "physics.h"
 
+#include "UI.h"
+
 //Mouse Info
 typedef struct {
 	bool mLButtonUp;
@@ -66,6 +68,10 @@ private:
 	std::vector<physicObj*> wallList;
 
 	//end of kennard testing stuff
+
+	//ryan testing stuff
+	CUI testUI;
+	//end of ryan testing stuff
 
 	//Camera
 	Vector3D theCameraPosition;
