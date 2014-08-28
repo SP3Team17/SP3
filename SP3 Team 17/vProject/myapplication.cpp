@@ -77,9 +77,16 @@ void myApplication::Update(void)
 						   MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER, MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER,
 						   1.0f, mapOffset_x, mapOffset_y);
 	
-	testSkill.Update(something,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y,*theMap);
+	testSkill.Update(infoList,*theHero,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y,*theMap);
 	
-	testMob.update(mvcTime::getInstance()->getDelta(),*theHero,wallList,mapOffset_x,mapOffset_y);
+	
+	for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
+	{
+		Monster* temp=*it;
+		temp->update(mvcTime::getInstance()->getDelta(),infoList,*theHero,wallList,mapOffset_x,mapOffset_y,*theMap);
+	}
+
+	//testMob.update(mvcTime::getInstance()->getDelta(),infoList,*theHero,wallList,mapOffset_x,mapOffset_y,*theMap);
 	//Update Tile Offset
 	tileOffset_x = (int)(mapOffset_x / TILE_SIZE);
 	tileOffset_y = (int)(mapOffset_y / TILE_SIZE);
@@ -209,7 +216,12 @@ void myApplication::renderScene(void)
 
 		//Render Hero
 		theHero->RenderHero();
-		testMob.render();
+		//testMob.render();
+		for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
+		{
+			Monster* temp=*it;
+			temp->render();
+		}
 		testSkill.render();
 		testUI.renderBackpanel();
 	}
@@ -467,8 +479,8 @@ bool myApplication::Init(void)
 	//Init Random Seed
 	Math::InitRNG();
 
-	testMob.init(Vector3D(180,200),MobType::DEFAULT,Vector3D(150,200),Vector3D(250,200));
-	LoadTGA(&testMob.MobTex,"images/placeplaceholder2.tga");
+	//testMob.init(Vector3D(180,200),MobType::DEFAULT,Vector3D(150,200),Vector3D(250,200));
+	//LoadTGA(&testMob.MobTex,"images/placeplaceholder2.tga");
 	
 	//Load Textures
 	LoadTGA(&BackgroundTexture[0], "images/background4.tga");
@@ -513,8 +525,10 @@ bool myApplication::Init(void)
 	//Set up Map
 	theMap = new CMap;
 	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-	theMap->LoadMap("mapDesign.csv",&wallList);
+	theMap->LoadMap("mapDesign.csv");
+	//theMap->LoadMap("test.csv");
 
+	processTiles();
 	
 
 	//Set up Border
@@ -529,6 +543,8 @@ bool myApplication::Init(void)
 
 	mvcTime* timer=mvcTime::getInstance();
 	timer->init();
+
+	//infoList.push_back(&testMob.stats);
 
 	//Initialise Level to 1
 	currentLevel = 1;
@@ -568,6 +584,65 @@ void myApplication::moveMeJump()
 {
 	if (theHero->isOnGround())
 		theHero->SetToJumpUpwards(true);
+}
+
+bool myApplication::processTiles()
+{
+	int theNumOfTiles_MapHeight=theMap->getNumOfTiles_MapHeight();
+	int theNumOfTiles_MapWidth=theMap->getNumOfTiles_MapWidth();
+	Vector3D temp;
+	physicObj* temp2;
+	Monster* temp3;
+	bool move=false;
+	int current;
+	int temp4;
+	for(int j=0;j<theNumOfTiles_MapHeight;++j)
+	{
+		for(int i=0;i<theNumOfTiles_MapWidth;++i)
+		{
+			current=theMap->theScreenMap[j][i];
+			switch(current)
+			{
+			case 1:
+				temp.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+				temp2=new physicObj(temp,Vector3D(TILE_SIZE,TILE_SIZE));
+				wallList.push_back(temp2);
+				break;
+			default:
+				temp4=current*0.1;
+				move=false;
+				switch(temp4)
+				{
+				case 1:
+					for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
+					{
+						temp3=*it;
+						if(temp3->ID==current%10)
+						{
+							temp3->AIstates.point1.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+							temp3->stats.active=true;
+							move=true;
+						}
+					}
+					if(move==false)
+					{
+						temp3=new Monster;
+						//set the monster type here
+						temp3->stats.setStats(0,50);
+						temp3->stats.setStats(1,50);
+						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
+						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+						temp3->ID=current%10;
+						infoList.push_back(&temp3->stats);
+						mobList.push_back(temp3);
+					}
+					break;
+				}
+				break;
+			}
+		}
+	}
+	return true;
 }
 
 void myApplication::moveMeUpDown(bool mode, float timeDiff)
@@ -648,7 +723,7 @@ void myApplication::DisplayText()
 			printw (700,80.0, 0, "playerPos: %.2f,%.2f", theHero->GetPos().x,theHero->GetPos().y);
 
 			
-			printw (700,120.0, 0, "MobPos: %.2f,%.2f", testMob.stats.getPos().x,testMob.stats.getPos().y);
+			//printw (700,120.0, 0, "MobPos: %.2f,%.2f", testMob.stats.getPos().x,testMob.stats.getPos().y);
 		}
 
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -1361,13 +1436,14 @@ void myApplication::calculateFPS()
 //-------------------------------------------------------------------------
 void myApplication::drawFPS()
 {
+	mvcTime* timer=mvcTime::getInstance();
 	//Load the identity matrix so that FPS string being drawn
 	//won't get animates
 	glLoadIdentity();
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		//Print the FPS to the window
 		glColor3f(0.0f, 1.0f, 0.0f);
-		printw (490, 27.0, 0, "FPS: %4.2f", fps);
+		printw (490, 27.0, 0, "FPS: %4.2f", timer->getFPS());
 		glColor3f(1.0f, 1.0f, 1.0f);
 	glPopAttrib();
 }

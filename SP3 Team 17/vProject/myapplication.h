@@ -59,11 +59,13 @@ private:
 	static myApplication *s_pInstance;
 
 	//kennard testing stuff
-	vector<MobInfo*> something;
-
-	Monster testMob;
+	vector<MobInfo*> infoList;
+	vector<Monster*> mobList;
+	//Monster testMob;
 
 	Skills testSkill;
+
+	bool processTiles();
 
 	std::vector<physicObj*> wallList;
 

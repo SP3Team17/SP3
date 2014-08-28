@@ -243,6 +243,6 @@ void Sprite::update(void)
 	//What else do i need to add in here??
 	//Check for hero & monster movt?
 	CurSubImage++;
-	if(CurSubImage>ImageVar-1)
+	if(CurSubImage>SubImage-1)
 		CurSubImage=0;
 }

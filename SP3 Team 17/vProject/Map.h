@@ -21,7 +21,6 @@ public:
 	void Init( int theScreen_Height, int theScreen_Width, 
 		       const int theMap_Height, const int theMap_Width, 
 		       const int theTileSize);
-	bool LoadMap(const string mapName, std::vector<physicObj*>* wallList);
 	bool LoadMap(const string mapName);
 	int getNumOfTiles_ScreenHeight();	// Get the number of tiles for height of the screen
 	int getNumOfTiles_ScreenWidth();	// Get the number of tiles for width of the screen

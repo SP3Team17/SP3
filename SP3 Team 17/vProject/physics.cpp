@@ -126,7 +126,7 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 		{
 			if(abs((w0-b1).dotVector3D(NP))<(pos-end).Length()*0.5+32)
 			{
-				float t=abs((w0-temp->pos).dotVector3D(N));
+				float t=abs((w0-b1).dotVector3D(N));
 				float f=(pos-end).Length()*0.5+32;
 				return true;
 			}
@@ -192,4 +192,12 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 
 	//	}
 	//}
+}
+
+bool physics::testCol(physicObj obj1,physicObj obj2)
+{
+	if(abs(obj1.pos.x-obj2.pos.x)<(obj1.size.x+obj2.size.x)*0.5&&abs(obj1.pos.y-obj2.pos.y)<(obj1.size.y+obj2.size.y)*0.5)
+		return true;
+	else 
+		return false;
 }

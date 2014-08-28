@@ -18,14 +18,6 @@ public:
 		MOVETOATTACK,
 		ATTACK,
 	};
-	enum atkSS//attack substates
-	{
-		ATK=0,
-		SKILL1,
-		SKILL2,
-		SKILL3,
-		RECOIL,//after a strong attack/skill
-	};
 	enum patrolSS//patrol substate
 	{
 		MOVETO1,
@@ -33,10 +25,10 @@ public:
 	};
 	//pathing* getPath(void);
 	std::vector<Vector3D> HeroPoints;
+	
 	Vector3D point1;
 	Vector3D point2;
 	State currentState;
-	atkSS atkState;
 	patrolSS patrolState;
 	//void calPath(Vector3D pos,Vector3D target)//CMap is a singleton
 };

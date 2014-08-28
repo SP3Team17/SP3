@@ -20,7 +20,7 @@ Skills::Skills()
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
 	if(!skillSprite.LoadTGA("images/player.tga"))
-		std::cout<<"failed\n";
+		std::cout<<"\nfailed\n";
 	skillSprite.ImageInit(4,4);
 	skillSprite.changeVariation(0);
 }
@@ -40,9 +40,10 @@ Skills::Skills(SkillType ID)
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
 	if(!skillSprite.LoadTGA("images/player.tga"))
-		std::cout<<"failed\n";
+		std::cout<<"\nfailed\n";
 	skillSprite.ImageInit(4,4);
-	skillSprite.changeVariation(0);
+	skillSprite.changeVariation(2);
+	skillSprite.changeSubImage(0);
 }
 
 
@@ -81,7 +82,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 						timer->changeLimit(temp->timeRef,1000);
 					}
 					timer->resetTime(coolRef);
-					timer->changeLimit(coolRef,2500);
+					timer->changeLimit(coolRef,750);
 					temp->active=true;
 					return;
 					break;
@@ -160,8 +161,8 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 	}
 
 }
-
-void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map)
+Vector3D something;
+void Skills::Update(std::vector<MobInfo*> enemies,CPlayerInfo Hero,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map)
 {
 	Poffset_y=this->offset_y;
 	Poffset_x=this->offset_x;
@@ -169,7 +170,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 	this->offset_x=offset_x;
 	this->offset_y=offset_y;
 
-	skillSprite.update();
+	//skillSprite.update();
 
 	mvcTime* timer=mvcTime::getInstance();
 	bool misc;
@@ -189,6 +190,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 		
 			temp->Pos.y=temp->Pos.y-this->offset_y+Poffset_y;
 
+			physicObj skillObj(temp->Pos+temp->Dir*16+Vector3D(16,16),Vector3D(TILE_SIZE,TILE_SIZE));
 			switch(temp->ID)
 			{
 			case ATTACK:
@@ -197,10 +199,23 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 				switch(temp->SkillPhase)
 				{
 				case 1://attack duration
+					for(vector<MobInfo*>::iterator it=enemies.begin();it!=enemies.end();++it)
+					{
+						MobInfo* enemy=*it;
+						something=enemy->getPos();
+						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+						if(physics::testCol(skillObj,mobObj))
+						{
+							enemy->setStats(0,enemy->getStats(0)-5);
+							temp->SkillPhase=3;
+							cout<<"HIT!\n";
+						}
+
+					}
 					if(timer->testTime(temp->timeRef))
 					{
 						temp->SkillPhase=2;
-						timer->changeLimit(temp->timeRef,1000);
+						timer->changeLimit(temp->timeRef,500);
 					}
 					break;
 				case 2://cooldown
@@ -208,6 +223,13 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					{
 						temp->SkillPhase=0;
 						temp->active=false;
+					}
+					break;
+				case 3://attacked enemy
+					if(timer->testTime(temp->timeRef))
+					{
+						temp->SkillPhase=2;
+						timer->changeLimit(temp->timeRef,500);
 					}
 					break;
 				}
@@ -268,7 +290,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						{
 							misc=false;
 							temp->Pos=temp->Pos+temp->Dir*32;
-							cout<<"line spawn\n";
 							++temp->SkillPhase;
 							timer->changeLimit(temp->timeRef,250);
 							for(vector<SkillData>::iterator it2=data.begin();it2!=data.end();++it2)
@@ -280,7 +301,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 									temp2->Pos=temp->Pos;
 									temp2->SkillPhase=-1;
 									timer->resetTime(temp2->timeRef);
-									timer->changeLimit(temp2->timeRef,5000);
+									timer->changeLimit(temp2->timeRef,1000);
 									misc=true;
 								}
 							}
@@ -289,7 +310,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								temp3.active=true;
 								temp3.Pos=temp->Pos;
 								temp3.SkillPhase=-1;
-								temp3.timeRef=timer->insertNewTime(5000);
+								temp3.timeRef=timer->insertNewTime(1000);
 								temp3.ID=LINE;
 							}
 						}
@@ -331,6 +352,8 @@ void Skills::render()
 				switch(temp.SkillPhase)
 				{
 				case 1:
+					glColor3f(1,0,0);
+				case 3:
 				case 2:
 					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
 					glScalef(32,32,0);
@@ -371,6 +394,10 @@ void Skills::render()
 			/*glDisable(GL_BLEND);
 			glDisable(GL_TEXTURE_2D);*/
 			glColor3f(1,1,1);
+			/*glBegin(GL_LINES);
+				glVertex3f(something.x,something.y,0);
+				glVertex3f(temp.Pos.x+temp.Dir.x*16+16,temp.Pos.y+temp.Dir.y*16+16,0);
+			glEnd();*/
 		}
 	}
 }

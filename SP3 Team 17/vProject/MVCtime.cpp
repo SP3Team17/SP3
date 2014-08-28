@@ -69,7 +69,6 @@ int mvcTime::insertNewTime(int limit)
 	Ntime->previousTime=timeGetTime();
 	Ntime->timeInterval=0;
 	timer.push_back(Ntime);
-	std::cout<<"new time inserted at"<<timer.size();
 	return timer.size()-1;
 }
 
@@ -85,7 +84,7 @@ bool mvcTime::testTime(int num)
 		return false;
 	}
 	else
-		return true;
+		return false;
 }
 
 void mvcTime::resetTime(int num)
