@@ -40,16 +40,16 @@ void Sprite::render(TextureImage image)
 	glBindTexture(GL_TEXTURE_2D, Images.texID);
 
 	glBegin (GL_TRIANGLE_STRIP);
-		glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar);
+		glTexCoord2f(ratio_x * CurSubImage, ratio_y * CurrentVar);
 		glVertex3f(-0.5, 0.5, 0);
 		
-		glTexCoord2f(ratio_x * SubImage, ratio_y * (ImageVar+1));
+		glTexCoord2f(ratio_x * CurSubImage, ratio_y * (CurrentVar+1));
 		glVertex3f(-0.5,-0.5,0);
 
-		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * ImageVar);
+		glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * CurrentVar);
 		glVertex3f(0.5,0.5,0);
 
-		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * (ImageVar+1));
+		glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * (CurrentVar+1));
 		glVertex3f(0.5,-0.5,0);
 	glEnd();
 
@@ -244,7 +244,10 @@ void Sprite::update(void)
 	//animation();
 	//What else do i need to add in here??
 	//Check for hero & monster movt?
-	CurSubImage++;
-	if(CurSubImage>SubImage-1)
-		CurSubImage=0;
+	if(!Stop)
+	{
+		CurSubImage++;
+		if(CurSubImage>SubImage-1)
+			CurSubImage=0;
+	}
 }

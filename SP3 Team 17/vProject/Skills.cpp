@@ -23,6 +23,7 @@ Skills::Skills()
 		std::cout<<"\nfailed\n";
 	skillSprite.ImageInit(4,4);
 	skillSprite.changeVariation(0);
+	skillSprite.Stop=false;
 }
 
 Skills::Skills(SkillType ID)
@@ -44,6 +45,7 @@ Skills::Skills(SkillType ID)
 	skillSprite.ImageInit(4,4);
 	skillSprite.changeVariation(2);
 	skillSprite.changeSubImage(0);
+	skillSprite.Stop=false;
 }
 
 
@@ -171,7 +173,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 	this->offset_x=offset_x;
 	this->offset_y=offset_y;
 
-	//skillSprite.update();
+	skillSprite.update();
 
 	mvcTime* timer=mvcTime::getInstance();
 	bool misc;
