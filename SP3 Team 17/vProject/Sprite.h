@@ -22,8 +22,7 @@ public:
 	void update(void);
 	void changeVariation(int newVar);
 	void changeSubImage(int newSub);
-	void animation (void);
-	void render(void);
+	void render(TextureImage);
 	void changeStop(bool nStop);
 	// Set Animation Invert status of the sprite
 	void SetAnimationInvert(bool AnimationInvert);
@@ -38,11 +37,5 @@ private:
 	float ratio_x;
 	float ratio_y;
 	bool AnimationInvert;
-	bool jump, bLeft, bRight, bMoving;
-	void moveMeJump();
-	void moveMeUpDown(bool mode, float timeDiff);
-	void moveMeLeftRight(bool mode, float timeDiff);
-	Sprite *object;
-
 };
 #endif

@@ -19,7 +19,7 @@ Skills::Skills()
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
-	if(!skillSprite.LoadTGA("images/player.tga"))
+	if(!skillSprite.LoadTGA("Images/player.tga"))
 		std::cout<<"\nfailed\n";
 	skillSprite.ImageInit(4,4);
 	skillSprite.changeVariation(0);
@@ -39,7 +39,7 @@ Skills::Skills(SkillType ID)
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
-	if(!skillSprite.LoadTGA("images/player.tga"))
+	if(!skillSprite.LoadTGA("Images"))
 		std::cout<<"\nfailed\n";
 	skillSprite.ImageInit(4,4);
 	skillSprite.changeVariation(2);
@@ -162,8 +162,9 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 
 }
 Vector3D something;
-void Skills::Update(std::vector<MobInfo*> enemies,CPlayerInfo Hero,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map)
+void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map)
 {
+	CPlayerInfo* Hero=CPlayerInfo::getInstance();
 	Poffset_y=this->offset_y;
 	Poffset_x=this->offset_x;
 
@@ -239,36 +240,60 @@ void Skills::Update(std::vector<MobInfo*> enemies,CPlayerInfo Hero,Vector3D Pos,
 				{
 				case 1://attack duration
 					bool up,down,left,right;
-					up=down=left=right=false;
-					if(temp->Dir.y<0)
+					bool moveon;
+					moveon=false;
+					for(vector<MobInfo*>::iterator it=enemies.begin();it!=enemies.end();++it)
 					{
-						up=true;
+						MobInfo* enemy=*it;
+						something=enemy->getPos();
+						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+						if(physics::testCol(skillObj,mobObj))
+						{
+							enemy->setStats(0,enemy->getStats(0)-5);
+							temp->SkillPhase=2;
+							cout<<"HIT!\n";
+							moveon=true;
+						}
+
 					}
-					else if(temp->Dir.y>0)
+					if(!moveon)
 					{
-						down=true;
-					}
-					if(temp->Dir.x<0)
-					{
-						left=true;
-					}
-					else if(temp->Dir.x>0)
-					{
-						right=true;
-					}
-					if(timer->testTime(temp->timeRef))
-					{
-						temp->SkillPhase=2;
-						timer->changeLimit(temp->timeRef,500);
-					}
-					else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
-					{
-						temp->SkillPhase=2;
-						timer->changeLimit(temp->timeRef,1000);
-					}
-					else
-					{
-						temp->Pos=temp->Pos+temp->Dir*timer->getDelta()*500;
+						if(timer->testTime(temp->timeRef))
+						{
+							temp->SkillPhase=2;
+							timer->changeLimit(temp->timeRef,500);
+						}
+						up=down=left=right=false;
+						if(temp->Dir.y<0)
+						{
+							up=true;
+						}
+						else if(temp->Dir.y>0)
+						{
+							down=true;
+						}
+						if(temp->Dir.x<0)
+						{
+							left=true;
+						}
+						else if(temp->Dir.x>0)
+						{
+							right=true;
+						}
+						if(timer->testTime(temp->timeRef))
+						{
+							temp->SkillPhase=2;
+							timer->changeLimit(temp->timeRef,500);
+						}
+						else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
+						{
+							temp->SkillPhase=2;
+							timer->changeLimit(temp->timeRef,1000);
+						}
+						else
+						{
+							temp->Pos=temp->Pos+temp->Dir*timer->getDelta()*500;
+						}
 					}
 					break;
 				case 2://cooldown
@@ -321,6 +346,12 @@ void Skills::Update(std::vector<MobInfo*> enemies,CPlayerInfo Hero,Vector3D Pos,
 					}
 					break;
 				case -1:
+					physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+					if(physics::testCol(skillObj,mobObj))
+					{
+						Hero->SetHp(Hero->GetHp()-1);
+						cout<<"Hero hp is now"<<Hero->GetHp()<<"\n";
+					}
 					if(timer->testTime(temp->timeRef))
 					{
 						temp->active=false;
@@ -375,8 +406,8 @@ void Skills::render()
 			/*glEnable(GL_TEXTURE_2D);
 			glEnable(GL_BLEND);
 			glBindTexture(GL_TEXTURE_2D,skillTex[temp.SkillPhase].texID);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);*/
-			/*glBegin (GL_TRIANGLE_STRIP);
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+			glBegin (GL_TRIANGLE_STRIP);
 				glTexCoord2f(0,0);
 				glVertex3f(-0.5, 0.5, 0);
 		
@@ -389,9 +420,9 @@ void Skills::render()
 				glTexCoord2f(1.0,1.0);
 				glVertex3f(0.5,-0.5,0);
 			glEnd();*/
-			skillSprite.render();
-			glPopMatrix();
-			/*glDisable(GL_BLEND);
+			skillSprite.render(skillTex[temp.SkillPhase]);
+			/*glPopMatrix();
+			glDisable(GL_BLEND);
 			glDisable(GL_TEXTURE_2D);*/
 			glColor3f(1,1,1);
 			/*glBegin(GL_LINES);

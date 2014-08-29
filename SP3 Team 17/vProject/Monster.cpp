@@ -23,9 +23,10 @@ void Monster::init(Vector3D pos,MobType type,Vector3D patrol1,Vector3D patrol2)
 	stats.init(pos,type);
 }
 
-void Monster::update(float dt,std::vector<MobInfo*> enemies,CPlayerInfo Hero,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map)
+void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map)
 {
-	skillList.Update(enemies,Hero,stats.getPos(),stats.getDir(),offset_x,offset_y,map);
+	CPlayerInfo* Hero=CPlayerInfo::getInstance();
+	skillList.Update(enemies,stats.getPos(),stats.getDir(),offset_x,offset_y,map);
 	Poffset_y=this->offset_y;
 	Poffset_x=this->offset_x;
 
@@ -46,7 +47,7 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,CPlayerInfo Hero,std
 			it->Set(it->x-this->offset_x+Poffset_x,it->y-this->offset_y+Poffset_y);
 		}
 
-		if(physics::testColLineMap(stats.getPos()+Vector3D(16,16),Hero.GetPos(),wallList,offset_x,offset_y)||(Hero.GetPos()-this->stats.getPos()).Length()>TILE_SIZE*8)
+		if(physics::testColLineMap(stats.getPos()+Vector3D(16,16),Hero->GetPos(),wallList,offset_x,offset_y)||(Hero->GetPos()-this->stats.getPos()).Length()>TILE_SIZE*8)
 		{//cannot see and continue patrol
 			mvcTime* timer=mvcTime::getInstance();
 			switch(AIstates.currentState)
@@ -193,9 +194,9 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,CPlayerInfo Hero,std
 				break;
 			}
 		}
-		else if((Hero.GetPos()-this->stats.getPos()).Length()<TILE_SIZE*8)
+		else if((Hero->GetPos()-this->stats.getPos()).Length()<TILE_SIZE*8)
 		{//can see and attempt to attack player
-			if((Hero.GetPos()-this->stats.getPos()).Length()>TILE_SIZE*4)
+			if((Hero->GetPos()-this->stats.getPos()).Length()>TILE_SIZE*4)
 			{
 				AIstates.currentState=MonsterAI::MOVETOATTACK;
 				if(AIstates.HeroPoints.size()<2)
@@ -214,7 +215,7 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,CPlayerInfo Hero,std
 				}
 				else
 				{
-					Vector3D dir=Hero.GetPos()-stats.getPos();
+					Vector3D dir=Hero->GetPos()-stats.getPos();
 					dir.normalizeVector3D();
 					if(!physics::testColLineMap(AIstates.HeroPoints[AIstates.HeroPoints.size()-1],stats.getPos()+dir*50*dt,wallList,offset_x,offset_y))
 					{
@@ -230,7 +231,7 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,CPlayerInfo Hero,std
 			else
 			{
 				AIstates.currentState=MonsterAI::ATTACK;
-				Vector3D dir=Hero.GetPos()-stats.getPos();
+				Vector3D dir=Hero->GetPos()-stats.getPos();
 				dir.normalizeVector3D();
 				skillList.procSkills(stats.getPos(),dir,Skills::LINE);
 			}

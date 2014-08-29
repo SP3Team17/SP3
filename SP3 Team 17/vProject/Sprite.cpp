@@ -7,7 +7,6 @@ using namespace std;
 
 Sprite::Sprite()
 {
-
 }
 
 Sprite::~Sprite()
@@ -25,20 +24,20 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 		this->ImageVar = ImageVar;
 		CurrentVar = 0;
 		CurSubImage = 0;
-		ratio_x = 1 / SubImage;
-		ratio_y = 1 / ImageVar;
+		ratio_x = 1.0f / SubImage;
+		ratio_y = 1.0f / ImageVar;
 
 	return true;
 }
 
-void Sprite::render(void)
+void Sprite::render(TextureImage image)
 {
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 	
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindTexture(GL_TEXTURE_2D, Images.texID);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindTexture(GL_TEXTURE_2D, Images[0].texID);
 
 	glBegin (GL_TRIANGLE_STRIP);
 		glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar);
@@ -64,14 +63,14 @@ void Sprite::render(void)
 	//	
 	//glEnd();
 
-	//glDisable( GL_BLEND );
+	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glPopMatrix();
 }
 
-bool Sprite::LoadTGA(char *filename)			// Loads A TGA File Into Memory
-{    
-	TextureImage * texture = &Images;
+bool Sprite::LoadTGA(char*filename)
+{
+	TextureImage* texture = &Images[0];
 	GLubyte		TGAheader[12]={0,0,2,0,0,0,0,0,0,0,0,0};	// Uncompressed TGA Header
 	GLubyte		TGAcompare[12];								// Used To Compare TGA Header
 	GLubyte		header[6];									// First 6 Useful Bytes From The Header
@@ -79,8 +78,9 @@ bool Sprite::LoadTGA(char *filename)			// Loads A TGA File Into Memory
 	GLuint		imageSize;									// Used To Store The Image Size When Setting Aside Ram
 	GLuint		temp;										// Temporary Variable
 	GLuint		type=GL_RGBA;								// Set The Default GL Mode To RBGA (32 BPP)
-
-	FILE *file = fopen(filename, "rb");						// Open The TGA File
+	//FILE *file;
+	//fopen_s(&file,filename, "rb");						// Open The TGA File
+	FILE* file=fopen(filename, "rb");
 
 	if(	file==NULL ||										// Does File Even Exist?
 		fread(TGAcompare,1,sizeof(TGAcompare),file)!=sizeof(TGAcompare) ||	// Are There 12 Bytes To Read?
@@ -98,8 +98,8 @@ bool Sprite::LoadTGA(char *filename)			// Loads A TGA File Into Memory
 
 	texture->width  = header[1] * 256 + header[0];			// Determine The TGA Width	(highbyte*256+lowbyte)
 	texture->height = header[3] * 256 + header[2];			// Determine The TGA Height	(highbyte*256+lowbyte)
-
-	if(	texture->width	<=0	||								// Is The Width Less Than Or Equal To Zero
+    
+ 	if(	texture->width	<=0	||								// Is The Width Less Than Or Equal To Zero
 		texture->height	<=0	||								// Is The Height Less Than Or Equal To Zero
 		(header[4]!=24 && header[4]!=32))					// Is The TGA 24 or 32 Bit?
 	{
@@ -138,7 +138,7 @@ bool Sprite::LoadTGA(char *filename)			// Loads A TGA File Into Memory
 	glBindTexture(GL_TEXTURE_2D, texture[0].texID);			// Bind Our Texture
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// Linear Filtered
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	// Linear Filtered
-
+	
 	if (texture[0].bpp==24)									// Was The TGA 24 Bits
 	{
 		type=GL_RGB;										// If So Set The 'type' To GL_RGB
@@ -146,8 +146,10 @@ bool Sprite::LoadTGA(char *filename)			// Loads A TGA File Into Memory
 
 	glTexImage2D(GL_TEXTURE_2D, 0, type, texture[0].width, texture[0].height, 0, type, GL_UNSIGNED_BYTE, texture[0].imageData);
 
-	return true;				// Texture Building Went Ok, Return True
+	return true;	
 }
+
+
 
 //void Sprite::moveMeUpDown(bool mode, float timeDiff)
 //{

@@ -84,13 +84,13 @@ void myApplication::Update(void)
 						   MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER, MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER,
 						   1.0f, mapOffset_x, mapOffset_y);
 	
-	testSkill.Update(infoList,*theHero,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y,*theMap);
+	testSkill.Update(infoList,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y,*theMap);
 	
 	
 	for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
 	{
 		Monster* temp=*it;
-		temp->update(mvcTime::getInstance()->getDelta(),infoList,*theHero,wallList,mapOffset_x,mapOffset_y,*theMap);
+		temp->update(mvcTime::getInstance()->getDelta(),infoList,wallList,mapOffset_x,mapOffset_y,*theMap);
 	}
 
 	//testMob.update(mvcTime::getInstance()->getDelta(),infoList,*theHero,wallList,mapOffset_x,mapOffset_y,*theMap);
@@ -456,9 +456,6 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 	case 'x':
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGE);
 		break;
-	case 'c':
-		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::LINE);
-		break;
 	}
 }
 
@@ -640,10 +637,10 @@ bool myApplication::Init(void)
 	theBorder->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
 	theBorder->LoadMap("Border.csv");
 
-	//if(!LoadTGA(&testSkill.skillTex[0],"images/placeholder.tga"))
-	//	return false;
-	//if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
-	//	return false;
+	if(!LoadTGA(&testSkill.skillTex[0],"images/placeholder.tga"))
+		return false;
+	if(!LoadTGA(&testSkill.skillTex[1],"images/placeholder2.tga"))
+		return false;
 
 	//Init Timer
 	mvcTime* timer=mvcTime::getInstance();
