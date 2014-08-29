@@ -414,9 +414,6 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 			theHero->getInventory()->open = !theHero->getInventory()->open;
 		}
 		break;
-	case'p':
-		gamePause = !gamePause;
-		break;
 	//Load Level 1
 	case '1':
 		{

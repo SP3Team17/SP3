@@ -349,8 +349,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 					if(physics::testCol(skillObj,mobObj))
 					{
-						Hero->SetHp(Hero->GetHp()-1);
-						cout<<"Hero hp is now"<<Hero->GetHp()<<"\n";
+						Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-1);
+						cout<<"Hero hp is now"<<Hero->getAttributes()->getHp()<<"\n";
 					}
 					if(timer->testTime(temp->timeRef))
 					{

@@ -37,7 +37,7 @@ void Sprite::render(TextureImage image)
 	glEnable(GL_BLEND);
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindTexture(GL_TEXTURE_2D, Images[0].texID);
+	glBindTexture(GL_TEXTURE_2D, Images.texID);
 
 	glBegin (GL_TRIANGLE_STRIP);
 		glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar);
@@ -70,7 +70,7 @@ void Sprite::render(TextureImage image)
 
 bool Sprite::LoadTGA(char*filename)
 {
-	TextureImage* texture = &Images[0];
+	TextureImage* texture = &Images;
 	GLubyte		TGAheader[12]={0,0,2,0,0,0,0,0,0,0,0,0};	// Uncompressed TGA Header
 	GLubyte		TGAcompare[12];								// Used To Compare TGA Header
 	GLubyte		header[6];									// First 6 Useful Bytes From The Header
