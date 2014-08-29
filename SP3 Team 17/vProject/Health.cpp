@@ -14,7 +14,7 @@ void CHealth::ExecuteBonus()
 	tempInventory = CInventory::getInstance();
 
 	//Increase Player Hp
-	tempPlayer->SetHp(tempPlayer->GetHp()+10);
+	tempPlayer->getAttributes()->setHp(tempPlayer->getAttributes()->getHp()+10);
 	//Delete item from inventory after use
 	tempInventory->deleteItem(CGoodies::HEALTH);
 }

@@ -9,6 +9,8 @@ void mvcTime::updateTime()
 	long Ctime=timeGetTime();
 	currentTime=Ctime;
 
+	//calculate time passed
+	timeInterval=currentTime-previousTime;
 	dt=(currentTime-dtPTime)/1000.0f;
 	dtPTime=currentTime;
 	
@@ -34,6 +36,7 @@ void mvcTime::updateTime()
 		//reset frame count
 		frameCount=0;
 	}
+	
 }
 
 mvcTime::~mvcTime() {}
@@ -69,7 +72,6 @@ int mvcTime::insertNewTime(int limit)
 	Ntime->previousTime=timeGetTime();
 	Ntime->timeInterval=0;
 	timer.push_back(Ntime);
-	std::cout<<"new time inserted at"<<timer.size();
 	return timer.size()-1;
 }
 

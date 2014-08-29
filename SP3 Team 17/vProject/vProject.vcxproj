@@ -83,7 +83,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Attributes.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ExpSystem.cpp" />
     <ClCompile Include="Goodies.cpp" />
     <ClCompile Include="GoodiesFactory.cpp" />
     <ClCompile Include="Health.cpp" />
@@ -97,12 +100,16 @@
     <ClCompile Include="myapplication.cpp" />
     <ClCompile Include="physics.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="shop.cpp" />
     <ClCompile Include="Skills.cpp" />
     <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Attributes.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="definitions.h" />
+    <ClInclude Include="ExpSystem.h" />
     <ClInclude Include="Goodies.h" />
     <ClInclude Include="GoodiesFactory.h" />
     <ClInclude Include="Health.h" />
@@ -117,6 +124,7 @@
     <ClInclude Include="myapplication.h" />
     <ClInclude Include="physics.h" />
     <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="shop.h" />
     <ClInclude Include="Skills.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="TextureImage.h" />

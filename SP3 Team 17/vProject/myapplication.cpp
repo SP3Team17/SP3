@@ -5,15 +5,15 @@ myApplication * myApplication::s_pInstance = NULL;
 
 //Constructor
 myApplication::myApplication()
-: theCamera(NULL)
-, theMap(NULL)
-, theBorder(NULL)
-, AGCredits(NULL)
+	: theCamera(NULL)
+	, theMap(NULL)
+	, theBorder(NULL)
+	, AGCredits(NULL)
 {
-	bGameOver = heroInit = bComplete = bShop
+	bGameOver = heroInit = bComplete = programInit
     = stopMovement = gameStart = startDialogue2 
 	= bFlash = gamePause = bTutorial = tutorialEnd
-	= trigger8 = trigger9 = programInit = menuHover = false;
+	= trigger8 = trigger9 = false;
 
 	counterFlash = counterTime = 0;
 
@@ -54,6 +54,7 @@ myApplication::~myApplication()
 	}
 }
 
+//Return only one instance of myApplication
 myApplication* myApplication::getInstance()
 {
 	if(s_pInstance == NULL)
@@ -65,7 +66,7 @@ myApplication* myApplication::getInstance()
 void myApplication::Update(void) 
 {
 	//Check for Game Over
-	if (theHero->GetHp() <= 0)
+	if (theHero->getAttributes()->getHp() <= 0)
 		bGameOver = true;
 
 	//Kennard's test skill
@@ -76,6 +77,9 @@ void myApplication::Update(void)
 
 	//Update Exp System
 	theHero->getExp()->Update();
+
+	//Update Stats
+	theHero->getAttributes()->Update();
 
 	//Constrain Hero to middle of screen (unless he reaches the border)
 	theHero->ConstrainHero(MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, 
@@ -96,9 +100,6 @@ void myApplication::Update(void)
 
 void myApplication::HeroUpdate()
 {
-	//Update Function from Player Class
-	theHero->Update();
-
 	Vector3D temp;
 	//Check Collision of the hero before moving Up
 	if (!CheckCollision(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
@@ -205,10 +206,10 @@ void myApplication::renderScene(void)
 	//Render Start Screen
 	if (!programInit)
 	{
-		if (!menuHover)
-			renderStartScreen(false);
+		if (!startButton->hover)
+			startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 		else
-			renderStartScreen(true);
+			startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 	}
 
 	//Game has Started
@@ -244,16 +245,16 @@ void myApplication::renderScene(void)
 		renderComplete();
 
 	//Open Shop
-	if (bShop)
-		renderShop();
+	if (theShop->open)
+		theShop->renderShop();
+
+	//Open Inventory
+	if (theHero->getInventory()->open)
+		theHero->getInventory()->renderInventory();
 
 	//Do not render over these screens
 	if (!bGameOver && !bComplete && gameStart)
 	{
-		//Display framerate
-		if (!bShop)
-			drawFPS();
-
 		//Display Text On Screen
 		DisplayText();
 	}
@@ -327,6 +328,8 @@ void myApplication::changeSize(int w, int h)
 void myApplication::KeyboardDown(unsigned char key, int x, int y)
 {
 	myKeys[key]= true;
+
+	//Keyboard
 	switch(key) {
 
 	//Exit Program
@@ -342,19 +345,46 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 			gamePause = false;
 		}
 		break;
+
+	//Increase Player Level
+	case '=':
+		if (theHero->getAttributes()->getLevel() < 100)
+			//theHero->getExp()->setExp(theHero->getExp()->getExpToLevel());
+			theHero->getAttributes()->setLevel(theHero->getAttributes()->getLevel()+1);
+		break;
+
+	//Pause the game
+	case 'p':
+		gamePause = !gamePause;
+		break;
 		
 	//Open Shop
 	case 'u':
 	case 'U':
-		if (!bTutorial && gameStart)
+		if (!bTutorial && gameStart && !theHero->getInventory()->open)
 		{
 			//Stop movement when Shop is open
-			if (bShop)
+			if (theShop->open)
 				gamePause = false;
 			else
 				gamePause = true;
 
-			bShop = !bShop;
+			theShop->open = !theShop->open;
+		}
+		break;
+
+	//Inventory
+	case 'i':
+	case 'I':
+		if (!bTutorial && gameStart && !theShop->open)
+		{
+			//Stop movement when Inventory is open
+			if (theHero->getInventory()->open)
+				gamePause = false;
+			else
+				gamePause = true;
+
+			theHero->getInventory()->open = !theHero->getInventory()->open;
 		}
 		break;
 
@@ -390,6 +420,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		}
 		break;
 
+	//Skills
 	case 'z':
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::ATTACK);
 		break;
@@ -405,6 +436,10 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 void myApplication::KeyboardUp(unsigned char key, int x, int y)
 {
 	myKeys[key]= false;
+
+	//Keyboard
+	switch(key) {
+	}
 }
 
 void myApplication::MouseMove (int x, int y)
@@ -412,12 +447,22 @@ void myApplication::MouseMove (int x, int y)
 	mouseInfo.lastX = x;
 	mouseInfo.lastY = y;
 
-	//Check if user is hovering over Start Button
-	if (x >= SCREEN_WIDTH/2.6597 && x <= SCREEN_WIDTH/1.5238 && //385, 672
-		y >= SCREEN_HEIGHT/1.352 && y <= SCREEN_HEIGHT/1.103) //554, 679
-		menuHover = true;
-	else
-		menuHover = false;
+	//Check if user is hovering over Button
+	for(std::vector<CButton*>::iterator it = buttonsList.begin(); it != buttonsList.end(); ++it)
+	{
+		CButton* theButton = *it;
+
+		//Check if mouse is within Region
+		if (x > theButton->getRegionPosX().x && x < theButton->getRegionPosX().y &&
+			y > theButton->getRegionPosY().x && y < theButton->getRegionPosY().y)
+		{
+			//Set Hover to true if mouse is within Region
+			theButton->hover = true;
+		}
+		else
+			//Set Hover to false if mouse is not within Region
+			theButton->hover = false;
+	}
 }
 
 void myApplication::MouseClick(int button, int state, int x, int y) 
@@ -438,7 +483,7 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					exit(0);
 
 				//Initiate Program if user clicks Start
-				if (menuHover)
+				if (startButton->hover)
 					programInit = true;
 
 				//Start Dialogue Scene 2
@@ -506,10 +551,7 @@ bool myApplication::Init(void)
 	LoadTGA(&LevelComplete[0], "images/levelcomplete.tga");
 	LoadTGA(&border[0], "images/border.tga");
 	LoadTGA(&ground[0], "images/ground.tga");
-	LoadTGA(&shop[0], "images/shop.tga");
 	LoadTGA(&PauseTex[0], "images/gamePause.tga");
-	LoadTGA(&StartScreen[0], "images/startScreen.tga");
-	LoadTGA(&StartScreen[1], "images/startScreenHover.tga");
 
 	//Dialogue
 	LoadTGA(&dialogueBG[0], "images/dialogueBG.tga");
@@ -537,6 +579,20 @@ bool myApplication::Init(void)
 	theHero = CPlayerInfo::getInstance();
 	theHero->Init();
 	LoadTGA(&(theHero->HeroTexture[0]), "images/keldeo.tga");
+
+	//Inventory Texture
+	LoadTGA(&(theHero->getInventory()->Inventory[0]), "images/placeholderInventory.tga");
+
+	//Shop
+	theShop = CShop::getInstance();
+	LoadTGA(&(theShop->shopTex[0]), "images/shop.tga");
+
+	//Buttons
+	startButton = new CButton;
+	startButton->Set(385, 672, 554, 679); //Min X, Max X, Min Y, Max Y (Region)
+	buttonsList.push_back(startButton);
+	LoadTGA(&(startButton->button[0]), "images/startScreen.tga");
+	LoadTGA(&(startButton->button[1]), "images/startScreenHover.tga");
 
 	//Set up Map
 	theMap = CMap::getInstance();
@@ -656,9 +712,12 @@ void myApplication::DisplayText()
 	glLoadIdentity();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-		//Do not render these text over screens
-		if (!bComplete && !bGameOver && !bShop)
+		//Do not render these texts over screens
+	    if (!bComplete && !bGameOver && !theShop->open && !theHero->getInventory()->open)
 		{
+			//FPS
+			drawFPS();
+
 			//Display Health Bar Text
 			glColor3f(1.0f, 0.0f, 0.0f);
 			printw (35.0, 23.0, 0, "Health Bar");
@@ -667,9 +726,26 @@ void myApplication::DisplayText()
 			glColor3f(0.0f, 1.0f, 1.0f);
 			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
 
-			//Display Level
-			glColor3f(0.0f, 1.0f, 1.0f);
-			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
+			//Display Stats
+			glColor3f(0.0f, 1.0f, 0.0f);
+			printw (790.0, 290.0, 0, "Player Level: %d", theHero->getAttributes()->getLevel());
+			printw (790.0, 320.0, 0, "Player Attack: %d", theHero->getAttributes()->getAttack());
+			printw (790.0, 350.0, 0, "Player Defense: %d", theHero->getAttributes()->getDefense());
+			printw (790.0, 380.0, 0, "Player Exp: %d", theHero->getExp()->getExp());
+
+			//Print Level
+			if (theHero->getAttributes()->getLevel() < 100)
+				printw (790.0, 410.0, 0, "Exp To Next Level: %d", theHero->getExp()->getExpToLevel());
+			else
+				printw (790.0, 410.0, 0, "Exp To Next Level: -");
+		}
+
+		//Render Inventory Info
+		if (theHero->getInventory()->open)
+		{
+			//Display Inventory Info
+			glColor3f(0.0f, 1.0f, 0.0f);
+			printw (490, 200.0, 0, "Inventory: ");
 		}
 
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -708,29 +784,6 @@ void myApplication::renderComplete()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBindTexture(GL_TEXTURE_2D, LevelComplete[0].texID);
-		glPushMatrix();
-			glBegin(GL_QUADS);
-				glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);
-				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH,RESOLUTION_HEIGHT);
-				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH,0);
-				glTexCoord2f(0,1); glVertex2f(0,0);				
-			glEnd();
-		glPopMatrix();
-		glDisable(GL_BLEND);
-	glPopMatrix();
-
-	glDisable(GL_TEXTURE_2D);
-}
-
-void myApplication::renderShop()
-{
-	glEnable(GL_TEXTURE_2D);
-
-	//Draw Shop
-	glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, shop[0].texID);
 		glPushMatrix();
 			glBegin(GL_QUADS);
 				glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);
@@ -1112,56 +1165,6 @@ void myApplication::renderTutorial()
 	}
 }
 
-void myApplication::renderStartScreen(bool hover) {
-	glEnable(GL_TEXTURE_2D);
-
-	//Mouse is hovering over Start Button
-	if (hover)
-	{
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			//Draw image
-			glBindTexture(GL_TEXTURE_2D, StartScreen[1].texID);
-			glPushMatrix();
-				glBegin(GL_QUADS);
-					glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
-					glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-					glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH, 0);
-					glTexCoord2f(0,1); glVertex2f(0, 0);				
-				glEnd();
-			glPopMatrix();
-
-		glDisable(GL_BLEND);
-		glPopMatrix();
-	}
-
-	//Mouse is not hovering over Start Button
-	else
-	{
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			//Draw image
-			glBindTexture(GL_TEXTURE_2D, StartScreen[0].texID);
-			glPushMatrix();
-				glBegin(GL_QUADS);
-					glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
-					glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-					glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH, 0);
-					glTexCoord2f(0,1); glVertex2f(0, 0);				
-				glEnd();
-			glPopMatrix();
-
-		glDisable(GL_BLEND);
-		glPopMatrix();
-	}
-
-	glDisable(GL_TEXTURE_2D);
-}
-
 void myApplication::renderGround()
 {
 	glEnable(GL_TEXTURE_2D);
@@ -1227,19 +1230,19 @@ void myApplication::RenderHpBar()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		if (theHero->GetHp() <= 0)
+		if (theHero->getAttributes()->getHp() <= 0)
 			glBindTexture(GL_TEXTURE_2D, HpBar[0].texID);
-		else if (theHero->GetHp() <= 1 * HP_MULTIPLIER)
+		else if (theHero->getAttributes()->getHp() <= 1 * HP_MULTIPLIER)
 			glBindTexture(GL_TEXTURE_2D, HpBar[1].texID);
-		else if (theHero->GetHp() <= 2 * HP_MULTIPLIER)
+		else if (theHero->getAttributes()->getHp() <= 2 * HP_MULTIPLIER)
 			glBindTexture(GL_TEXTURE_2D, HpBar[2].texID);
-		else if (theHero->GetHp() <= 3 * HP_MULTIPLIER)
+		else if (theHero->getAttributes()->getHp() <= 3 * HP_MULTIPLIER)
 			glBindTexture(GL_TEXTURE_2D, HpBar[3].texID);
-		else if (theHero->GetHp() <= 4 * HP_MULTIPLIER)
+		else if (theHero->getAttributes()->getHp() <= 4 * HP_MULTIPLIER)
 			glBindTexture(GL_TEXTURE_2D, HpBar[4].texID);
-		else if (theHero->GetHp() <= 5 * HP_MULTIPLIER)
+		else if (theHero->getAttributes()->getHp() <= 5 * HP_MULTIPLIER)
 			glBindTexture(GL_TEXTURE_2D, HpBar[5].texID);
-		else if (theHero->GetHp() <= 6 * HP_MULTIPLIER)
+		else if (theHero->getAttributes()->getHp() <= 6 * HP_MULTIPLIER)
 			glBindTexture(GL_TEXTURE_2D, HpBar[6].texID);
 
 		short height = 55; 

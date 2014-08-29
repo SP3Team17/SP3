@@ -3,6 +3,7 @@
 CInventory* CInventory::instance = NULL;
 
 CInventory::CInventory()
+	: open(false)
 {
 	//Set all slots to 0
 	potion = level = armor = invinc = 0;
@@ -183,4 +184,27 @@ void CInventory::deleteItem(CGoodies::GoodieType Type)
 			}
 		}
 	}
+}
+
+void CInventory::renderInventory()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	//Draw Inventory
+	glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBindTexture(GL_TEXTURE_2D, Inventory[0].texID);
+		glPushMatrix();
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH,0);
+				glTexCoord2f(0,1); glVertex2f(0,0);				
+			glEnd();
+		glPopMatrix();
+		glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
 }

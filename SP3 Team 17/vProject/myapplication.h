@@ -18,6 +18,8 @@
 #include "GoodiesFactory.h"
 #include "Inventory.h"
 #include "ExpSystem.h"
+#include "shop.h"
+#include "Button.h"
 
 #include "MVCtime.h"
 #include "Skills.h"
@@ -63,7 +65,6 @@ private:
 	Skills testSkill;
 
 	std::vector<physicObj*> wallList;
-
 	//end of kennard testing stuff
 
 	//Camera
@@ -76,15 +77,12 @@ private:
 	TextureImage LevelComplete[1];
 	TextureImage ground[1];
 	TextureImage PauseTex[1];
-	TextureImage StartScreen[2];
 
 	//Goodies Factory
 	CGoodiesFactory* theGoodiesFactory;
 
 	//Shop
-	TextureImage shop[1];
-	void renderShop();
-	bool bShop;
+	CShop* theShop;
 
 	//Scenes
 	bool gameStart, gamePause, startDialogue2, bFlash;
@@ -100,9 +98,13 @@ private:
 	TextureImage Troy[2];
 	TextureImage Flash[1];
 
+	//Buttons
+	vector<CButton*> buttonsList;
+	CButton* startButton;
+
 	//Std Variables
 	bool bGameOver, bComplete, stopMovement, bTutorial, 
-		 tutorialEnd, programInit, menuHover;
+		 tutorialEnd, programInit;
 	int AGCredits;
 
 	//Std Functions
@@ -111,7 +113,6 @@ private:
 	void renderGround();
 	void renderPause();
 	void renderTutorial();
-	void renderStartScreen(bool hover);
 
 	void Update();
 

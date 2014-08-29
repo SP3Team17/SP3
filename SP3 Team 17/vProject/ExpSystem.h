@@ -24,8 +24,12 @@ public:
 	//Update
 	void Update();
 
+	//Calc ExpToLevel
+	int calcExpToLevel(short level);
+
 	//Get Set Functions
 	void setExp(int exp);
+	void setExpToLevel(int expToLevel);
 	int getExp();
 	int getExpToLevel();
 };

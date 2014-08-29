@@ -5,18 +5,26 @@
 CPlayerInfo* CPlayerInfo::instance = NULL;
 
 CPlayerInfo::CPlayerInfo() 
-	: playerLevel(2)
-	, active(true)
+	: active(true)
 	, jumpspeed(0)
 	, heroAnimationCounter(0)
-	, hp(MAX_PLAYER_HP * HP_MULTIPLIER)
 {
 	//Init C.Classes
 	playerExp = CExpSystem::getInstance();
 	playerInventory = CInventory::getInstance();
+	playerAttributes = CAttributes::getInstance();
 }
 
-CPlayerInfo::~CPlayerInfo() {}
+CPlayerInfo::~CPlayerInfo() 
+{
+	//Delete all C.Classes upon exit
+	if (playerExp != NULL)
+		delete playerExp;
+	if (playerInventory != NULL)
+		delete playerInventory;
+	if (playerAttributes != NULL)
+		delete playerAttributes;
+}
 
 //Initialise this class instance
 void CPlayerInfo::Init()
@@ -24,6 +32,12 @@ void CPlayerInfo::Init()
 	//Init Variables
 	pos.Set(100,400);
 	hero_inMidAir_Up = hero_inMidAir_Down = heroAnimationInvert = false;
+
+	//Set Player Attributes (Level / Hp / Attack / Defense)
+	playerAttributes->Set(1, MAX_PLAYER_HP * HP_MULTIPLIER, -1, -1);
+
+	//Re-Init Random IVs
+	playerAttributes->ReIVs();
 }
 
 CPlayerInfo* CPlayerInfo::getInstance()
@@ -32,14 +46,6 @@ CPlayerInfo* CPlayerInfo::getInstance()
 	if(instance == NULL)
 		instance = new CPlayerInfo();
 	return instance;
-}
-
-//Update
-void CPlayerInfo::Update()
-{
-	//Level up player if requirements are met
-	if (playerExp->getExp() >= playerExp->getExpToLevel())
-		++playerLevel;
 }
 
 //Get Active State
@@ -54,18 +60,6 @@ void CPlayerInfo::SetActive(bool active)
 	this->active = active;
 }
 
-//Get Level
-int CPlayerInfo::getLevel()
-{
-	return playerLevel;
-}
-
-//Set Level
-void CPlayerInfo::setLevel(short level)
-{
-	level = playerLevel;
-}
-
 //Get Inventory
 CInventory* CPlayerInfo::getInventory()
 {
@@ -76,6 +70,12 @@ CInventory* CPlayerInfo::getInventory()
 CExpSystem* CPlayerInfo::getExp()
 {
 	return playerExp;
+}
+
+//Get Attributes
+CAttributes* CPlayerInfo::getAttributes()
+{
+	return playerAttributes;
 }
 
 /****************************************************************************************************
@@ -112,18 +112,6 @@ void CPlayerInfo::RenderHero() {
 	glDisable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glPopMatrix();
-}
-
-//Get Hp of the player
-short CPlayerInfo::GetHp()
-{
-	return hp;
-}
-
-//Set Hp of the player
-void CPlayerInfo::SetHp(short hp)
-{
-	this->hp = hp;
 }
 
 //Returns true if the player is on ground

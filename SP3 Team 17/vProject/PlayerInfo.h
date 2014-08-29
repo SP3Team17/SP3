@@ -7,10 +7,12 @@
 
 #include "Inventory.h"
 #include "ExpSystem.h"
+#include "Attributes.h"
 
 //Class Composition Prototype
 class CExpSystem;
 class CInventory;
+class CAttributes;
 
 class CPlayerInfo
 {
@@ -28,14 +30,11 @@ private:
 	bool hero_inMidAir_Down;
 	bool heroAnimationInvert;
 	int heroAnimationCounter;
-	short hp;
 
 	//Class Composition
 	CInventory* playerInventory;
 	CExpSystem* playerExp;
-
-	//Level
-	short playerLevel;
+	CAttributes* playerAttributes;
 
 public:
 	CPlayerInfo();
@@ -47,9 +46,6 @@ public:
 	void SetActive(bool active);
 
 	static CPlayerInfo* getInstance();
-
-	//Update
-	void Update();
 
 	//Hero's information
 	TextureImage HeroTexture[1];
@@ -88,20 +84,10 @@ public:
 	//Get Jumpspeed of the player
 	int GetJumpspeed();
 
-	//Get Hp of the player
-	short GetHp();
-	//Set Hp of the player
-	void SetHp(short hp);
-
 	//Update Jump Upwards
 	void UpdateJumpUpwards();
 	//Update FreeFall
 	void UpdateFreeFall();
-
-	//Set Level of Player
-	void setLevel(short level);
-	//Get Level of Player
-	int getLevel();
 
 	//Set Animation Invert status of the player
 	void SetAnimationInvert(bool heroAnimationInvert);
@@ -115,6 +101,7 @@ public:
 	//Get Functions for Composition Classes
 	CInventory* getInventory();
 	CExpSystem* getExp();
+	CAttributes* getAttributes();
 
 	//Constrain the position of the Hero to within the border
 	void ConstrainHero(const int leftBorder, const int rightBorder, 
