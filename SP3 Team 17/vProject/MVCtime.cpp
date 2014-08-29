@@ -87,7 +87,7 @@ bool mvcTime::testTime(int num)
 		return false;
 	}
 	else
-		return true;
+		return false;
 }
 
 void mvcTime::resetTime(int num)

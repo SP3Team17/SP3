@@ -19,6 +19,10 @@ Skills::Skills()
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
+	if(!skillSprite.LoadTGA("images/player.tga"))
+		std::cout<<"\nfailed\n";
+	skillSprite.ImageInit(4,4);
+	skillSprite.changeVariation(0);
 }
 
 Skills::Skills(SkillType ID)
@@ -35,6 +39,11 @@ Skills::Skills(SkillType ID)
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
+	if(!skillSprite.LoadTGA("images/player.tga"))
+		std::cout<<"\nfailed\n";
+	skillSprite.ImageInit(4,4);
+	skillSprite.changeVariation(2);
+	skillSprite.changeSubImage(0);
 }
 
 
@@ -73,7 +82,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 						timer->changeLimit(temp->timeRef,1000);
 					}
 					timer->resetTime(coolRef);
-					timer->changeLimit(coolRef,2500);
+					timer->changeLimit(coolRef,750);
 					temp->active=true;
 					return;
 					break;
@@ -152,14 +161,17 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 	}
 
 }
-
-void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y)
+Vector3D something;
+void Skills::Update(std::vector<MobInfo*> enemies,CPlayerInfo Hero,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map)
 {
 	Poffset_y=this->offset_y;
 	Poffset_x=this->offset_x;
 
 	this->offset_x=offset_x;
 	this->offset_y=offset_y;
+
+	//skillSprite.update();
+
 	mvcTime* timer=mvcTime::getInstance();
 	bool misc;
 	SkillData temp3;
@@ -178,6 +190,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 		
 			temp->Pos.y=temp->Pos.y-this->offset_y+Poffset_y;
 
+			physicObj skillObj(temp->Pos+temp->Dir*16+Vector3D(16,16),Vector3D(TILE_SIZE,TILE_SIZE));
 			switch(temp->ID)
 			{
 			case ATTACK:
@@ -186,19 +199,37 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 				switch(temp->SkillPhase)
 				{
 				case 1://attack duration
+					for(vector<MobInfo*>::iterator it=enemies.begin();it!=enemies.end();++it)
+					{
+						MobInfo* enemy=*it;
+						something=enemy->getPos();
+						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+						if(physics::testCol(skillObj,mobObj))
+						{
+							enemy->setStats(0,enemy->getStats(0)-5);
+							temp->SkillPhase=3;
+							cout<<"HIT!\n";
+						}
+
+					}
 					if(timer->testTime(temp->timeRef))
 					{
-						cout<<"skill attack phase 1 ended\n";
 						temp->SkillPhase=2;
-						timer->changeLimit(temp->timeRef,1000);
+						timer->changeLimit(temp->timeRef,500);
 					}
 					break;
 				case 2://cooldown
 					if(timer->testTime(temp->timeRef))
 					{
-						cout<<"skill attack phase 2 ended\n";
 						temp->SkillPhase=0;
 						temp->active=false;
+					}
+					break;
+				case 3://attacked enemy
+					if(timer->testTime(temp->timeRef))
+					{
+						temp->SkillPhase=2;
+						timer->changeLimit(temp->timeRef,500);
 					}
 					break;
 				}
@@ -207,11 +238,33 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 				switch(temp->SkillPhase)
 				{
 				case 1://attack duration
+					bool up,down,left,right;
+					up=down=left=right=false;
+					if(temp->Dir.y<0)
+					{
+						up=true;
+					}
+					else if(temp->Dir.y>0)
+					{
+						down=true;
+					}
+					if(temp->Dir.x<0)
+					{
+						left=true;
+					}
+					else if(temp->Dir.x>0)
+					{
+						right=true;
+					}
 					if(timer->testTime(temp->timeRef))
 					{
-						cout<<"skill Ranged phase 1 ended\n";
 						temp->SkillPhase=2;
 						timer->changeLimit(temp->timeRef,500);
+					}
+					else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
+					{
+						temp->SkillPhase=2;
+						timer->changeLimit(temp->timeRef,1000);
 					}
 					else
 					{
@@ -221,7 +274,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 				case 2://cooldown
 					if(timer->testTime(temp->timeRef))
 					{
-						cout<<"skill Ranged phase 2 ended\n";
 						temp->SkillPhase=0;
 						temp->active=false;
 					}
@@ -238,7 +290,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						{
 							misc=false;
 							temp->Pos=temp->Pos+temp->Dir*32;
-							cout<<"line spawn\n";
 							++temp->SkillPhase;
 							timer->changeLimit(temp->timeRef,250);
 							for(vector<SkillData>::iterator it2=data.begin();it2!=data.end();++it2)
@@ -293,7 +344,7 @@ void Skills::render()
 		if(temp.active)
 		{
 			glPushMatrix();
-			glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
+			//glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
 			switch(temp.ID)
 			{
 			case ATTACK:
@@ -301,6 +352,8 @@ void Skills::render()
 				switch(temp.SkillPhase)
 				{
 				case 1:
+					glColor3f(1,0,0);
+				case 3:
 				case 2:
 					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
 					glScalef(32,32,0);
@@ -313,17 +366,17 @@ void Skills::render()
 				defualt:
 					return;
 				case -1:
-					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
+					glTranslatef(temp.Pos.x,temp.Pos.y,0);
 					glScalef(32,32,0);
 					break;
 				}
 				break;
 			}
-			glEnable(GL_TEXTURE_2D);
+			/*glEnable(GL_TEXTURE_2D);
 			glEnable(GL_BLEND);
 			glBindTexture(GL_TEXTURE_2D,skillTex[temp.SkillPhase].texID);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-			glBegin (GL_TRIANGLE_STRIP);
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);*/
+			/*glBegin (GL_TRIANGLE_STRIP);
 				glTexCoord2f(0,0);
 				glVertex3f(-0.5, 0.5, 0);
 		
@@ -335,11 +388,16 @@ void Skills::render()
 
 				glTexCoord2f(1.0,1.0);
 				glVertex3f(0.5,-0.5,0);
-			glEnd();
+			glEnd();*/
+			skillSprite.render();
 			glPopMatrix();
-			glDisable(GL_BLEND);
-			glDisable(GL_TEXTURE_2D);
+			/*glDisable(GL_BLEND);
+			glDisable(GL_TEXTURE_2D);*/
 			glColor3f(1,1,1);
+			/*glBegin(GL_LINES);
+				glVertex3f(something.x,something.y,0);
+				glVertex3f(temp.Pos.x+temp.Dir.x*16+16,temp.Pos.y+temp.Dir.y*16+16,0);
+			glEnd();*/
 		}
 	}
 }

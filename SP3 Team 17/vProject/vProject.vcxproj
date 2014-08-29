@@ -62,7 +62,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freeglut.lib;winmm.lib;irrklang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -95,14 +95,15 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MobInfo.cpp" />
     <ClCompile Include="Monster.cpp" />
-    <ClCompile Include="MonsterAI.cpp" />
     <ClCompile Include="MVCtime.cpp" />
     <ClCompile Include="myapplication.cpp" />
     <ClCompile Include="physics.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="shop.cpp" />
     <ClCompile Include="Skills.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Attributes.h" />
@@ -122,12 +123,15 @@
     <ClInclude Include="MonsterAI.h" />
     <ClInclude Include="MVCtime.h" />
     <ClInclude Include="myapplication.h" />
+    <ClInclude Include="physicObj.h" />
     <ClInclude Include="physics.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="shop.h" />
     <ClInclude Include="Skills.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="TextureImage.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="vector3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

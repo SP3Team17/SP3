@@ -1,10 +1,11 @@
-#ifndef INVENTORY_H
-#define INVENTORY_H
-
 #include <vector>
 #include "definitions.h"
 #include "TextureImage.h"
 #include "Goodies.h"
+
+#ifndef INVENTORY_H
+#define INVENTORY_H
+
 
 class CInventory {
 

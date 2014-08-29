@@ -5,6 +5,9 @@
 #include <vector>
 #include "MobInfo.h"
 #include "TextureImage.h"
+#include "Sprite.h"
+#include "physics.h"
+#include "Map.h"
 
 class Skills
 {
@@ -28,14 +31,14 @@ public:
 	Skills(void);
 	Skills(SkillType ID);
 	~Skills(void);
-	void Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y);//,player* hero
+	void Update(std::vector<MobInfo*> enemies,CPlayerInfo Hero,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map);//,player* hero
 	void render();
 	void procSkills(Vector3D pos,Vector3D Dir,SkillType ID);
 	TextureImage skillTex[TOTAL];
 	int coolRef;
 private:
 	float offset_x,offset_y,Poffset_x,Poffset_y;
-	//Sprite skillSprite;
+	Sprite skillSprite;
 	std::vector<SkillData> data;
 	int SkillLevel;
 	bool cool;

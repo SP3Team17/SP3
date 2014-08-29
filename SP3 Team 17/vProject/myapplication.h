@@ -26,6 +26,8 @@
 #include "Monster.h"
 #include "physics.h"
 
+#include "UI.h"
+
 //Mouse Info
 typedef struct {
 	bool mLButtonUp;
@@ -60,12 +62,20 @@ private:
 	static myApplication *s_pInstance;
 
 	//kennard testing stuff
-	vector<MobInfo*> something;
+	vector<MobInfo*> infoList;
+	vector<Monster*> mobList;
+	//Monster testMob;
 
 	Skills testSkill;
 
+	bool processTiles();
+
 	std::vector<physicObj*> wallList;
 	//end of kennard testing stuff
+
+	//ryan testing stuff
+	CUI testUI;
+	//end of ryan testing stuff
 
 	//Camera
 	Vector3D theCameraPosition;

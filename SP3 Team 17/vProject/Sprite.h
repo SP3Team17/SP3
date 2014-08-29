@@ -1,10 +1,9 @@
-#include "Monster.h"
-#include "Skills.h"
-#include "PlayerInfo.h"
-//#include "Item.h"
-
 #include <GL/freeglut.h>
 #include <iostream>
+#include "definitions.h"
+
+#include "PlayerInfo.h"
+#include "TextureImage.h"
 
 #ifndef SPRITE_H
 #define SPRITE_H
@@ -14,22 +13,17 @@ public:
 	Sprite();
 	~Sprite();
 
-	// Therapist
+	// Textures
 	TextureImage Images;
-	// Anti-Gambling Credits
-	// Shooting particle
-	// Money Bag enemy
-	// Dollar note
-	// Mahjong enemy
-	// Poker enemy
-	// Du Shen
 	// LoadTGA
 	bool Stop;
-	bool ImageInit(void);
+	bool ImageInit(int SubImage, int ImageVar);
 	bool LoadTGA( char *filename);
 	void update(void);
 	void changeVariation(int newVar);
-	void render(int Image);
+	void changeSubImage(int newSub);
+	void animation (void);
+	void render(void);
 	void changeStop(bool nStop);
 	// Set Animation Invert status of the sprite
 	void SetAnimationInvert(bool AnimationInvert);
@@ -40,9 +34,15 @@ private:
 	int SubImage; // animation counter
 	int ImageVar; 
 	int CurrentVar;
-	int AnimationCounter;
+	int CurSubImage;
+	float ratio_x;
+	float ratio_y;
 	bool AnimationInvert;
-
+	bool jump, bLeft, bRight, bMoving;
+	void moveMeJump();
+	void moveMeUpDown(bool mode, float timeDiff);
+	void moveMeLeftRight(bool mode, float timeDiff);
+	Sprite *object;
 
 };
 #endif

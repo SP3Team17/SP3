@@ -3,34 +3,34 @@
 #include "MobInfo.h"
 #include <vector>
 #include "Skills.h"
+#include "PlayerInfo.h"
+#include "MVCtime.h"
 
 #ifndef MONSTER_H
 #define MONSTER_H
 class Monster
 {
 public:
-	bool active;
-	int HP;
 	Monster(void);
 	~Monster(void);
-	enum MobType
-	{
-		DEFAULT=0,
-	};
 	void render(void);
-	int action;//current action its taking(AI)
+	void init(Vector3D pos,MobType type,Vector3D patrol1,Vector3D patrol2);
 
-	//void update(float dt,player Hero);//should call ai to do stuff
+	void update(float dt,std::vector<MobInfo*> enemies,CPlayerInfo Hero,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map);//should call ai to do stuff
+
+	TextureImage MobTex;
 
 	//void OnDeath(map World,ItemFactory spawner)//spawns items
 
-private:
-	MobType type;
+	int ID;
+
 	MobInfo stats;
-	std::vector<Skills*> SkillList;
-	void MoveUpDown(bool mode,float dt);
-	void MoveLeftRight(bool mode,float dt);
-	void ProcSkill(int skillNo);
+	MonsterAI AIstates;
+private:
+	int timeRef;
+	float offset_x,offset_y,Poffset_x,Poffset_y;
+	Skills skillList;
+	void ProcSkill(Skills::SkillType skilltype);
 };
 
 #endif
