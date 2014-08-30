@@ -22,7 +22,7 @@ public:
 	void update(void);
 	void changeVariation(int newVar);
 	void changeSubImage(int newSub);
-	void render(TextureImage);
+	void render();
 	void changeStop(bool nStop);
 	// Set Animation Invert status of the sprite
 	void SetAnimationInvert(bool AnimationInvert);

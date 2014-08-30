@@ -13,17 +13,17 @@ Skills::Skills()
 	temp.Pos=(Vector3D(0,0,0));
 	temp.SkillPhase=0;
 	temp.active=false;
+	temp.skillSprite.LoadTGA("Images/player.tga");
+	temp.skillSprite.ImageInit(4,4);
+	temp.skillSprite.changeVariation(0);
+	temp.rend=true;
+	temp.skillSprite.Stop=false;
 	data.push_back(temp);
 	offset_x=offset_y=0;
 	Poffset_x=Poffset_y=0;
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
-	if(!skillSprite.LoadTGA("Images/player.tga"))
-		std::cout<<"\nfailed\n";
-	skillSprite.ImageInit(4,4);
-	skillSprite.changeVariation(0);
-	skillSprite.Stop=false;
 }
 
 Skills::Skills(SkillType ID)
@@ -34,18 +34,18 @@ Skills::Skills(SkillType ID)
 	temp.Pos=(Vector3D(0,0,0));
 	temp.SkillPhase=0;
 	temp.active=false;
+	temp.skillSprite.LoadTGA("Images/player.tga");
+	temp.skillSprite.ImageInit(4,4);
+	temp.skillSprite.changeVariation(2);
+	temp.skillSprite.changeSubImage(0);
+	temp.rend=true;
+	temp.skillSprite.Stop=false;
 	data.push_back(temp);
 	offset_x=offset_y=0;
 	Poffset_x=Poffset_y=0;
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
-	if(!skillSprite.LoadTGA("Images"))
-		std::cout<<"\nfailed\n";
-	skillSprite.ImageInit(4,4);
-	skillSprite.changeVariation(2);
-	skillSprite.changeSubImage(0);
-	skillSprite.Stop=false;
 }
 
 
@@ -128,38 +128,52 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 				temp->active=true;
 			}
 		}
-		if(!cool)
+		SkillData temp2;
+		cool=true;
+		mvcTime* timer=mvcTime::getInstance();
+		temp2.SkillPhase=1;
+		//offset_x=offset_y=0;
+		//Poffset_x=Poffset_y=0;
+		temp2.Pos=pos;
+		temp2.Dir=Dir;
+		temp2.ID=ID;
+		switch(ID)
 		{
-			SkillData temp;
-			cool=true;
-			mvcTime* timer=mvcTime::getInstance();
-			temp.SkillPhase=1;
-			//offset_x=offset_y=0;
-			//Poffset_x=Poffset_y=0;
-			temp.Pos=pos;
-			temp.Dir=Dir;
-			temp.ID=ID;
-			switch(ID)
-			{
-			case ATTACK:
-				timer->resetTime(coolRef);
-				temp.timeRef=timer->insertNewTime(1000);
-				timer->changeLimit(coolRef,2500);
-				break;
-			case RANGE:
-				timer->resetTime(coolRef);
-				timer->changeLimit(coolRef,1000);
-				temp.timeRef=timer->insertNewTime(1000);
-				break;
-			case LINE:
-				timer->resetTime(coolRef);
-				timer->changeLimit(coolRef,4000);
-				temp.timeRef=timer->insertNewTime(50);
-				break;
-			}
-			temp.active=true;
-			data.push_back(temp);
+		case ATTACK:
+			timer->resetTime(coolRef);
+			temp2.timeRef=timer->insertNewTime(1000);
+			timer->changeLimit(coolRef,2500);
+			temp2.skillSprite.LoadTGA("Images/player.tga");
+
+			temp2.skillSprite.ImageInit(4,4);
+			temp2.skillSprite.changeVariation(2);
+			temp2.skillSprite.changeSubImage(0);
+			temp2.skillSprite.Stop=false;
+			break;
+		case RANGE:
+			timer->resetTime(coolRef);
+			timer->changeLimit(coolRef,1000);
+			temp2.timeRef=timer->insertNewTime(1000);
+			
+			temp2.skillSprite.LoadTGA("Images/player.tga");
+			temp2.skillSprite.ImageInit(4,4);
+			temp2.skillSprite.changeVariation(2);
+			temp2.skillSprite.changeSubImage(0);
+			temp2.skillSprite.Stop=false;
+			break;
+		case LINE:
+			timer->resetTime(coolRef);
+			timer->changeLimit(coolRef,4000);
+			temp2.timeRef=timer->insertNewTime(50);
+			temp2.skillSprite.LoadTGA("Images/player.tga");
+			temp2.skillSprite.ImageInit(4,4);
+			temp2.skillSprite.changeVariation(2);
+			temp2.skillSprite.changeSubImage(0);
+			temp2.skillSprite.Stop=false;
+			break;
 		}
+		temp2.active=true;
+		data.push_back(temp2);
 	}
 
 }
@@ -173,7 +187,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 	this->offset_x=offset_x;
 	this->offset_y=offset_y;
 
-	skillSprite.update();
 
 	mvcTime* timer=mvcTime::getInstance();
 	bool misc;
@@ -186,12 +199,27 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 	for(vector<SkillData>::iterator it=data.begin();it!=data.end();++it)
 	{
 		SkillData* temp=&*it;
+		temp->skillSprite.update();
 		if(temp->active==true)
 		{
 		
 			temp->Pos.x=temp->Pos.x-this->offset_x+Poffset_x;
 		
 			temp->Pos.y=temp->Pos.y-this->offset_y+Poffset_y;
+
+			if(temp->Pos.x<LEFT_BORDER+TILE_SIZE*0.5||temp->Pos.x>MAP_SCREEN_WIDTH+TILE_SIZE*2)
+			{
+				temp->rend=false;
+			}
+			else if(temp->Pos.y<BOTTOM_BORDER+TILE_SIZE*0.5||temp->Pos.y>MAP_SCREEN_HEIGHT+TILE_SIZE*2)
+			{
+				temp->rend=false;
+			}
+			else if(!(temp->Pos.x<LEFT_BORDER+TILE_SIZE*0.5||temp->Pos.x>MAP_SCREEN_WIDTH+TILE_SIZE*2))
+			{
+				if(!(temp->Pos.y<BOTTOM_BORDER+TILE_SIZE*0.5||temp->Pos.y>MAP_SCREEN_HEIGHT+TILE_SIZE*2))
+					temp->rend=true;
+			}
 
 			physicObj skillObj(temp->Pos+temp->Dir*16+Vector3D(16,16),Vector3D(TILE_SIZE,TILE_SIZE));
 			switch(temp->ID)
@@ -211,7 +239,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						{
 							enemy->setStats(0,enemy->getStats(0)-5);
 							temp->SkillPhase=3;
-							cout<<"HIT!\n";
 						}
 
 					}
@@ -253,7 +280,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						{
 							enemy->setStats(0,enemy->getStats(0)-5);
 							temp->SkillPhase=2;
-							cout<<"HIT!\n";
 							moveon=true;
 						}
 
@@ -352,7 +378,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					if(physics::testCol(skillObj,mobObj))
 					{
 						Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-1);
-						cout<<"Hero hp is now"<<Hero->getAttributes()->getHp()<<"\n";
 					}
 					if(timer->testTime(temp->timeRef))
 					{
@@ -371,10 +396,11 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 
 void Skills::render()
 {
+	
 	for(vector<SkillData>::iterator it=data.begin();it!=data.end();++it)
 	{
 		SkillData temp=*it;
-		if(temp.active)
+		if(temp.active&&temp.rend)
 		{
 			glPushMatrix();
 			//glColor3f(float(rand()%100/100.f),float(rand()%100/100.f),float(rand()%100/100.f));
@@ -422,9 +448,9 @@ void Skills::render()
 				glTexCoord2f(1.0,1.0);
 				glVertex3f(0.5,-0.5,0);
 			glEnd();*/
-			skillSprite.render(skillTex[temp.SkillPhase]);
-			/*glPopMatrix();
-			glDisable(GL_BLEND);
+			temp.skillSprite.render();
+			glPopMatrix();
+			/*glDisable(GL_BLEND);
 			glDisable(GL_TEXTURE_2D);*/
 			glColor3f(1,1,1);
 			/*glBegin(GL_LINES);

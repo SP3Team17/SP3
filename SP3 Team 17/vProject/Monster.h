@@ -27,6 +27,7 @@ public:
 	MobInfo stats;
 	MonsterAI AIstates;
 private:
+	bool rend;
 	int timeRef;
 	float offset_x,offset_y,Poffset_x,Poffset_y;
 	Skills skillList;

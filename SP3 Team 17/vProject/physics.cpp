@@ -124,14 +124,18 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 		N.normalizeVector3D();
 		if(abs((w0-b1).dotVector3D(N))<32)
 		{
-			if(abs((w0-b1).dotVector3D(NP))<(pos-end).Length()*0.5+32)
+			if(abs((w0-b1).dotVector3D(NP))<(pos-end).Length()*0.5+16)
 			{
-				float t=abs((w0-b1).dotVector3D(N));
-				float f=(pos-end).Length()*0.5+32;
 				return true;
 			}
 		}
-		
+		if(abs((w0-b1).dotVector3D(NP))<(pos-end).Length()*0.5+16)
+		{
+			if(abs((w0-b1).dotVector3D(N))<32)
+			{
+				return true;
+			}
+		}
 	}
 	return false;
 

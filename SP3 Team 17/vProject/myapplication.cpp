@@ -209,18 +209,29 @@ void myApplication::renderScene(void)
 	theCamera->SetHUD(true);
 
 	//Game has yet to start
-	if (!gameStart && programInit)
-		renderStartScene();
+	//if (!gameStart && programInit)
+	//	renderStartScene();
 
-	//Render Start Screen
-	if (!programInit)
+	////Render Start Screen
+	//if (!programInit)
+	//{
+	//	if (!startButton->hover)
+	//		startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+	//	else
+	//		startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+	//}
+	gameStart=true;
+	if ((timeGetTime()-timelastcall)>1000/frequency)
 	{
-		if (!startButton->hover)
-			startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-		else
-			startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-	}
+		//Calculate the framerate
+		calculateFPS();
 
+		timelastcall=timeGetTime();
+
+		//Update Function
+		if (gameStart && !gamePause)
+			Update();
+	}
 	//Game has Started
 	if (gameStart)
 	{
@@ -232,27 +243,17 @@ void myApplication::renderScene(void)
 		else if (currentLevel == 2)
 			LoadLevel(2);
 
-		//Render Hero
-		theHero->RenderHero();
-		//testMob.render();
 		for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
 		{
 			Monster* temp=*it;
 			temp->render();
 		}
+		//Render Hero
+		theHero->RenderHero();
+		//testMob.render();
 		testSkill.render();
 		testUI.renderBackpanel();
-	}
-	if ((timeGetTime()-timelastcall)>1000/frequency)
-	{
-		//Calculate the framerate
-		calculateFPS();
-
-		timelastcall=timeGetTime();
-
-		//Update Function
-		if (gameStart && !gamePause)
-			Update();
+		RenderMapBorder();
 	}
 	//Game is Paused
 	if (gamePause)
@@ -312,7 +313,6 @@ void myApplication::LoadLevel(short level)
 
 		//Re-Init Map 
 		RenderTileMap(theMap);
-		RenderMapBorder();
 
 		RenderHpBar();
 	}
@@ -325,7 +325,6 @@ void myApplication::LoadLevel(short level)
 
 		//Re-Init Map 
 		RenderTileMap(theMap);
-		RenderMapBorder();
 
 		RenderHpBar();
 	}
@@ -424,6 +423,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 			mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
 			theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
 			theMap->LoadMap("MapDesign.csv");
+			processTiles();
 
 			//Set Level to 1
 			currentLevel = 1;
@@ -440,6 +440,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 			mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
 			theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
 			theMap->LoadMap("MapDesign2.csv");
+			processTiles();
 
 			//Set Level to 1
 			currentLevel = 2;
@@ -695,6 +696,17 @@ bool myApplication::processTiles()
 	bool move=false;
 	int current;
 	int temp4;
+	while(wallList.size()>0)
+	{
+		delete wallList.back();
+		wallList.pop_back();
+	}
+	while(mobList.size()>0)
+	{
+		delete mobList.back();
+		mobList.pop_back();
+		infoList.pop_back();
+	}
 	for(int j=0;j<theNumOfTiles_MapHeight;++j)
 	{
 		for(int i=0;i<theNumOfTiles_MapWidth;++i)
@@ -802,7 +814,7 @@ void myApplication::DisplayText()
 {
 	glLoadIdentity();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-
+	mvcTime* timer=mvcTime::getInstance();
 		//Do not render these texts over screens
 	    if (!bComplete && !bGameOver && !theShop->open && !theHero->getInventory()->open)
 		{
@@ -813,6 +825,9 @@ void myApplication::DisplayText()
 			glColor3f(1.0f, 0.0f, 0.0f);
 			printw (35.0, 23.0, 0, "Health Bar");
 
+			glColor3f(1.f,1.f,1.f);
+			printw(790,100,0,"delta: %.4f",timer->getDelta());
+			printw(790,150,0,"fps: %.2f",timer->getFPS());
 			//Display Level
 			glColor3f(0.0f, 1.0f, 1.0f);
 			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
