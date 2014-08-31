@@ -452,7 +452,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::ATTACK);
 		break;
 	case 'x':
-		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGE);
+		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGEAOE);
 		break;
 	}
 }

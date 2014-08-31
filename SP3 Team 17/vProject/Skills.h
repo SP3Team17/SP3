@@ -17,6 +17,7 @@ public:
 		ATTACK=0,
 		RANGE,
 		LINE,
+		RANGEAOE,
 		TOTAL,
 	};
 	typedef struct
