@@ -241,10 +241,6 @@ void myApplication::renderScene(void)
 			theUI->getStartButton()->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
 	}
 
-		//Update Function
-		if (gameStart && !gamePause)
-			Update();
-	}
 	//Game has Started
 	if (gameStart)
 	{
@@ -266,7 +262,7 @@ void myApplication::renderScene(void)
 		//testMob.render();
 		testSkill.render();
 
-		testUI.renderBackpanel();
+		theUI->renderBackpanel();
 		RenderMapBorder();
 	}
 	
@@ -436,7 +432,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 	//Pause the game
 	case 27:
-		if (gameStart && programInit)
+		//if (gameStart && programInit)
 			gamePause = !gamePause;
 		break;
 		
