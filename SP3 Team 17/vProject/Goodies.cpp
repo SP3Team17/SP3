@@ -19,6 +19,30 @@ CGoodies* CGoodies::getInstance()
 	return instance;
 }
 
+void CGoodies::ExecuteBonus(CGoodies::GoodieType Type)
+{
+	//Get Instance from Player class
+	tempPlayer = CPlayerInfo::getInstance();
+
+	switch(Type)
+	{
+	case CGoodies::HEALTH:
+		//Increase Player's Hp
+		tempPlayer->getAttributes()->setHp(tempPlayer->getAttributes()->getHp()+10);
+		break;
+	case CGoodies::ARMOR:
+		//Increase Player's Defense
+		tempPlayer->getAttributes()->setDefIV(tempPlayer->getAttributes()->getDefIV()+10);
+		break;
+	case CGoodies::LEVEL:
+		//Increase Player's Level
+		tempPlayer->getAttributes()->setLevel(tempPlayer->getAttributes()->getLevel()+1);
+		break;
+	default:
+		return;
+	}
+}
+
 //Get Active State
 bool CGoodies::GetActive()
 {

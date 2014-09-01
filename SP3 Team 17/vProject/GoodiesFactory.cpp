@@ -21,8 +21,20 @@ CGoodies* CGoodiesFactory::Create(CGoodies::GoodieType Type)
 	switch (Type)
 	{
 	case CGoodies::HEALTH:
-		theNewGoodies = new CHealth;
+		theNewGoodies = new CGoodies;
 		theNewGoodies->SetType(CGoodies::HEALTH);
+		break;
+	case CGoodies::ARMOR:
+		theNewGoodies = new CGoodies; 
+		theNewGoodies->SetType(CGoodies::ARMOR);
+		break;
+	case CGoodies::INVINC:
+		theNewGoodies = new CGoodies; 
+		theNewGoodies->SetType(CGoodies::INVINC);
+		break;
+	case CGoodies::LEVEL:
+		theNewGoodies = new CGoodies; 
+		theNewGoodies->SetType(CGoodies::LEVEL);
 		break;
 	case CGoodies::GOODIE_NONE:
 		theNewGoodies = new CGoodies;

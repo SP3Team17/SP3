@@ -74,7 +74,7 @@ private:
 	//end of kennard testing stuff
 
 	//ryan testing stuff
-	CUI testUI;
+	CUI* theUI;
 	//end of ryan testing stuff
 
 	//Camera
@@ -107,10 +107,6 @@ private:
 	TextureImage Patient[3];
 	TextureImage Troy[2];
 	TextureImage Flash[1];
-
-	//Buttons
-	vector<CButton*> buttonsList;
-	CButton* startButton;
 
 	//Std Variables
 	bool bGameOver, bComplete, stopMovement, bTutorial, 

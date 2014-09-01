@@ -4,8 +4,6 @@
 #include "definitions.h"
 #include "Goodies.h"
 
-#include "Health.h"
-
 class CGoodiesFactory
 {
 private:

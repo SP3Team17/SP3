@@ -52,6 +52,20 @@ myApplication::~myApplication()
 		delete theCamera;
 		theCamera = NULL;
 	}
+
+	//Delete Shop
+	if (theShop != NULL)
+	{
+		delete theShop;
+		theShop = NULL;
+	}
+
+	//Delete UI
+	if (theUI != NULL)
+	{
+		delete theUI;
+		theUI = NULL;
+	}
 }
 
 //Return only one instance of myApplication
@@ -68,7 +82,6 @@ void myApplication::Update(void)
 	//Check for Game Over
 	if (theHero->getAttributes()->getHp() <= 0)
 		bGameOver = true;
-
 
 	//Update Hero
 	HeroUpdate();
@@ -204,7 +217,6 @@ void myApplication::renderScene(void)
 	mvcTime* timer=mvcTime::getInstance();
 	timer->updateTime();
 
-
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
 
@@ -215,10 +227,10 @@ void myApplication::renderScene(void)
 	//Render Start Screen
 	if (!programInit)
 	{
-		if (!startButton->hover)
-			startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+		if (!theUI->getStartButton()->hover)
+			theUI->getStartButton()->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
 		else
-			startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+			theUI->getStartButton()->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
 	}
 
 	//Game has Started
@@ -234,6 +246,7 @@ void myApplication::renderScene(void)
 
 		//Render Hero
 		theHero->RenderHero();
+
 		//testMob.render();
 		for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
 		{
@@ -241,23 +254,22 @@ void myApplication::renderScene(void)
 			temp->render();
 		}
 		testSkill.render();
-		testUI.renderBackpanel();
+		theUI->renderBackpanel();
 	}
-	if ((timeGetTime()-timelastcall)>1000/frequency)
-	{
-		//Calculate the framerate
-		calculateFPS();
-
-		timelastcall=timeGetTime();
-
-		//Update Function
-		if (gameStart && !gamePause)
-			Update();
-	}
+	
 	//Game is Paused
 	if (gamePause)
-		//renderPause();
-		testUI.renderPause();
+	{
+		renderPause();
+		if (theUI->getPauseButton(0)->hover)
+			theUI->getPauseButton(0)->Render(true, 360, 250, 360, 300);
+		else if (theUI->getPauseButton(1)->hover)
+			theUI->getPauseButton(1)->Render(true, 360, 250, 360, 300);
+		else if (theUI->getPauseButton(2)->hover)
+			theUI->getPauseButton(2)->Render(true, 360, 250, 360, 300);
+		else
+			theUI->getPauseButton(0)->Render(false, 360, 250, 360, 300);
+	}
 
 	//Stacey's Tutorial
 	if (bTutorial)
@@ -359,9 +371,40 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 	//Keyboard
 	switch(key) {
 
-	//Exit Program
-	case 27: 
-		exit(0);
+	//Add Heath
+	case 'v':
+	case 'V':
+		{
+			CGoodies* health = theGoodiesFactory->Create(CGoodies::HEALTH);
+			theHero->getInventory()->addItem(health);
+		}
+		break;
+
+	//Add Armor
+	case 'b':
+	case 'B':
+		{
+			CGoodies* armor = theGoodiesFactory->Create(CGoodies::ARMOR);
+			theHero->getInventory()->addItem(armor);
+		}
+		break;
+
+	//Add Invinc Pill
+	case 'n':
+	case 'N':
+		{
+			CGoodies* invinc = theGoodiesFactory->Create(CGoodies::INVINC);
+			theHero->getInventory()->addItem(invinc);
+		}
+		break;
+
+	//Add Level Pill
+	case 'm':
+	case 'M':
+		{
+			CGoodies* level = theGoodiesFactory->Create(CGoodies::LEVEL);
+			theHero->getInventory()->addItem(level);
+		}
 		break;
 
 	//Skip Start Scene
@@ -381,8 +424,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		break;
 
 	//Pause the game
-	case 'p':
-		gamePause = !gamePause;
+	case 27:
+		if (gameStart && programInit)
+			gamePause = !gamePause;
 		break;
 		
 	//Open Shop
@@ -412,37 +456,300 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				gamePause = true;
 
 			theHero->getInventory()->open = !theHero->getInventory()->open;
+
+			//Reset booleans
+			if (theHero->getInventory()->open)
+				theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+				theHero->getInventory()->invincUsed = theHero->getInventory()->potionUsed = false;
 		}
 		break;
+
 	//Load Level 1
 	case '1':
 		{
-			//Trigger Hero Init
-			heroInit = false;
+			//Do not load level if inventory or shop is opened
+			if (!theShop->open && !theHero->getInventory()->open)
+			{
+				//Trigger Hero Init
+				heroInit = false;
 
-			//Re-Init Map
-			mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
-			theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-			theMap->LoadMap("MapDesign.csv");
+				//Re-Init Map
+				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
+				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
+				theMap->LoadMap("MapDesign.csv");
 
-			//Set Level to 1
-			currentLevel = 1;
+				//Set Level to 1
+				currentLevel = 1;
+			}
+
+			//Item in slot 1 used
+			if (theHero->getInventory()->open)
+			{
+				//Check for Empty Slot
+				if (theHero->getInventory()->itemsArray[0]->GetType() != CGoodies::GOODIE_NONE)
+				{
+					//Check if player Hp is max if type is HEALTH
+					if (theHero->getInventory()->itemsArray[0]->GetType() == CGoodies::HEALTH)
+					{
+						if (theHero->getAttributes()->getHp() < MAX_PLAYER_HP*HP_MULTIPLIER)
+						{
+							//Execute Item Bonus
+							theHero->getInventory()->itemsArray[0]->ExecuteBonus(CGoodies::HEALTH);
+
+							//Delete the Item in slot 1
+							theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[0]);
+						}
+					}
+
+					//Exeute Bonus and delete item from Slot
+					else
+					{
+						//Execute Item Bonus
+						theHero->getInventory()->itemsArray[0]->ExecuteBonus(theHero->getInventory()->itemsArray[0]->GetType());
+
+						//Delete the Item in slot 1
+						theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[0]);
+					}
+
+					//Toggle Used Text
+					switch (theHero->getInventory()->itemsArray[0]->GetType())
+					{
+					case CGoodies::HEALTH:
+						theHero->getInventory()->potionUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::ARMOR:
+						theHero->getInventory()->armorUsed = true;
+						theHero->getInventory()->potionUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::LEVEL:
+						theHero->getInventory()->levelUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->potionUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::INVINC:
+						theHero->getInventory()->invincUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->potionUsed = false;
+						break;
+					}
+				}
+			}
 		}
 		break;
 
 	//Load Level 2
 	case '2':
 		{
-			//Trigger Hero Init
-			heroInit = false;
+			//Do not load level if inventory or shop is opened
+			if (!theShop->open && !theHero->getInventory()->open)
+			{
+				//Trigger Hero Init
+				heroInit = false;
 
-			//Re-Init Map
-			mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
-			theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-			theMap->LoadMap("MapDesign2.csv");
+				//Re-Init Map
+				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
+				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
+				theMap->LoadMap("MapDesign2.csv");
 
-			//Set Level to 1
-			currentLevel = 2;
+				//Set Level to 2
+				currentLevel = 2;
+			}
+
+			//Item in slot 2 used
+			if (theHero->getInventory()->open)
+			{
+				//Check for Empty Slot
+				if (theHero->getInventory()->itemsArray[1]->GetType() != CGoodies::GOODIE_NONE)
+				{
+					//Check if player Hp is max if type is HEALTH
+					if (theHero->getInventory()->itemsArray[1]->GetType() == CGoodies::HEALTH)
+					{
+						if (theHero->getAttributes()->getHp() < MAX_PLAYER_HP*HP_MULTIPLIER)
+						{
+							//Execute Item Bonus
+							theHero->getInventory()->itemsArray[1]->ExecuteBonus(CGoodies::HEALTH);
+
+							//Delete the Item in slot 2
+							theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[1]);
+						}
+					}
+
+					//Exeute Bonus and delete item from Slot
+					else
+					{
+						//Execute Item Bonus
+						theHero->getInventory()->itemsArray[1]->ExecuteBonus(theHero->getInventory()->itemsArray[1]->GetType());
+
+						//Delete the Item in slot 1
+						theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[1]);
+					}
+
+					//Toggle Used Text
+					switch (theHero->getInventory()->itemsArray[1]->GetType())
+					{
+					case CGoodies::HEALTH:
+						theHero->getInventory()->potionUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::ARMOR:
+						theHero->getInventory()->armorUsed = true;
+						theHero->getInventory()->potionUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::LEVEL:
+						theHero->getInventory()->levelUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->potionUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::INVINC:
+						theHero->getInventory()->invincUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->potionUsed = false;
+						break;
+					}
+				}
+			}
+		}
+		break;
+
+	//Load Level 3
+	case '3':
+		{
+			//Do not load level if inventory or shop is opened
+			if (!theShop->open && !theHero->getInventory()->open)
+			{
+				//Trigger Hero Init
+				heroInit = false;
+
+				//Re-Init Map
+				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
+				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
+				theMap->LoadMap("MapDesign.csv");
+
+				//Set Level to 3
+				currentLevel = 3;
+			}
+
+			//Item in slot 3 used
+			if (theHero->getInventory()->open)
+			{
+				//Check for Empty Slot
+				if (theHero->getInventory()->itemsArray[2]->GetType() != CGoodies::GOODIE_NONE)
+				{
+					//Check if player Hp is max if type is HEALTH
+					if (theHero->getInventory()->itemsArray[2]->GetType() == CGoodies::HEALTH)
+					{
+						if (theHero->getAttributes()->getHp() < MAX_PLAYER_HP*HP_MULTIPLIER)
+						{
+							//Execute Item Bonus
+							theHero->getInventory()->itemsArray[2]->ExecuteBonus(CGoodies::HEALTH);
+
+							//Delete the Item in slot 3
+							theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[2]);
+						}
+					}
+
+					//Exeute Bonus and delete item from Slot
+					else
+					{
+						//Execute Item Bonus
+						theHero->getInventory()->itemsArray[2]->ExecuteBonus(theHero->getInventory()->itemsArray[2]->GetType());
+
+						//Delete the Item in slot 1
+						theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[2]);
+					}
+
+					//Toggle Used Text
+					switch (theHero->getInventory()->itemsArray[2]->GetType())
+					{
+					case CGoodies::HEALTH:
+						theHero->getInventory()->potionUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::ARMOR:
+						theHero->getInventory()->armorUsed = true;
+						theHero->getInventory()->potionUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::LEVEL:
+						theHero->getInventory()->levelUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->potionUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::INVINC:
+						theHero->getInventory()->invincUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->potionUsed = false;
+						break;
+					}
+				}
+			}
+		}
+		break;
+
+	//4
+	case '4':
+		{
+			//Item in slot 4 used
+			if (theHero->getInventory()->open)
+			{
+				//Check for Empty Slot
+				if (theHero->getInventory()->itemsArray[3]->GetType() != CGoodies::GOODIE_NONE)
+				{
+					//Check if player Hp is max if type is HEALTH
+					if (theHero->getInventory()->itemsArray[3]->GetType() == CGoodies::HEALTH)
+					{
+						if (theHero->getAttributes()->getHp() < MAX_PLAYER_HP*HP_MULTIPLIER)
+						{
+							//Execute Item Bonus
+							theHero->getInventory()->itemsArray[3]->ExecuteBonus(CGoodies::HEALTH);
+
+							//Delete the Item in slot 4
+							theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[3]);
+						}
+					}
+
+					//Exeute Bonus and delete item from Slot
+					else
+					{
+						//Execute Item Bonus
+						theHero->getInventory()->itemsArray[3]->ExecuteBonus(theHero->getInventory()->itemsArray[3]->GetType());
+
+						//Delete the Item in slot 1
+						theHero->getInventory()->deleteItem(theHero->getInventory()->itemsArray[3]);
+					}
+
+					//Toggle Used Text
+					switch (theHero->getInventory()->itemsArray[3]->GetType())
+					{
+					case CGoodies::HEALTH:
+						theHero->getInventory()->potionUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::ARMOR:
+						theHero->getInventory()->armorUsed = true;
+						theHero->getInventory()->potionUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::LEVEL:
+						theHero->getInventory()->levelUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->potionUsed = 
+						theHero->getInventory()->invincUsed = false;
+						break;
+					case CGoodies::INVINC:
+						theHero->getInventory()->invincUsed = true;
+						theHero->getInventory()->armorUsed = theHero->getInventory()->levelUsed = 
+						theHero->getInventory()->potionUsed = false;
+						break;
+					}
+				}
+			}
 		}
 		break;
 
@@ -471,7 +778,7 @@ void myApplication::MouseMove (int x, int y)
 	mouseInfo.lastY = y;
 
 	//Check if user is hovering over Button
-	for(std::vector<CButton*>::iterator it = buttonsList.begin(); it != buttonsList.end(); ++it)
+	for(std::vector<CButton*>::iterator it = theUI->buttonsList.begin(); it != theUI->buttonsList.end(); ++it)
 	{
 		CButton* theButton = *it;
 
@@ -498,6 +805,9 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 			mouseInfo.lastX = x;
 			mouseInfo.lastY = y;
 
+			cout << "Mouse Clicked!" << endl
+				 << "X: " << x << " | " << "Y: " << y << endl << endl;
+
 			if (mouseInfo.mLButtonUp) {
 
 				//Exit program upon mouse click
@@ -506,8 +816,16 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					exit(0);
 
 				//Initiate Program if user clicks Start
-				if (startButton->hover)
+				if (theUI->getStartButton()->hover)
 					programInit = true;
+
+				//Resume Game
+				if (theUI->getPauseButton(0)->hover)
+					gamePause = false;
+
+				//Exit Program
+				if (theUI->getPauseButton(2)->hover)
+					exit(0);
 
 				//Start Dialogue Scene 2
 				if (dTrans4 == 0)
@@ -601,6 +919,9 @@ bool myApplication::Init(void)
 	LoadTGA(&HpBar[5], "images/HP_5.tga");
 	LoadTGA(&HpBar[6], "images/HP_6.tga");
 
+	//UI
+	theUI = CUI::getInstance();
+
 	//Create Hero
 	theHero = CPlayerInfo::getInstance();
 	theHero->Init();
@@ -611,14 +932,7 @@ bool myApplication::Init(void)
 
 	//Shop
 	theShop = CShop::getInstance();
-	LoadTGA(&(theShop->shopTex[0]), "images/shop.tga");
-
-	//Buttons
-	startButton = new CButton;
-	startButton->Set(385, 672, 554, 679); //Min X, Max X, Min Y, Max Y (Region)
-	buttonsList.push_back(startButton);
-	LoadTGA(&(startButton->button[0]), "images/startScreen.tga");
-	LoadTGA(&(startButton->button[1]), "images/startScreenHover.tga");
+	LoadTGA(&(theShop->shopTex[0]), "images/placeholderInventory.tga");
 
 	//Set up Map
 	theMap = CMap::getInstance();
@@ -628,7 +942,6 @@ bool myApplication::Init(void)
 
 	processTiles();
 	
-
 	//Set up Border
 	theBorder = new CMap;
 	theBorder->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
@@ -665,7 +978,7 @@ bool myApplication::Init(void)
 
 	//Realtime loop control
 	timelastcall=timeGetTime();
-	frequency = 60.0f;
+	frequency = 70.0f;
 
 	for(int i=0; i<255; i++)
 		myKeys[i] = false;
@@ -833,9 +1146,15 @@ void myApplication::DisplayText()
 		//Render Inventory Info
 		if (theHero->getInventory()->open)
 		{
-			//Display Inventory Info
+			theHero->getInventory()->DisplayInfo();
+		}
+
+		//Render Shop Info
+		if (theShop->open)
+		{
+			//Display Shop Info
 			glColor3f(0.0f, 1.0f, 0.0f);
-			printw (490, 200.0, 0, "Inventory: ");
+			printw (490, 200.0, 0, "Shop: ");
 		}
 
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -1475,14 +1794,13 @@ void myApplication::calculateFPS()
 //-------------------------------------------------------------------------
 void myApplication::drawFPS()
 {
-	mvcTime* timer=mvcTime::getInstance();
 	//Load the identity matrix so that FPS string being drawn
 	//won't get animates
 	glLoadIdentity();
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		//Print the FPS to the window
 		glColor3f(0.0f, 1.0f, 0.0f);
-		printw (490, 27.0, 0, "FPS: %4.2f", timer->getFPS());
+		printw (490, 27.0, 0, "FPS: %4.2f", mvcTime::getInstance()->getFPS());
 		glColor3f(1.0f, 1.0f, 1.0f);
 	glPopAttrib();
 }

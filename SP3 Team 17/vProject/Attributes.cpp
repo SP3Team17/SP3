@@ -40,6 +40,18 @@ void CAttributes::Update()
 	//Formula for Stats: ((Base + 50) x Level)/50 + 10 + IV
 }
 
+//Set Def IV
+void CAttributes::setDefIV(short defIV)
+{
+	defenseIV = defIV;
+}
+
+//Get Def IV
+short CAttributes::getDefIV()
+{
+	return defenseIV;
+}
+
 //Set Level
 void CAttributes::setLevel(short level)
 {

@@ -1,21 +1,80 @@
 #include "UI.h"
-#include <iostream>
 
-using namespace std;
+CUI* CUI::instance = NULL;
 
-CUI::CUI()
+CUI* CUI::getInstance()
 {
-	ui_panel = true;
-	ui_pause = true;
-	LoadTGA(&UI[0], "images/backpanel.tga");
-	LoadTGA(&UI[1], "images/pause.tga");
-	LoadTGA(&UI[2], "images/settings.tga");
-
+	//Only one instance of UI
+	if (instance == NULL)
+		instance = new CUI;
+	return instance;
 }
 
-CUI::~CUI()
+CUI::CUI()
+	: ui_panel(true)
 {
+	//UI Textures
+	LoadTGA(&UI[0], "images/backpanel.tga");
+	LoadTGA(&UI[1], "images/settings.tga");
 
+	//Start Button
+	startButton = new CButton;
+
+	//Add Start Button to Vector List
+	buttonsList.push_back(startButton);
+
+	//Start Button Texture
+	LoadTGA(&(startButton->button[0]), "images/startScreen.tga");
+	LoadTGA(&(startButton->button[1]), "images/startScreenHover.tga");
+
+	//Pause Button
+	for (int i = 0; i < 3; ++i)
+	{
+		pauseButton[i] = new CButton;
+	}
+
+	//Add Pause Button to Vector List
+	for (int i = 0; i < 3; ++i)
+	{
+		buttonsList.push_back(pauseButton[i]);
+	}
+
+	//Pause Buttons Texture
+	for (int i = 0; i < 3; ++i)
+	{
+		LoadTGA(&(pauseButton[i]->button[0]), "images/pause.tga");
+	}
+	LoadTGA(&(pauseButton[0]->button[1]), "images/pause1.tga");
+	LoadTGA(&(pauseButton[1]->button[1]), "images/pause2.tga");
+	LoadTGA(&(pauseButton[2]->button[1]), "images/pause3.tga");
+
+
+	//Set Region for Buttons
+	SetRegion();
+}
+
+CUI::~CUI() {}
+
+//Set Regions for Buttons
+void CUI::SetRegion()
+{
+	//Min X, Max X, Min Y, Max Y (Region)
+
+	startButton->Set(385, 672, 554, 679);
+
+	pauseButton[0]->Set(421, 483, 375, 452);
+	pauseButton[1]->Set(508, 571, 374, 450);
+	pauseButton[2]->Set(597, 659, 377, 449);
+}
+
+CButton* CUI::getStartButton()
+{
+	return startButton;
+}
+
+CButton* CUI::getPauseButton(short slot)
+{
+	return pauseButton[slot];
 }
 
 void CUI::renderBackpanel()
@@ -40,31 +99,6 @@ void CUI::renderBackpanel()
 		glPopMatrix();
 		glDisable(GL_TEXTURE_2D);
 	}
-}
-
-void CUI::renderPause()
-{
-	if(ui_pause == true)
-	{
-		glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-		glTranslatef(400,250,0);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glBindTexture(GL_TEXTURE_2D, UI[1].texID);
-			glPushMatrix();
-				glBegin(GL_QUADS);
-				glTexCoord2f(0, 0); glVertex2f(0, 250);
-				glTexCoord2f(1, 0); glVertex2f(250, 250);
-				glTexCoord2f(1, 1); glVertex2f(250, 0);
-				glTexCoord2f(0, 1); glVertex2f(0, 0);
-				glEnd();
-			glPopMatrix();
-			glDisable(GL_BLEND);
-		glPopMatrix();
-		glDisable(GL_TEXTURE_2D);
-	}
-
 }
 
 bool CUI::LoadTGA(TextureImage *texture, char *filename)
@@ -144,9 +178,4 @@ bool CUI::LoadTGA(TextureImage *texture, char *filename)
 	glTexImage2D(GL_TEXTURE_2D, 0, type, texture[0].width, texture[0].height, 0, type, GL_UNSIGNED_BYTE, texture[0].imageData);
 
 	return true;											// Texture Building Went Ok, Return True
-}
-
-void CUI::render()
-{
-	//testUI.renderBackpanel();
 }

@@ -28,7 +28,8 @@ public:
 	TextureImage button[2];
 
 	//Render the button
-	void Render(bool bHover, int w, int h);
+	void Render(bool bHover, int w, int h,
+				int transX, int transY);
 };
 
 #endif
