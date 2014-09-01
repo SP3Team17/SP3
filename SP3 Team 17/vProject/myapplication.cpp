@@ -198,7 +198,7 @@ void myApplication::menuSequence(void)
 {
 		if (setting && !pause)
 		{	
-			//renderSettings();
+			renderPause();
 			if (theUI->getSettingButton(0)->hover)
 				theUI->getSettingButton(0)->Render(true, 360, 250, 360, 300);
 			else if (theUI->getSettingButton(1)->hover)
@@ -1289,31 +1289,6 @@ void myApplication::renderPause() {
 
 		//Draw Pause Image
 		glBindTexture(GL_TEXTURE_2D, PauseTex[0].texID);
-		glPushMatrix();
-			glBegin(GL_QUADS);
-				glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
-				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH, 0);
-				glTexCoord2f(0,1); glVertex2f(0, 0);				
-			glEnd();
-		glPopMatrix();
-
-	glDisable(GL_BLEND);
-	glPopMatrix();
-
-	glDisable(GL_TEXTURE_2D);
-}
-
-void myApplication::renderSettings()
-{
-	glEnable(GL_TEXTURE_2D);
-
-	glPushMatrix();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		//Draw setting Image
-		glBindTexture(GL_TEXTURE_2D, settingTex[0].texID);
 		glPushMatrix();
 			glBegin(GL_QUADS);
 				glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
