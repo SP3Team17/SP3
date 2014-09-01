@@ -11,7 +11,7 @@ void mvcTime::updateTime()
 
 	//calculate time passed
 	timeInterval=currentTime-previousTime;
-	dt=(currentTime-dtPTime)/1000.0f;
+	dt=(currentTime-dtPTime)*0.001;
 	dtPTime=currentTime;
 	
 	std::vector<timeKeeper*>::iterator end=timer.end();
@@ -39,7 +39,14 @@ void mvcTime::updateTime()
 	
 }
 
-mvcTime::~mvcTime() {}
+mvcTime::~mvcTime() 
+{
+	while(timer.size()>0)
+	{
+		delete timer.back();
+		timer.pop_back();
+	}
+}
 
 mvcTime::mvcTime()
 {

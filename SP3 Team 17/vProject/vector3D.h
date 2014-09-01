@@ -36,6 +36,11 @@ public:
 		return sqrtf(x * x + y * y + z * z);
 	}
 
+	float GetMagnitudeSquare()
+	{
+		return x * x + y * y + z * z;
+	}
+
 	//multiply this vector by a scalar
 	Vector3D operator*(float num) const
 	{

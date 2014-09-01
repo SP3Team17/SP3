@@ -17,6 +17,7 @@ public:
 		ATTACK=0,
 		RANGE,
 		LINE,
+		RANGEAOE,
 		TOTAL,
 	};
 	typedef struct
@@ -27,6 +28,8 @@ public:
 		Vector3D Dir;
 		SkillType ID;
 		bool active;
+		bool rend;
+		Sprite skillSprite;
 	}SkillData;
 	Skills(void);
 	Skills(SkillType ID);
@@ -36,11 +39,10 @@ public:
 	void procSkills(Vector3D pos,Vector3D Dir,SkillType ID);
 	TextureImage skillTex[TOTAL];
 	int coolRef;
+	bool cool;
 private:
 	float offset_x,offset_y,Poffset_x,Poffset_y;
-	Sprite skillSprite;
 	std::vector<SkillData> data;
 	int SkillLevel;
-	bool cool;
 };
 #endif

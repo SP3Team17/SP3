@@ -30,41 +30,31 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 	return true;
 }
 
-void Sprite::render(TextureImage image)
+void Sprite::render()
 {
 	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
 	
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindTexture(GL_TEXTURE_2D, Images.texID);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBindTexture(GL_TEXTURE_2D, Images.texID);
 
-	glBegin (GL_TRIANGLE_STRIP);
-		glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar);
-		glVertex3f(-0.5, 0.5, 0);
+		glBegin (GL_TRIANGLE_STRIP);
+			glTexCoord2f(ratio_x * CurSubImage, ratio_y * CurrentVar);
+			glVertex3f(-0.5, 0.5, 0);
 		
-		glTexCoord2f(ratio_x * SubImage, ratio_y * (ImageVar+1));
-		glVertex3f(-0.5,-0.5,0);
+			glTexCoord2f(ratio_x * CurSubImage, ratio_y * (CurrentVar+1));
+			glVertex3f(-0.5,-0.5,0);
 
-		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * ImageVar);
-		glVertex3f(0.5,0.5,0);
+			glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * CurrentVar);
+			glVertex3f(0.5,0.5,0);
 
-		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * (ImageVar+1));
-		glVertex3f(0.5,-0.5,0);
-	glEnd();
+			glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * (CurrentVar+1));
+			glVertex3f(0.5,-0.5,0);
+		glEnd();
 
-	//glBegin(GL_QUADS);
-
-	//		// this is (x(SubImage), y(ImageVar))
-	//		glTexCoord2f(ratio_x * SubImage, ratio_y * (ImageVar+1)); glVertex2f(0,0);
-	//		glTexCoord2f(ratio_x * SubImage, ratio_y * ImageVar); glVertex2f(0,1);
-	//		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * ImageVar); glVertex2f(1,1);
-	//		glTexCoord2f(ratio_x * (SubImage + 1), ratio_y * (ImageVar+1)); glVertex2f(1,0);
-	//	
-	//glEnd();
-
-	glDisable( GL_BLEND );
-	glDisable( GL_TEXTURE_2D );
+		glDisable( GL_BLEND );
+		glDisable( GL_TEXTURE_2D );
 	glPopMatrix();
 }
 
@@ -78,9 +68,9 @@ bool Sprite::LoadTGA(char*filename)
 	GLuint		imageSize;									// Used To Store The Image Size When Setting Aside Ram
 	GLuint		temp;										// Temporary Variable
 	GLuint		type=GL_RGBA;								// Set The Default GL Mode To RBGA (32 BPP)
-	//FILE *file;
-	//fopen_s(&file,filename, "rb");						// Open The TGA File
-	FILE* file=fopen(filename, "rb");
+	FILE *file;
+	fopen_s(&file,filename, "rb");						// Open The TGA File
+	//FILE* file=fopen(filename, "rb");
 
 	if(	file==NULL ||										// Does File Even Exist?
 		fread(TGAcompare,1,sizeof(TGAcompare),file)!=sizeof(TGAcompare) ||	// Are There 12 Bytes To Read?
@@ -149,62 +139,6 @@ bool Sprite::LoadTGA(char*filename)
 	return true;	
 }
 
-
-
-//void Sprite::moveMeUpDown(bool mode, float timeDiff)
-//{
-//	//Down
-//	if (mode)
-//	{
-//		theHero->SetPosY(theHero->GetPos().y-(int)(5.0f * timeDiff));
-//
-//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
-//		if (theHero->GetAnimationCounter()==0)
-//			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
-//	}
-//
-//	//Up
-//	else
-//	{
-//		theHero->SetPosY(theHero->GetPos().y+(int)(5.0f * timeDiff));
-//
-//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
-//		if (theHero->GetAnimationCounter()==0)
-//			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
-//	}
-//}
-//
-//void Sprite::moveMeLeftRight(bool mode, float timeDiff)
-//{
-//	//Left
-//	if (mode)
-//	{
-//		bLeft = true;
-//		bRight = false;
-//
-//		theHero->SetPosX(theHero->GetPos().x - (int) (5.0f * timeDiff));
-//
-//		theHero->SetAnimationInvert(true);
-//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
-//		if (theHero->GetAnimationCounter()==0)
-//			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
-//	}
-//
-//	//Right
-//	else
-//	{
-//		bLeft = false;
-//		bRight = true;
-//
-//		theHero->SetPosX(theHero->GetPos().x + (int) (5.0f * timeDiff));
-//
-//		theHero->SetAnimationInvert(false);
-//		theHero->SetAnimationCounter(theHero->GetAnimationCounter()+1);
-//		if (theHero->GetAnimationCounter() > SPRITE_FRAMES_PLAYER)
-//			theHero->SetAnimationCounter(0);
-//	}
-//}
-
 void Sprite::changeVariation(int newVar)
 {
 	if (newVar >= ImageVar)
@@ -244,7 +178,10 @@ void Sprite::update(void)
 	//animation();
 	//What else do i need to add in here??
 	//Check for hero & monster movt?
-	CurSubImage++;
-	if(CurSubImage>SubImage-1)
-		CurSubImage=0;
+	if(!Stop)
+	{
+		CurSubImage++;
+		if(CurSubImage>SubImage-1)
+			CurSubImage=0;
+	}
 }
