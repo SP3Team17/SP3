@@ -16,8 +16,12 @@ public:
 	{
 		ATTACK=0,
 		RANGE,
-		LINE,
+		WALLOFCOIN,
 		RANGEAOE,
+		MOB_RANGE,
+		MOB_MELEE,
+		MOB_CLEAVE,
+		MOB_LINE,
 		TOTAL,
 	};
 	typedef struct

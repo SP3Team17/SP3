@@ -22,11 +22,13 @@ public:
 
 	//void OnDeath(map World,ItemFactory spawner)//spawns items
 
-	int ID;
+	int ID;//for csv loading
 
 	MobInfo stats;
 	MonsterAI AIstates;
 private:
+	void patrol(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map);
+	void attack(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map);
 	bool rend;
 	int timeRef;
 	float offset_x,offset_y,Poffset_x,Poffset_y;

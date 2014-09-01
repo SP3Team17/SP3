@@ -105,18 +105,23 @@ bool physics::testColMap(Vector3D pos,
 	}
 	return false;
 }
-
+#include <iostream>
 bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> wallList,int offset_x,int offset_y)
 {
+	Vector3D w0=((end+pos)*0.5);
+	float length=(end-pos).Length();
+	Vector3D NP(end.x-pos.x,(end.y-pos.y));
+	NP.normalizeVector3D();
+	//int p=0;
+	//int j=0;
 	for(vector<physicObj*>::iterator it=wallList.begin();it!=wallList.end();++it)
 	{
 		physicObj* temp=*it;
 		//if((temp->pos-pos).GetMagnitudeSquare()<(pos-end).Length())
+		//if(abs(temp->pos.x-w0.x)<abs(length*NP.x)||abs(temp->pos.y-w0.y)<abs(length*NP.y))
 		{
-			Vector3D w0=((end+pos)*0.5);
+			//j++;
 			Vector3D b1=temp->pos-Vector3D(offset_x-TILE_SIZE/2,offset_y-TILE_SIZE/2);
-			Vector3D NP(end.x-pos.x,(end.y-pos.y));
-			NP.normalizeVector3D();
 			if((w0-b1).dotVector3D(NP)<0)
 			{
 				NP=Vector3D(-NP.x,-NP.y,-NP.z);
@@ -127,6 +132,7 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 			{
 				if(abs((w0-b1).dotVector3D(NP))<(pos-end).Length()*0.5+16)
 				{
+					//cout<<p<<" "<<j<<"\n";
 					return true;
 				}
 			}
@@ -134,11 +140,17 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 			{
 				if(abs((w0-b1).dotVector3D(N))<32)
 				{
+					//cout<<p<<" "<<j<<"\n";
 					return true;
 				}
 			}
 		}
+		//else
+		{
+			//p++;
+		}
 	}
+	//cout<<p<<" "<<j<<"\n";
 	return false;
 }
 

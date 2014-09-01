@@ -1,6 +1,8 @@
 #ifndef MVCTIME_H
 #define MVCTIME_H
 
+//created by kennard for Gdev assignment 1
+
 #include <Windows.h>//for timeGetTime
 #include <string>
 #include <vector>

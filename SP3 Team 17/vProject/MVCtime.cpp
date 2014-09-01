@@ -28,7 +28,7 @@ void mvcTime::updateTime()
 	if(timeInterval>1000)//updates fps every 1s
 	{
 		//calculate the number of frames per second
-		fps=frameCount/(timeInterval/1000.0f);
+		fps=frameCount/(timeInterval*0.001f);
 
 		//set time
 		previousTime=currentTime;

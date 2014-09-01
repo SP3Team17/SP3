@@ -25,7 +25,6 @@ public:
 	};
 	//pathing* getPath(void);
 	std::vector<Vector3D> HeroPoints;
-	
 	Vector3D point1;
 	Vector3D point2;
 	State currentState;

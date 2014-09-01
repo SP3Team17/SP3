@@ -8,6 +8,9 @@ void changeSize(int w, int h) {
 void renderScene(void) {
 	myApplication::getInstance()->renderScene();
 }
+void update(void) {
+	myApplication::getInstance()->Update();
+}
 
 void KeyboardDown(unsigned char key, int x, int y){
 	myApplication::getInstance()->KeyboardDown(key,x,y);
@@ -39,7 +42,7 @@ int main(int argc, char **argv )
 	//glutFullScreen();
 
 	glutDisplayFunc(renderScene);
-	glutIdleFunc(renderScene);
+	glutIdleFunc(update);
 
 	glutKeyboardFunc(KeyboardDown);
 	glutKeyboardUpFunc(KeyboardUp);

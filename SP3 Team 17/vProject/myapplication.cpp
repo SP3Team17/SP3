@@ -65,44 +65,59 @@ myApplication* myApplication::getInstance()
 
 void myApplication::Update(void) 
 {
-	//Check for Game Over
-	if (theHero->getAttributes()->getHp() <= 0)
-		bGameOver = true;
-
-
-	//Update Hero
-	HeroUpdate();
-
-	//Update Exp System
-	theHero->getExp()->Update();
-
-	//Update Stats
-	theHero->getAttributes()->Update();
-
-	//Constrain Hero to middle of screen (unless he reaches the border)
-	theHero->ConstrainHero(MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, 
-						   MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER, MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER,
-						   1.0f, mapOffset_x, mapOffset_y);
-	
-	testSkill.Update(infoList,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y,*theMap);
-	
-	
-	for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
+	//Update Time
+	mvcTime* timer=mvcTime::getInstance();
+	timer->updateTime();
+	if ((timeGetTime()-timelastcall)>1000.f/frequency)
 	{
-		Monster* temp=*it;
-		temp->update(mvcTime::getInstance()->getDelta(),infoList,wallList,mapOffset_x,mapOffset_y,*theMap);
+		//Calculate the framerate
+		calculateFPS();
+
+		timelastcall=timeGetTime();
+
+		//Update Function
+		if (gameStart && !gamePause)
+		{
+			//Check for Game Over
+			if (theHero->getAttributes()->getHp() <= 0)
+				bGameOver = true;
+
+
+			//Update Hero
+			HeroUpdate();
+
+			//Update Exp System
+			theHero->getExp()->Update();
+
+			//Update Stats
+			theHero->getAttributes()->Update();
+
+			//Constrain Hero to middle of screen (unless he reaches the border)
+			theHero->ConstrainHero(MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, MAP_SCREEN_WIDTH*0.5+LEFT_BORDER, 
+								   MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER, MAP_SCREEN_HEIGHT*0.5+BOTTOM_BORDER,
+								   1.0f, mapOffset_x, mapOffset_y);
+	
+			testSkill.Update(infoList,theHero->GetPos(),theHero->getDir(),mapOffset_x,mapOffset_y,*theMap);
+	
+	
+			for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
+			{
+				Monster* temp=*it;
+				temp->update(mvcTime::getInstance()->getDelta(),infoList,wallList,mapOffset_x,mapOffset_y,*theMap);
+			}
+
+			//testMob.update(mvcTime::getInstance()->getDelta(),infoList,*theHero,wallList,mapOffset_x,mapOffset_y,*theMap);
+			//Update Tile Offset
+			tileOffset_x = (int)(mapOffset_x / TILE_SIZE);
+			tileOffset_y = (int)(mapOffset_y / TILE_SIZE);
+
+			if (tileOffset_x+theMap->getNumOfTiles_ScreenWidth() > theMap->getNumOfTiles_MapWidth())
+				tileOffset_x = theMap->getNumOfTiles_MapWidth() - theMap->getNumOfTiles_ScreenWidth();
+
+			if (tileOffset_y+theMap->getNumOfTiles_ScreenHeight() > theMap->getNumOfTiles_MapHeight())
+				tileOffset_y = theMap->getNumOfTiles_MapHeight() - theMap->getNumOfTiles_ScreenHeight();
+		}
 	}
-
-	//testMob.update(mvcTime::getInstance()->getDelta(),infoList,*theHero,wallList,mapOffset_x,mapOffset_y,*theMap);
-	//Update Tile Offset
-	tileOffset_x = (int)(mapOffset_x / TILE_SIZE);
-	tileOffset_y = (int)(mapOffset_y / TILE_SIZE);
-
-	if (tileOffset_x+theMap->getNumOfTiles_ScreenWidth() > theMap->getNumOfTiles_MapWidth())
-		tileOffset_x = theMap->getNumOfTiles_MapWidth() - theMap->getNumOfTiles_ScreenWidth();
-
-	if (tileOffset_y+theMap->getNumOfTiles_ScreenHeight() > theMap->getNumOfTiles_MapHeight())
-		tileOffset_y = theMap->getNumOfTiles_MapHeight() - theMap->getNumOfTiles_ScreenHeight();
 }
 
 
@@ -188,50 +203,28 @@ void myApplication::renderScene(void)
 	glLoadIdentity();
 	theCamera->Update();
 
-	if ((timeGetTime()-timelastcall)>1000/frequency)
-	{
-		//Calculate the framerate
-		calculateFPS();
-
-		timelastcall=timeGetTime();
-
-		//Update Function
-		if (gameStart && !gamePause)
-			Update();
-	}
-
-	//Update Time
-	mvcTime* timer=mvcTime::getInstance();
-	timer->updateTime();
-
-
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
 
 	//Game has yet to start
-	//if (!gameStart && programInit)
-	//	renderStartScene();
+	if (!gameStart && programInit)
+		renderStartScene();
 
-	////Render Start Screen
-	//if (!programInit)
-	//{
-	//	if (!startButton->hover)
-	//		startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-	//	else
-	//		startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-	//}
-	gameStart=true;
-	if ((timeGetTime()-timelastcall)>1000/frequency)
+	//Render Start Screen
+	if (!programInit)
 	{
-		//Calculate the framerate
-		calculateFPS();
-
-		timelastcall=timeGetTime();
-
-		//Update Function
-		if (gameStart && !gamePause)
-			Update();
+		if (!startButton->hover)
+			startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+		else
+			startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
 	}
+
+
+	//remove to put back the start screen
+	gameStart=true;
+
+
+	
 	//Game has Started
 	if (gameStart)
 	{
@@ -294,6 +287,7 @@ void myApplication::renderScene(void)
 
 	//Swapping the buffers causes the rendering above to be shown
 	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 void myApplication::LoadLevel(short level)
@@ -719,16 +713,20 @@ bool myApplication::processTiles()
 				temp2=new physicObj(temp,Vector3D(TILE_SIZE,TILE_SIZE));
 				wallList.push_back(temp2);
 				break;
-			default:
+			default://default is for mobs
 				temp4=current*0.1;
+				while(current>9)
+				{
+					current=current%10;
+				}
 				move=false;
-				switch(temp4)
+				switch(temp4)//determines which
 				{
 				case 1:
-					for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
+					for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)//for 2ed patrol point
 					{
 						temp3=*it;
-						if(temp3->ID==current%10)
+						if(temp3->ID==current&&temp3->stats.type==COIN_RANGED)//checks if the monster id already exist
 						{
 							temp3->AIstates.point1.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 							temp3->stats.active=true;
@@ -738,12 +736,88 @@ bool myApplication::processTiles()
 					if(move==false)
 					{
 						temp3=new Monster;
+						temp3->stats.type=COIN_RANGED;
 						//set the monster type here
 						temp3->stats.setStats(0,50);
 						temp3->stats.setStats(1,50);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
-						temp3->ID=current%10;
+						temp3->ID=current;
+						infoList.push_back(&temp3->stats);
+						mobList.push_back(temp3);
+					}
+					break;
+				case 2:
+					for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)//for 2ed patrol point
+					{
+						temp3=*it;
+						if(temp3->ID==current&&temp3->stats.type==COIN_MELEE)//checks if the monster id already exist
+						{
+							temp3->AIstates.point1.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+							temp3->stats.active=true;
+							move=true;
+						}
+					}
+					if(move==false)
+					{
+						temp3=new Monster;
+						temp3->stats.type=COIN_MELEE;
+						//set the monster type here
+						temp3->stats.setStats(0,50);
+						temp3->stats.setStats(1,50);
+						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
+						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+						temp3->ID=current;
+						infoList.push_back(&temp3->stats);
+						mobList.push_back(temp3);
+					}
+					break;
+				case 3:
+					for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)//for 2ed patrol point
+					{
+						temp3=*it;
+						if(temp3->ID==current&&temp3->stats.type==FIEND_CLEAVE)//checks if the monster id already exist
+						{
+							temp3->AIstates.point1.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+							temp3->stats.active=true;
+							move=true;
+						}
+					}
+					if(move==false)
+					{
+						temp3=new Monster;
+						temp3->stats.type=FIEND_CLEAVE;
+						//set the monster type here
+						temp3->stats.setStats(0,50);
+						temp3->stats.setStats(1,50);
+						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
+						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+						temp3->ID=current;
+						infoList.push_back(&temp3->stats);
+						mobList.push_back(temp3);
+					}
+					break;
+				case 4:
+					for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)//for 2ed patrol point
+					{
+						temp3=*it;
+						if(temp3->ID==current&&temp3->stats.type==FIEND_RANGED)//checks if the monster id already exist
+						{
+							temp3->AIstates.point1.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+							temp3->stats.active=true;
+							move=true;
+						}
+					}
+					if(move==false)
+					{
+						temp3=new Monster;
+						temp3->stats.type=FIEND_RANGED;
+						//set the monster type here
+						temp3->stats.setStats(0,50);
+						temp3->stats.setStats(1,50);
+						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
+						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+						temp3->ID=current;
 						infoList.push_back(&temp3->stats);
 						mobList.push_back(temp3);
 					}

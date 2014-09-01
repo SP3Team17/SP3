@@ -6,6 +6,11 @@
 enum MobType
 {
 	DEFAULT=0,
+	COIN_RANGED,
+	COIN_MELEE,
+	FIEND_CLEAVE,
+	FIEND_RANGED,
+	BOSS
 };
 
 class MobInfo
@@ -22,8 +27,8 @@ public:
 	void setDir(Vector3D nDir);
 	void init(Vector3D pos,MobType type);
 	bool active;
-private:
 	MobType type;
+private:
 	struct mobStats
 	{
 		int health;

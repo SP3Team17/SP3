@@ -45,6 +45,7 @@ public:
 	~myApplication();
 
 	bool Init();
+	void Update();
 	void renderScene();
 	void changeSize(int w, int h);
 
@@ -124,7 +125,6 @@ private:
 	void renderPause();
 	void renderTutorial();
 
-	void Update();
 
 	//Movement
 	bool jump, bLeft, bRight, bMoving;
