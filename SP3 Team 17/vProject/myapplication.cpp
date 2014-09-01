@@ -198,7 +198,7 @@ void myApplication::menuSequence(void)
 {
 		if (setting && !pause)
 		{	
-			//renderSettings();
+			renderSettings();
 			if (theUI->getSettingButton(0)->hover)
 				theUI->getSettingButton(0)->Render(true, 360, 250, 360, 300);
 			else if (theUI->getSettingButton(1)->hover)
