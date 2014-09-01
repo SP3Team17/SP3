@@ -250,19 +250,11 @@ void myApplication::renderScene(void)
 	theCamera->SetHUD(true);
 
 	//Game has yet to start
-	//if (!gameStart && programInit)
-	//	renderStartScene();
+	if (!gameStart && programInit)
+		renderStartScene();
 
-	////Render Start Screen
-	//if (!programInit)
-	//{
-	//	if (!startButton->hover)
-	//		startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-	//	else
-	//		startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-	//}
-	gameStart=true;
-	if ((timeGetTime()-timelastcall)>1000/frequency)
+	//Render Start Screen
+	if (!programInit)
 	{
 		if (!theUI->getStartButton()->hover)
 			theUI->getStartButton()->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
@@ -455,7 +447,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 	//Pause the game
 	case 27:
-		//if (gameStart && programInit)
+		if (gameStart && programInit)
 			gamePause = !gamePause;
 			pause = true;
 			setting = false;
@@ -1204,9 +1196,11 @@ void myApplication::DisplayText()
 			glColor3f(1.f,1.f,1.f);
 			printw(790,100,0,"delta: %.4f",timer->getDelta());
 			printw(790,150,0,"fps: %.2f",timer->getFPS());
+
 			//Display Level
 			glColor3f(0.0f, 1.0f, 1.0f);
 			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
+
 			//Display Stats
 			glColor3f(0.0f, 1.0f, 0.0f);
 			printw (790.0, 290.0, 0, "Player Level: %d", theHero->getAttributes()->getLevel());
