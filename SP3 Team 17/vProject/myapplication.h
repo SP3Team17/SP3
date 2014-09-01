@@ -87,6 +87,7 @@ private:
 	TextureImage LevelComplete[1];
 	TextureImage ground[1];
 	TextureImage PauseTex[1];
+	TextureImage settingTex[1];
 
 	//Goodies Factory
 	CGoodiesFactory* theGoodiesFactory;
@@ -119,6 +120,7 @@ private:
 	void renderGameOver();
 	void renderGround();
 	void renderPause();
+	void renderSettings();
 	void menuSequence();
 	void renderTutorial();
 
