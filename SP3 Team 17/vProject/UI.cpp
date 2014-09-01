@@ -48,6 +48,26 @@ CUI::CUI()
 	LoadTGA(&(pauseButton[1]->button[1]), "images/pause2.tga");
 	LoadTGA(&(pauseButton[2]->button[1]), "images/pause3.tga");
 
+	//Setting Button
+	for (int j = 0; j < 3; ++j)
+	{
+		settingButton[j] = new CButton;
+	}
+
+	//Add setting button to vec list
+	for (int j = 0; j < 3; ++j)
+	{
+		buttonsList.push_back(settingButton[j]);
+	}
+
+	//Setting button texture
+	for (int j = 0; j < 3; ++j)
+	{
+		LoadTGA(&(settingButton[j]->button[0]), "images/settings.tga");
+	}
+	LoadTGA(&(settingButton[0]->button[1]), "images/settings1.tga");
+	LoadTGA(&(settingButton[1]->button[1]), "images/settings2.tga");
+	LoadTGA(&(settingButton[2]->button[1]), "images/settings3.tga");
 
 	//Set Region for Buttons
 	SetRegion();
@@ -65,6 +85,10 @@ void CUI::SetRegion()
 	pauseButton[0]->Set(421, 483, 375, 452);
 	pauseButton[1]->Set(508, 571, 374, 450);
 	pauseButton[2]->Set(597, 659, 377, 449);
+
+	settingButton[0]->Set(421, 483, 375, 452);
+	settingButton[1]->Set(508, 571, 374, 450);
+	settingButton[2]->Set(597, 659, 377, 449);
 }
 
 CButton* CUI::getStartButton()
@@ -77,11 +101,17 @@ CButton* CUI::getPauseButton(short slot)
 	return pauseButton[slot];
 }
 
+CButton* CUI::getSettingButton(short slot)
+{
+	return settingButton[slot];
+}
+
 void CUI::renderBackpanel()
 {
 	if(ui_panel == true)
 	{
 		glEnable(GL_TEXTURE_2D);
+
 		glPushMatrix();
 		glTranslatef(765,60,0);
 			glEnable(GL_BLEND);
@@ -97,6 +127,7 @@ void CUI::renderBackpanel()
 			glPopMatrix();
 			glDisable(GL_BLEND);
 		glPopMatrix();
+
 		glDisable(GL_TEXTURE_2D);
 	}
 }

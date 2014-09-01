@@ -23,6 +23,7 @@ private:
 	//Buttons
 	CButton* startButton;
 	CButton* pauseButton[3];
+	CButton* settingButton[3];
 
 public:
 	static CUI* getInstance();
@@ -32,13 +33,13 @@ public:
 
 	//Render Functions
 	void renderBackpanel();
-	void renderSettings();
 	bool LoadTGA(TextureImage *texture, char *filename);
 	TextureImage UI[2];
 
 	//Buttons
 	CButton* getStartButton();
 	CButton* getPauseButton(short slot);
+	CButton* getSettingButton(short slot);
 	vector<CButton*> buttonsList;
 
 	//Set Region 

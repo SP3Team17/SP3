@@ -1,4 +1,4 @@
-#ifndef MYAPPLICATOIN_H
+#ifndef MYAPPLICATION_H
 #define MYAPPLICATION_H
 
 #include <stdio.h>
@@ -87,6 +87,7 @@ private:
 	TextureImage LevelComplete[1];
 	TextureImage ground[1];
 	TextureImage PauseTex[1];
+	TextureImage settingTex[1];
 
 	//Goodies Factory
 	CGoodiesFactory* theGoodiesFactory;
@@ -96,6 +97,7 @@ private:
 
 	//Scenes
 	bool gameStart, gamePause, startDialogue2, bFlash;
+	bool setting, pause;
 	bool trigger8, trigger9;
 	void renderStartScene();
 	float dTrans1, dTrans2, dTrans3, dTrans4, dTrans5, dTrans6, dTrans7, dTrans8, dTrans9;
@@ -118,6 +120,8 @@ private:
 	void renderGameOver();
 	void renderGround();
 	void renderPause();
+	void renderSettings();
+	void menuSequence();
 	void renderTutorial();
 
 	void Update();

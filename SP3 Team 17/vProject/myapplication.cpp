@@ -14,6 +14,7 @@ myApplication::myApplication()
     = stopMovement = gameStart = startDialogue2 
 	= bFlash = gamePause = bTutorial = tutorialEnd
 	= trigger8 = trigger9 = false;
+	setting = pause = false;
 
 	counterFlash = counterTime = 0;
 
@@ -193,6 +194,34 @@ void myApplication::HeroUpdate()
 		theHero->setDir(temp);
 }
 
+void myApplication::menuSequence(void)
+{
+		if (setting && !pause)
+		{	
+			//renderSettings();
+			if (theUI->getSettingButton(0)->hover)
+				theUI->getSettingButton(0)->Render(true, 360, 250, 360, 300);
+			else if (theUI->getSettingButton(1)->hover)
+				theUI->getSettingButton(1)->Render(true, 360, 250, 360, 300);
+			else if (theUI->getSettingButton(2)->hover)
+				theUI->getSettingButton(2)->Render(true, 360, 250, 360, 300);
+			else
+				theUI->getSettingButton(0)->Render(false, 360, 250, 360, 300);
+		}
+		else if (pause && !setting)
+		{
+			renderPause();
+			if (theUI->getPauseButton(0)->hover)
+				theUI->getPauseButton(0)->Render(true, 360, 250, 360, 300);
+			else if (theUI->getPauseButton(1)->hover)
+				theUI->getPauseButton(1)->Render(true, 360, 250, 360, 300);
+			else if (theUI->getPauseButton(2)->hover)
+				theUI->getPauseButton(2)->Render(true, 360, 250, 360, 300);
+			else
+				theUI->getPauseButton(0)->Render(false, 360, 250, 360, 300);
+		}
+}
+
 void myApplication::renderScene(void)
 {
 	//Clear the buffer
@@ -209,7 +238,7 @@ void myApplication::renderScene(void)
 		timelastcall=timeGetTime();
 
 		//Update Function
-		if (gameStart && !gamePause)
+		if (gameStart && !gamePause && !setting && !pause)
 			Update();
 	}
 
@@ -269,15 +298,7 @@ void myApplication::renderScene(void)
 	//Game is Paused
 	if (gamePause)
 	{
-		renderPause();
-		if (theUI->getPauseButton(0)->hover)
-			theUI->getPauseButton(0)->Render(true, 360, 250, 360, 300);
-		else if (theUI->getPauseButton(1)->hover)
-			theUI->getPauseButton(1)->Render(true, 360, 250, 360, 300);
-		else if (theUI->getPauseButton(2)->hover)
-			theUI->getPauseButton(2)->Render(true, 360, 250, 360, 300);
-		else
-			theUI->getPauseButton(0)->Render(false, 360, 250, 360, 300);
+		menuSequence();
 	}
 
 	//Stacey's Tutorial
@@ -420,6 +441,8 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		{
 			gameStart = true;
 			gamePause = false;
+			setting = false;
+			pause = false;
 		}
 		break;
 
@@ -434,6 +457,8 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 	case 27:
 		//if (gameStart && programInit)
 			gamePause = !gamePause;
+			pause = true;
+			setting = false;
 		break;
 		
 	//Open Shop
@@ -826,13 +851,45 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 				if (theUI->getStartButton()->hover)
 					programInit = true;
 
-				//Resume Game
-				if (theUI->getPauseButton(0)->hover)
-					gamePause = false;
 
-				//Exit Program
-				if (theUI->getPauseButton(2)->hover)
-					exit(0);
+				if(pause == true)
+				{
+					//Resume Game
+					if (theUI->getPauseButton(0)->hover && !setting)
+					{
+						gamePause = false;
+						pause = false;
+					}
+
+					//Enter Settings
+					if (theUI->getPauseButton(1)->hover)
+					{
+						setting = true;
+						pause = false;
+					}
+
+					//Exit Program
+					if (theUI->getPauseButton(2)->hover)
+						exit(0);
+				}
+				if(setting == true)
+				{
+					//sound1
+					//if (theUI->getSettingButton(0)->hover)
+						//gamePause = false;
+
+					//sound2
+				//	if (theUI->getSettingButton(1)->hover)
+						//setting = true;
+
+					//back
+					if (theUI->getSettingButton(2)->hover)
+					{
+						pause = true;
+						setting = false;
+						//menuSequence();
+					}
+				}
 
 				//Start Dialogue Scene 2
 				if (dTrans4 == 0)
@@ -1253,6 +1310,31 @@ void myApplication::renderPause() {
 	glDisable(GL_TEXTURE_2D);
 }
 
+void myApplication::renderSettings()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		//Draw setting Image
+		glBindTexture(GL_TEXTURE_2D, settingTex[0].texID);
+		glPushMatrix();
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0, RESOLUTION_HEIGHT);
+				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH, 0);
+				glTexCoord2f(0,1); glVertex2f(0, 0);				
+			glEnd();
+		glPopMatrix();
+
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+}
+
 void myApplication::renderStartScene()
 {
 	glEnable(GL_TEXTURE_2D);
@@ -1474,6 +1556,7 @@ void myApplication::renderStartScene()
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;
+			setting = pause = true;
 		}
 	}	
 }
