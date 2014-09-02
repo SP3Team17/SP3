@@ -424,6 +424,12 @@ void Monster::attack(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 			}
 		}
 		break;
+		case BOSS:
+			if(AIstates.attackIndex==-1)
+			{
+				AIstates.attackIndex=timer->insertNewTime(2000);
+			}
+			//if(
 	}
 }
 
@@ -475,20 +481,27 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 	}
 	if(stats.active)
 	{
-		if((Hero->GetPos()-this->stats.getPos()).Length()<TILE_SIZE*8)
+		if(stats.type!=BOSS)
 		{
-			if(physics::testColLineMap(stats.getPos()+Vector3D(16,16),Hero->GetPos(),wallList,offset_x,offset_y))
-			{//cannot see and continue patrol
-				patrol(dt,enemies,wallList,offset_x,offset_y,map);
+			if((Hero->GetPos()-this->stats.getPos()).Length()<TILE_SIZE*8)
+			{
+				if(physics::testColLineMap(stats.getPos()+Vector3D(16,16),Hero->GetPos(),wallList,offset_x,offset_y))
+				{//cannot see and continue patrol
+					patrol(dt,enemies,wallList,offset_x,offset_y,map);
+				}
+				else
+				{//can see and attempt to attack player
+					attack(dt,enemies,wallList,offset_x,offset_y,map);
+				}
 			}
 			else
-			{//can see and attempt to attack player
-				attack(dt,enemies,wallList,offset_x,offset_y,map);
+			{
+				patrol(dt,enemies,wallList,offset_x,offset_y,map);
 			}
 		}
 		else
 		{
-			patrol(dt,enemies,wallList,offset_x,offset_y,map);
+			attack(dt,enemies,wallList,offset_x,offset_y,map);
 		}
 			
 	}

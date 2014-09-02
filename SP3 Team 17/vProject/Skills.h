@@ -22,6 +22,7 @@ public:
 		MOB_MELEE,
 		MOB_CLEAVE,
 		MOB_LINE,
+		M_SUPER_AOE,
 		TOTAL,
 	};
 	typedef struct

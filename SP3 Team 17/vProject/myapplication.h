@@ -192,11 +192,6 @@ private:
 	CMap *theMap, *theBorder;
 	TextureImage TileMapTexture[2];
 
-	//Check for collision of hero with obstacles in a certain position
-	bool CheckCollision(Vector3D pos, 
-						bool m_bCheckUpwards, bool m_bCheckDownwards, 
-						bool m_bCheckLeft, bool m_bCheckRight, CMap* map,int x_offset,int y_offset);
-
 	//Hp Bar
 	TextureImage HpBar[7];
 	void RenderHpBar();
