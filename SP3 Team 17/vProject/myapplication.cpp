@@ -236,6 +236,8 @@ void myApplication::menuSequence(void)
 			else
 				theUI->getPauseButton(0)->Render(false, 360, 250, 360, 300);
 		}
+		else
+			renderPause();
 }
 
 void myApplication::renderScene(void)
@@ -1727,7 +1729,7 @@ void myApplication::renderTutorial()
 		//End Tutorial
 		if (dTrans9 == -600)
 		{
-			bTutorial = gamePause = false;
+			bTutorial = gamePause = setting = pause = false;
 		}
 	}
 }
