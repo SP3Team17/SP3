@@ -1,4 +1,4 @@
-#ifndef MYAPPLICATOIN_H
+#ifndef MYAPPLICATION_H
 #define MYAPPLICATION_H
 
 #include <stdio.h>
@@ -75,7 +75,7 @@ private:
 	//end of kennard testing stuff
 
 	//ryan testing stuff
-	CUI testUI;
+	CUI* theUI;
 	//end of ryan testing stuff
 
 	//Camera
@@ -97,6 +97,7 @@ private:
 
 	//Scenes
 	bool gameStart, gamePause, startDialogue2, bFlash;
+	bool setting, pause;
 	bool trigger8, trigger9;
 	void renderStartScene();
 	float dTrans1, dTrans2, dTrans3, dTrans4, dTrans5, dTrans6, dTrans7, dTrans8, dTrans9;
@@ -109,10 +110,6 @@ private:
 	TextureImage Troy[2];
 	TextureImage Flash[1];
 
-	//Buttons
-	vector<CButton*> buttonsList;
-	CButton* startButton;
-
 	//Std Variables
 	bool bGameOver, bComplete, stopMovement, bTutorial, 
 		 tutorialEnd, programInit;
@@ -123,6 +120,7 @@ private:
 	void renderGameOver();
 	void renderGround();
 	void renderPause();
+	void menuSequence();
 	void renderTutorial();
 
 

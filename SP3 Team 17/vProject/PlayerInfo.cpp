@@ -19,11 +19,20 @@ CPlayerInfo::~CPlayerInfo()
 {
 	//Delete all C.Classes upon exit
 	if (playerExp != NULL)
+	{
 		delete playerExp;
+		playerExp = NULL;
+	}
 	if (playerInventory != NULL)
+	{
 		delete playerInventory;
+		playerInventory = NULL;
+	}
 	if (playerAttributes != NULL)
+	{
 		delete playerAttributes;
+		playerAttributes = NULL;
+	}
 }
 
 //Initialise this class instance

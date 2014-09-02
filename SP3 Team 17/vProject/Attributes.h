@@ -40,6 +40,8 @@ public:
 	short getHp();
 	short getAttack();
 	short getDefense();
+	short getDefIV();
+	void setDefIV(short defIV);
 
 	//update
 	void Update();

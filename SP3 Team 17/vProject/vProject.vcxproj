@@ -89,7 +89,6 @@
     <ClCompile Include="ExpSystem.cpp" />
     <ClCompile Include="Goodies.cpp" />
     <ClCompile Include="GoodiesFactory.cpp" />
-    <ClCompile Include="Health.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -113,7 +112,6 @@
     <ClInclude Include="ExpSystem.h" />
     <ClInclude Include="Goodies.h" />
     <ClInclude Include="GoodiesFactory.h" />
-    <ClInclude Include="Health.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Map.h" />

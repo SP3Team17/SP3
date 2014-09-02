@@ -4,9 +4,13 @@
 #include "vector3D.h"
 #include "definitions.h"
 #include "TextureImage.h"
+#include "PlayerInfo.h"
 
 #include <iostream>
 using namespace std;
+
+//Class Composition Prototype
+class CPlayerInfo;
 
 class CGoodies
 {
@@ -26,11 +30,14 @@ public:
 	CGoodies();
 	~CGoodies();
 
-	virtual void ExecuteBonus() {}
+	void ExecuteBonus(CGoodies::GoodieType Type);
 
 private:
 
 	static CGoodies* instance;
+
+	//Creates Temp Player
+	CPlayerInfo* tempPlayer;
 
 	//Position of this goodie
 	Vector3D pos;
