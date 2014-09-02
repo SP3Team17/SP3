@@ -85,9 +85,9 @@ void myApplication::Update(void)
 {
 	//Update Time
 	mvcTime* timer=mvcTime::getInstance();
+		timer->updateTime();
 	if ((timeGetTime()-timelastcall)>1000.f/frequency)
 	{
-		timer->updateTime();
 		//Calculate the framerate
 
 		timelastcall=timeGetTime();
@@ -273,7 +273,6 @@ void myApplication::renderScene(void)
 		else
 			theUI->getStartButton()->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
 	}
->>>>>>> origin/Main
 
 	//Game has Started
 	if (gameStart)
