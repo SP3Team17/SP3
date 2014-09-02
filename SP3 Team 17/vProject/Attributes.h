@@ -42,6 +42,7 @@ public:
 	short getDefense();
 	short getDefIV();
 	void setDefIV(short defIV);
+	short getBaseDef();
 
 	//update
 	void Update();

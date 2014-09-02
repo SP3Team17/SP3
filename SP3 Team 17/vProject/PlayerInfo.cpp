@@ -6,6 +6,7 @@ CPlayerInfo* CPlayerInfo::instance = NULL;
 
 CPlayerInfo::CPlayerInfo() 
 	: active(true)
+	, invinc(false)
 	, jumpspeed(0)
 	, heroAnimationCounter(0)
 {

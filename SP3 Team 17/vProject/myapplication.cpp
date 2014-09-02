@@ -1316,9 +1316,7 @@ void myApplication::DisplayText()
 		//Render Shop Info
 		if (theShop->open)
 		{
-			//Display Shop Info
-			glColor3f(0.0f, 1.0f, 0.0f);
-			printw (490, 200.0, 0, "Shop: ");
+			theShop->DisplayInfo();
 		}
 
 	glColor3f(1.0f, 1.0f, 1.0f);

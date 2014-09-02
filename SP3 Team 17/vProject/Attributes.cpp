@@ -40,6 +40,12 @@ void CAttributes::Update()
 	//Formula for Stats: ((Base + 50) x Level)/50 + 10 + IV
 }
 
+//Get Base Def
+short CAttributes::getBaseDef()
+{
+	return baseDef;
+}
+
 //Set Def IV
 void CAttributes::setDefIV(short defIV)
 {

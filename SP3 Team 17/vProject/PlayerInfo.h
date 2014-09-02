@@ -40,6 +40,9 @@ public:
 	CPlayerInfo();
 	~CPlayerInfo();
 
+	//Invincible State
+	bool invinc;
+
 	//Get Active State
 	bool GetActive();
 	//Set Active State

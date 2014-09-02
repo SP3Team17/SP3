@@ -23,6 +23,19 @@ public:
 
 	//Render Shop
 	void renderShop();
+
+	//Display Shop Info
+	void DisplayInfo();
+
+	//Pointer to a font style..
+	//Fonts supported by GLUT are: GLUT_BITMAP_8_BY_13, 
+	//GLUT_BITMAP_9_BY_15, GLUT_BITMAP_TIMES_ROMAN_10, 
+	//GLUT_BITMAP_TIMES_ROMAN_24, GLUT_BITMAP_HELVETICA_10,
+	//GLUT_BITMAP_HELVETICA_12, and GLUT_BITMAP_HELVETICA_18.
+	//GLvoid *font_style;
+	void *font_style;
+	//Draws a string at the specified coordinates.
+	void printw (float x, float y, float z, char* format, ...);
 };
 
 #endif

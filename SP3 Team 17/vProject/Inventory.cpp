@@ -335,6 +335,24 @@ void CInventory::DisplayInfo()
 			printw (501, posY+(40*INVENTORY_VARIETY)+50, 0, "Your Hp is full, potion cannot be used.");
 		}
 	}
+	//Armor
+	else if (armorUsed)
+	{
+		printw (501, posY+(40*INVENTORY_VARIETY)+50, 0, "You've successfully utilised an Armor item!");
+		printw (501, posY+(40*INVENTORY_VARIETY)+80, 0, "Your Defense is now %d", ((((tempPlayer->getAttributes()->getBaseDef()+50)*(tempPlayer->getAttributes()->getLevel()))/50) + 10 + tempPlayer->getAttributes()->getDefIV()));
+	}
+	//Level
+	else if (levelUsed)
+	{
+		printw (501, posY+(40*INVENTORY_VARIETY)+50, 0, "You've successfully consumed a Level Pill!");
+		printw (501, posY+(40*INVENTORY_VARIETY)+80, 0, "Your level is now %d", tempPlayer->getAttributes()->getLevel());
+	}
+	//Invinc
+	else if (invincUsed)
+	{
+		printw (501, posY+(40*INVENTORY_VARIETY)+50, 0, "You've successfully consumed an Invincible Pill!");
+		printw (501, posY+(40*INVENTORY_VARIETY)+80, 0, "You're now temporarily immune to enemies' attacks!");
+	}
 }
 
 //-------------------------------------------------------------------------
@@ -365,7 +383,6 @@ void CInventory::printw (float x, float y, float z, char* format, ...)
 
 	//  Specify the raster position for pixel operations.
 	glRasterPos3f (x, y, z);
-
 
 	//  Draw the characters one by one
 	for (i = 0; text[i] != '\0'; i++)
