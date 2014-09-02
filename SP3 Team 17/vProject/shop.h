@@ -5,6 +5,10 @@
 #include "definitions.h"
 #include "TextureImage.h"
 
+#include "PlayerInfo.h"
+#include "Goodies.h"
+#include "GoodiesFactory.h"
+
 class CShop
 {
 private:
@@ -17,6 +21,9 @@ public:
 
 	//Detect if the shop is open
 	bool open;
+
+	//Detect if item is bought
+	bool healthBought, levelBought, armorBought, invincBought, NotEnoughCredits;
 
 	//Texture
 	TextureImage shopTex[1];

@@ -36,6 +36,9 @@ private:
 
 	static CGoodies* instance;
 
+	//Credit
+	short credit;
+
 	//Creates Temp Player
 	CPlayerInfo* tempPlayer;
 
@@ -64,6 +67,10 @@ public:
 	//Get and Set Type
 	GoodieType GetType();
 	void SetType(GoodieType Type);
+
+	//Get and Set AGC
+	void setCredit(short credit);
+	short getCredit();
 
 	//Stores the texture for this goodie
 	TextureImage GoodiesTexture[1];

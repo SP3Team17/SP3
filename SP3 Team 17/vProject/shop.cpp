@@ -12,6 +12,9 @@ CShop::CShop()
 	//GLUT_BITMAP_HELVETICA_12, and GLUT_BITMAP_HELVETICA_18.
 	//GLvoid *font_style = GLUT_BITMAP_TIMES_ROMAN_24;
 	font_style = GLUT_BITMAP_TIMES_ROMAN_24;
+
+	//Set all bought booleans to False
+	healthBought = armorBought = levelBought = invincBought = NotEnoughCredits = false;
 }
 
 CShop::~CShop() {}
@@ -53,6 +56,78 @@ void CShop::DisplayInfo()
 	//Display Shop Info
 	glColor3f(0.0f, 1.0f, 0.0f);
 	printw (490, 200.0, 0, "Shop: ");
+
+	//Display Items
+	glColor3f(0.0f, 1.0f, 1.0f);
+	float posY = 300.0, posX = 350.0;
+	for (short i = 0; i < INVENTORY_VARIETY; ++i)
+	{
+		switch (i)
+		{
+		case 0:
+			{
+				CGoodies* tempGoodie = CGoodiesFactory::getInstance()->Create(CGoodies::HEALTH);
+				printw (posX, posY, 0, "%d. Health Potion | AGC: %d | In Bag: %d", i+1, tempGoodie->getCredit(), CPlayerInfo::getInstance()->getInventory()->potion);
+				delete tempGoodie;
+			}
+			break;
+		case 1:
+			{
+				CGoodies* tempGoodie = CGoodiesFactory::getInstance()->Create(CGoodies::ARMOR);
+				printw (posX, posY, 0, "%d. Armor | AGC: %d | In Bag: %d", i+1, tempGoodie->getCredit(), CPlayerInfo::getInstance()->getInventory()->armor);
+				delete tempGoodie;
+			}
+			break;
+		case 2:
+			{
+				CGoodies* tempGoodie = CGoodiesFactory::getInstance()->Create(CGoodies::LEVEL);
+				printw (posX, posY, 0, "%d. Level Pill | AGC: %d | In Bag: %d", i+1, tempGoodie->getCredit(), CPlayerInfo::getInstance()->getInventory()->level);
+				delete tempGoodie;
+			}
+			break;
+		case 3:
+			{
+				CGoodies* tempGoodie = CGoodiesFactory::getInstance()->Create(CGoodies::INVINC);
+				printw (posX, posY, 0, "%d. Invincible Pill | AGC: %d | In Bag: %d", i+1, tempGoodie->getCredit(), CPlayerInfo::getInstance()->getInventory()->invinc);
+				delete tempGoodie;
+			}
+			break;
+		}
+		posY += 40;
+	}
+
+	// *** Display Item Bought *** //
+	//Potion
+	if (healthBought)
+	{
+		printw (posX, posY+(40*INVENTORY_VARIETY)+10, 0, "You've successfully bought a Health Potion!");
+		printw (posX, posY+(40*INVENTORY_VARIETY)+40, 0, "Your remaining Credits: %d", CPlayerInfo::getInstance()->getAttributes()->getAGC());
+	}
+	//Armor
+	else if (armorBought)
+	{
+		printw (posX, posY+(40*INVENTORY_VARIETY)+10, 0, "You've successfully bought an Armor!");
+		printw (posX, posY+(40*INVENTORY_VARIETY)+40, 0, "Your remaining Credits: %d", CPlayerInfo::getInstance()->getAttributes()->getAGC());
+	}
+	//Level
+	else if (levelBought)
+	{
+		printw (posX, posY+(40*INVENTORY_VARIETY)+10, 0, "You've successfully bought a Level Pill!");
+		printw (posX, posY+(40*INVENTORY_VARIETY)+40, 0, "Your remaining Credits: %d", CPlayerInfo::getInstance()->getAttributes()->getAGC());
+	}
+	//Invinc
+	else if (invincBought)
+	{
+		printw (posX, posY+(40*INVENTORY_VARIETY)+10, 0, "You've successfully bought an Invincible Pill!");
+		printw (posX, posY+(40*INVENTORY_VARIETY)+40, 0, "Your remaining Credits: %d", CPlayerInfo::getInstance()->getAttributes()->getAGC());
+	}
+
+	//Not Enough Credits
+	else if (NotEnoughCredits)
+	{
+		printw (posX, posY+(40*INVENTORY_VARIETY)+10, 0, "You've not enough Credits!");
+		printw (posX, posY+(40*INVENTORY_VARIETY)+40, 0, "Your remaining Credits: %d", CPlayerInfo::getInstance()->getAttributes()->getAGC());
+	}
 }
 
 //-------------------------------------------------------------------------
@@ -62,7 +137,7 @@ void CShop::printw (float x, float y, float z, char* format, ...)
 {
 	va_list args;	//  Variable argument list
 	int len;		//	String length
-	int i;			//  Iterator
+	short i;		//  Iterator
 	char * text;	//	Text
 
 	//  Initialize a variable argument list

@@ -3,8 +3,9 @@
 CGoodies* CGoodies::instance = NULL;
 
 CGoodies::CGoodies()
-: type(GOODIE_NONE)
-, active(true)
+	: type(GOODIE_NONE)
+	, active(true)
+	, credit(100)
 {
 	pos.Set(-50,0);
 }
@@ -65,6 +66,18 @@ CGoodies::GoodieType CGoodies::GetType()
 void CGoodies::SetType(GoodieType Type)
 {
 	this->type = Type;
+}
+
+//Get Credit
+short CGoodies::getCredit()
+{
+	return credit;
+}
+
+//Set Credit
+void CGoodies::setCredit(short credit)
+{
+	this->credit = credit;
 }
 
 //Get the pos of this goodie

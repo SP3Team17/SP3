@@ -27,5 +27,6 @@
 
 //Inventory
 #define INVENTORY_VARIETY 4
+#define STARTING_AGC 10000
 
 #endif

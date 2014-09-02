@@ -44,7 +44,7 @@ void CMap::Init(const int theScreen_Height, const int theScreen_Width,
 	theNumOfTiles_MapWidth = (int) (theMap_Width / theTileSize);
 
 	theScreenMap.resize(theNumOfTiles_MapHeight);
-	for (int i = 0; i < theNumOfTiles_MapHeight; ++i)
+	for (short i = 0; i < theNumOfTiles_MapHeight; ++i)
 	{
 		theScreenMap[i].resize(theNumOfTiles_MapWidth);
 	}

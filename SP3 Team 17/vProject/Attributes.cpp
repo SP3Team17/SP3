@@ -3,7 +3,7 @@
 CAttributes* CAttributes::instance = NULL;
 
 CAttributes::CAttributes() 
-	: level(1), hp(0), attack(0), defense(0)
+	: level(1), hp(0), attack(0), defense(0), AGC(STARTING_AGC)
 	, baseAtk(150), baseDef(80)
 {
 	//Random Attack IVs
@@ -38,6 +38,18 @@ void CAttributes::Update()
 	attack = (((baseAtk+50)*(tempPlayer->getAttributes()->getLevel()))/50) + 10 + attackIV;
 	defense = (((baseDef+50)*(tempPlayer->getAttributes()->getLevel()))/50) + 10 + defenseIV;
 	//Formula for Stats: ((Base + 50) x Level)/50 + 10 + IV
+}
+
+//Get Credit
+int CAttributes::getAGC()
+{
+	return AGC;
+}
+
+//Set Credit
+void CAttributes::setAGC(int AGC)
+{
+	this->AGC = AGC;
 }
 
 //Get Base Def

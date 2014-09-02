@@ -259,7 +259,8 @@ void myApplication::renderScene(void)
 
 	//Render Start Screen
 	if (!programInit)//this one for sound only, feel free to merge with original when you are done.
-	{	if(!soundinit)
+	{	
+		if(!soundinit)
 		{
 			theSound->PlayMusic(SOUND_BGM, true, false);
 			soundinit = true;
@@ -404,42 +405,6 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 	//Keyboard
 	switch(key) {
 
-	//Add Heath
-	case 'v':
-	case 'V':
-		{
-			CGoodies* health = theGoodiesFactory->Create(CGoodies::HEALTH);
-			theHero->getInventory()->addItem(health);
-		}
-		break;
-
-	//Add Armor
-	case 'b':
-	case 'B':
-		{
-			CGoodies* armor = theGoodiesFactory->Create(CGoodies::ARMOR);
-			theHero->getInventory()->addItem(armor);
-		}
-		break;
-
-	//Add Invinc Pill
-	case 'n':
-	case 'N':
-		{
-			CGoodies* invinc = theGoodiesFactory->Create(CGoodies::INVINC);
-			theHero->getInventory()->addItem(invinc);
-		}
-		break;
-
-	//Add Level Pill
-	case 'm':
-	case 'M':
-		{
-			CGoodies* level = theGoodiesFactory->Create(CGoodies::LEVEL);
-			theHero->getInventory()->addItem(level);
-		}
-		break;
-
 	//Skip Start Scene
 	case ' ':
 		if (programInit)
@@ -478,6 +443,10 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				gamePause = true;
 
 			theShop->open = !theShop->open;
+
+			//Reset Text Toggling
+			theShop->healthBought = theShop->invincBought = theShop->NotEnoughCredits =
+			theShop->levelBought = theShop->armorBought = false;
 		}
 		break;
 
@@ -574,6 +543,40 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 					}
 				}
 			}
+
+			//Health is bought
+			if (theShop->open)
+			{
+				//Create Temp CGoodie
+				CGoodies* health = theGoodiesFactory->Create(CGoodies::HEALTH);
+
+				//Check if Credits are enough
+				if (theHero->getAttributes()->getAGC() >= health->getCredit())
+				{
+					//Credits are enough
+					theShop->NotEnoughCredits = false;
+
+					//Add item
+					theHero->getInventory()->addItem(health);
+
+					//Reduce Credits
+					theHero->getAttributes()->setAGC(theHero->getAttributes()->getAGC()-health->getCredit());
+
+					//Toggle Bought Text
+					theShop->healthBought = true;
+					theShop->invincBought = theShop->levelBought = theShop->armorBought = false;
+				}
+
+				//The player has not enough credits
+				else
+				{
+					theShop->NotEnoughCredits = true;
+					theShop->healthBought = theShop->invincBought = theShop->levelBought = theShop->armorBought = false;
+				}
+
+				//Delete temp Goodie
+				delete health;
+			}
 		}
 		break;
 
@@ -650,7 +653,41 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 					}
 				}
 			}
-		;}
+
+			//Armor is bought
+			if (theShop->open)
+			{
+				//Create Temp CGoodie
+				CGoodies* armor = theGoodiesFactory->Create(CGoodies::ARMOR);
+
+				//Check if Credits are enough
+				if (theHero->getAttributes()->getAGC() >= armor->getCredit())
+				{
+					//Credits are enough
+					theShop->NotEnoughCredits = false;
+
+					//Add item
+					theHero->getInventory()->addItem(armor);
+
+					//Reduce Credits
+					theHero->getAttributes()->setAGC(theHero->getAttributes()->getAGC()-armor->getCredit());
+
+					//Toggle Bought Text
+					theShop->armorBought = true;
+					theShop->invincBought = theShop->levelBought = theShop->healthBought = false;
+				}
+
+				//The player has not enough credits
+				else
+				{
+					theShop->NotEnoughCredits = true;
+					theShop->healthBought = theShop->invincBought = theShop->levelBought = theShop->armorBought = false;
+				}
+
+				//Delete temp Goodie
+				delete armor;
+			}
+		}
 		break;
 
 	//Load Level 3
@@ -726,6 +763,40 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 					}
 				}
 			}
+
+			//Level is bought
+			if (theShop->open)
+			{
+				//Create Temp CGoodie
+				CGoodies* level = theGoodiesFactory->Create(CGoodies::LEVEL);
+
+				//Check if Credits are enough
+				if (theHero->getAttributes()->getAGC() >= level->getCredit())
+				{
+					//Credits are enough
+					theShop->NotEnoughCredits = false;
+
+					//Add item
+					theHero->getInventory()->addItem(level);
+
+					//Reduce Credits
+					theHero->getAttributes()->setAGC(theHero->getAttributes()->getAGC()-level->getCredit());
+
+					//Toggle Bought Text
+					theShop->levelBought = true;
+					theShop->invincBought = theShop->armorBought = theShop->healthBought = false;
+				}
+
+				//The player has not enough credits
+				else
+				{
+					theShop->NotEnoughCredits = true;
+					theShop->healthBought = theShop->invincBought = theShop->levelBought = theShop->armorBought = false;
+				}
+
+				//Delete temp Goodie
+				delete level;
+			}
 		}
 		break;
 
@@ -786,6 +857,40 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 						break;
 					}
 				}
+			}
+
+			//Invinc is bought
+			if (theShop->open)
+			{
+				//Create Temp CGoodie
+				CGoodies* invinc = theGoodiesFactory->Create(CGoodies::INVINC);
+
+				//Check if Credits are enough
+				if (theHero->getAttributes()->getAGC() >= invinc->getCredit())
+				{
+					//Credits are enough
+					theShop->NotEnoughCredits = false;
+
+					//Add item
+					theHero->getInventory()->addItem(invinc);
+
+					//Reduce Credits
+					theHero->getAttributes()->setAGC(theHero->getAttributes()->getAGC()-invinc->getCredit());
+
+					//Toggle Bought Text
+					theShop->invincBought = true;
+					theShop->levelBought = theShop->armorBought = theShop->healthBought = false;
+				}
+
+				//The player has not enough credits
+				else
+				{
+					theShop->NotEnoughCredits = true;
+					theShop->healthBought = theShop->invincBought = theShop->levelBought = theShop->armorBought = false;
+				}
+
+				//Delete temp Goodie
+				delete invinc;
 			}
 		}
 		break;
@@ -1285,26 +1390,31 @@ void myApplication::DisplayText()
 			glColor3f(1.0f, 0.0f, 0.0f);
 			printw (35.0, 23.0, 0, "Health Bar");
 
-			glColor3f(1.f,1.f,1.f);
-			printw(790,100,0,"delta: %.4f",timer->getDelta());
-			printw(790,150,0,"fps: %.2f",timer->getFPS());
-
 			//Display Level
 			glColor3f(0.0f, 1.0f, 1.0f);
 			printw (870.0, 40.0, 0, "Level: %d", currentLevel);
 
-			//Display Stats
+			//Display Stats 
 			glColor3f(0.0f, 1.0f, 0.0f);
 			printw (790.0, 290.0, 0, "Player Level: %d", theHero->getAttributes()->getLevel());
 			printw (790.0, 320.0, 0, "Player Attack: %d", theHero->getAttributes()->getAttack());
 			printw (790.0, 350.0, 0, "Player Defense: %d", theHero->getAttributes()->getDefense());
 			printw (790.0, 380.0, 0, "Player Exp: %d", theHero->getExp()->getExp());
+			printw (790.0, 440.0, 0, "AGC Credits: %d", theHero->getAttributes()->getAGC());
 
 			//Print Level
 			if (theHero->getAttributes()->getLevel() < 100)
 				printw (790.0, 410.0, 0, "Exp To Next Level: %d", theHero->getExp()->getExpToLevel());
 			else
 				printw (790.0, 410.0, 0, "Exp To Next Level: -");
+
+			//Print Skills
+			printw (790.0, 500.0, 0, "(Z) -> Skill 1");
+			printw (790.0, 530.0, 0, "(X) -> Skill 2");
+
+			//Print Skills
+			printw (790.0, 590.0, 0, "(U) -> Open Shop");
+			printw (790.0, 620.0, 0, "(I) -> Open Inventory");
 		}
 
 		//Render Inventory Info
@@ -1816,6 +1926,7 @@ void myApplication::RenderHpBar()
 			glBindTexture(GL_TEXTURE_2D, HpBar[5].texID);
 		else if (theHero->getAttributes()->getHp() <= 6 * HP_MULTIPLIER)
 			glBindTexture(GL_TEXTURE_2D, HpBar[6].texID);
+		else glBindTexture(GL_TEXTURE_2D, HpBar[6].texID);
 
 		short height = 55; 
 		short width = 300;
@@ -1975,7 +2086,7 @@ void myApplication::printw (float x, float y, float z, char* format, ...)
 {
 	va_list args;	//  Variable argument list
 	int len;		//	String length
-	int i;			//  Iterator
+	short i;		//  Iterator
 	char * text;	//	Text
 
 	//  Initialize a variable argument list

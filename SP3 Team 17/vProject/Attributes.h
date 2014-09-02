@@ -22,6 +22,9 @@ private:
 	//IVs
 	short attackIV, defenseIV;
 
+	//Credit
+	int AGC;
+
 	//Creates Temp Player
 	CPlayerInfo* tempPlayer;
 
@@ -43,6 +46,8 @@ public:
 	short getDefIV();
 	void setDefIV(short defIV);
 	short getBaseDef();
+	void setAGC(int AGC);
+	int getAGC();
 
 	//update
 	void Update();

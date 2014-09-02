@@ -12,7 +12,7 @@ CInventory::CInventory()
 	potionUsed = armorUsed = invincUsed = levelUsed = false;
 
 	//Initialise all Goodies
-	for (int i = 0; i < INVENTORY_VARIETY; ++i)
+	for (short i = 0; i < INVENTORY_VARIETY; ++i)
 	{
 		itemsArray[i] = new CGoodies; //GOODIE_NONE
 	}
@@ -49,7 +49,7 @@ void CInventory::addItem(CGoodies *item)
 		if (potion == 0)
 		{
 			//Loop through array
-			for (int i = 0; i < INVENTORY_VARIETY; ++i)
+			for (short i = 0; i < INVENTORY_VARIETY; ++i)
 			{
 				//Check for empty slot
 				if (itemsArray[i]->GetType() == CGoodies::GOODIE_NONE)
@@ -74,7 +74,7 @@ void CInventory::addItem(CGoodies *item)
 		if (invinc == 0)
 		{
 			//Loop through array
-			for (int i = 0; i < INVENTORY_VARIETY; ++i)
+			for (short i = 0; i < INVENTORY_VARIETY; ++i)
 			{
 				//Check for empty slot
 				if (itemsArray[i]->GetType() == CGoodies::GOODIE_NONE)
@@ -99,7 +99,7 @@ void CInventory::addItem(CGoodies *item)
 		if (level == 0)
 		{
 			//Loop through array
-			for (int i = 0; i < INVENTORY_VARIETY; ++i)
+			for (short i = 0; i < INVENTORY_VARIETY; ++i)
 			{
 				//Check for empty slot
 				if (itemsArray[i]->GetType() == CGoodies::GOODIE_NONE)
@@ -124,7 +124,7 @@ void CInventory::addItem(CGoodies *item)
 		if (armor == 0)
 		{
 			//Loop through array
-			for (int i = 0; i < INVENTORY_VARIETY; ++i)
+			for (short i = 0; i < INVENTORY_VARIETY; ++i)
 			{
 				//Check for empty slot
 				if (itemsArray[i]->GetType() == CGoodies::GOODIE_NONE)
@@ -166,7 +166,7 @@ void CInventory::deleteItem(CGoodies *item)
 				if (potion == 0)
 				{
 					//Loop through items array
-					for (int i = 0; i < INVENTORY_VARIETY; ++i)
+					for (short i = 0; i < INVENTORY_VARIETY; ++i)
 					{
 						//Check for Health item
 						if (itemsArray[i]->GetType() == CGoodies::HEALTH)
@@ -187,7 +187,7 @@ void CInventory::deleteItem(CGoodies *item)
 			if (armor > 0)
 			{
 				//Loop through items array
-				for (int i = 0; i < INVENTORY_VARIETY; ++i)
+				for (short i = 0; i < INVENTORY_VARIETY; ++i)
 				{
 					//Check for Armor item
 					if (itemsArray[i]->GetType() == CGoodies::ARMOR)
@@ -211,7 +211,7 @@ void CInventory::deleteItem(CGoodies *item)
 			if (level > 0)
 			{
 				//Loop through items array
-				for (int i = 0; i < INVENTORY_VARIETY; ++i)
+				for (short i = 0; i < INVENTORY_VARIETY; ++i)
 				{
 					//Check for Level item
 					if (itemsArray[i]->GetType() == CGoodies::LEVEL)
@@ -235,7 +235,7 @@ void CInventory::deleteItem(CGoodies *item)
 			if (invinc > 0)
 			{
 				//Loop through items array
-				for (int i = 0; i < INVENTORY_VARIETY; ++i)
+				for (short i = 0; i < INVENTORY_VARIETY; ++i)
 				{
 					//Check for Invinc item
 					if (itemsArray[i]->GetType() == CGoodies::INVINC)
@@ -289,7 +289,7 @@ void CInventory::DisplayInfo()
 	//Display Slots
 	glColor3f(0.0f, 1.0f, 1.0f);
 	float posY = 300.0;
-	for (int i = 0; i < INVENTORY_VARIETY; ++i)
+	for (short i = 0; i < INVENTORY_VARIETY; ++i)
 	{
 		//Check for Item
 		switch (itemsArray[i]->GetType())
@@ -298,20 +298,16 @@ void CInventory::DisplayInfo()
 			printw (450, posY, 0, "Slot %d: %s", i+1, "Empty");
 			break;
 		case CGoodies::HEALTH:
-			printw (450, posY, 0, "Slot %d: ", i+1);
-			printw (501, posY, 0, "Health Potion x %d", potion);
+			printw (450, posY, 0, "Slot %d: Health Potion x %d", i+1, potion);
 			break;
 		case CGoodies::ARMOR:
-			printw (450, posY, 0, "Slot %d: ", i+1);
-			printw (501, posY, 0, "Armor x %d", armor);
+			printw (450, posY, 0, "Slot %d: Armor x %d", i+1, armor);
 			break;
 		case CGoodies::INVINC:
-			printw (450, posY, 0, "Slot %d: ", i+1);
-			printw (501, posY, 0, "Invincible Pill x %d", invinc);
+			printw (450, posY, 0, "Slot %d: Invincible Pill x %d", i+1, invinc);
 			break;
 		case CGoodies::LEVEL:
-			printw (450, posY, 0, "Slot %d: ", i+1);
-			printw (501, posY, 0, "Level Pill x %d", level);
+			printw (450, posY, 0, "Slot %d: Level Pill x %d", i+1, level);
 			break;
 		}
 		posY += 40;
@@ -362,7 +358,7 @@ void CInventory::printw (float x, float y, float z, char* format, ...)
 {
 	va_list args;	//  Variable argument list
 	int len;		//	String length
-	int i;			//  Iterator
+	short i;		//  Iterator
 	char * text;	//	Text
 
 	//  Initialize a variable argument list

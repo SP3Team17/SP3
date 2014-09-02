@@ -28,19 +28,19 @@ CUI::CUI()
 	LoadTGA(&(startButton->button[1]), "images/startScreenHover.tga");
 
 	//Pause Button
-	for (int i = 0; i < 3; ++i)
+	for (short i = 0; i < 3; ++i)
 	{
 		pauseButton[i] = new CButton;
 	}
 
 	//Add Pause Button to Vector List
-	for (int i = 0; i < 3; ++i)
+	for (short i = 0; i < 3; ++i)
 	{
 		buttonsList.push_back(pauseButton[i]);
 	}
 
 	//Pause Buttons Texture
-	for (int i = 0; i < 3; ++i)
+	for (short i = 0; i < 3; ++i)
 	{
 		LoadTGA(&(pauseButton[i]->button[0]), "images/pause.tga");
 	}
