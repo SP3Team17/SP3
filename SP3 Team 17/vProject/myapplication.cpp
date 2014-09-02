@@ -97,7 +97,6 @@ void myApplication::Update(void)
 			if (theHero->getAttributes()->getHp() <= 0)
 				bGameOver = true;
 
-
 			//Update Hero
 			HeroUpdate();
 
@@ -258,15 +257,11 @@ void myApplication::renderScene(void)
 	//Render Start Screen
 	if (!programInit)
 	{
-		if (!startButton->hover)
-			startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+		if (!theUI->getStartButton()->hover)
+			theUI->getStartButton()->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
 		else
-			startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+			theUI->getStartButton()->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
 	}
-
-
-	//remove to put back the start screen
-	gameStart=true;
 
 	//Game has Started
 	if (gameStart)
