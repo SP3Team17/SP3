@@ -246,6 +246,7 @@ void myApplication::renderScene(void)
 
 	glLoadIdentity();
 	theCamera->Update();
+	calculateFPS();
 
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
@@ -449,10 +450,11 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 	//Pause the game
 	case 27:
-		if (gameStart && programInit)
+		/*if (gameStart && programInit)
 			gamePause = !gamePause;
 			pause = true;
-			setting = false;
+			setting = false;*/
+		exit(0);
 		break;
 		
 	//Open Shop
@@ -1955,7 +1957,7 @@ void myApplication::drawFPS()
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		//Print the FPS to the window
 		glColor3f(0.0f, 1.0f, 0.0f);
-		printw (490, 27.0, 0, "FPS: %4.2f", mvcTime::getInstance()->getFPS());
+		printw (490, 27.0, 0, "FPS: %4.2f", fps);
 		glColor3f(1.0f, 1.0f, 1.0f);
 	glPopAttrib();
 }
@@ -1996,96 +1998,6 @@ void myApplication::printw (float x, float y, float z, char* format, ...)
 
 	//  Free the allocated memory for the string
 	free(text);
-}
-
-//Check for collision of hero with obstacles in a certain position
-bool myApplication::CheckCollision(Vector3D pos, 
-								   bool m_bCheckUpwards, bool m_bCheckDownwards, 
-								   bool m_bCheckLeft, bool m_bCheckRight, CMap* map,int x_offset,int y_offset)
-{
-	//The pos.x and pos.y are the top left corner of the hero, so we find the tile which this position occupies.
-	int tile_topleft_x = (int)floor((float)(mapOffset_x+pos.x-LEFT_BORDER) / TILE_SIZE);
-	int tile_topleft_y = (int)floor((float)(mapOffset_y+pos.y-BOTTOM_BORDER)/ TILE_SIZE);
-	int proceed=false;
-	Vector3D reference[9];
-	int j=0;
-	
-	if (m_bCheckLeft)
-	{
-		if (map->theScreenMap[tile_topleft_y][tile_topleft_x] == 1)
-		{
-			proceed=true;
-			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
-			j++;
-		}
-		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x] == 1)
-		{
-			proceed=true;
-			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
-			j++;
-		}
-	}
-
-	if (m_bCheckRight)
-	{
-		if (map->theScreenMap[tile_topleft_y][tile_topleft_x+1] == 1)
-		{
-			proceed=true;
-			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
-			j++;
-		}
-		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x+1] == 1)
-		{
-			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
-			proceed=true;
-			j++;
-		}
-	}
-
-	if (m_bCheckUpwards)
-	{
-		if (map->theScreenMap[tile_topleft_y][tile_topleft_x] == 1)
-		{
-			proceed=true;
-			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
-			j++;
-		}
-		if (map->theScreenMap[tile_topleft_y][tile_topleft_x+1] == 1)
-		{
-			proceed=true;
-			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y)*TILE_SIZE+BOTTOM_BORDER);
-			j++;
-		}
-	}
-
-	if (m_bCheckDownwards)
-	{
-		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x] == 1)
-		{
-			proceed=true;
-			reference[j].Set((tile_topleft_x)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
-			j++;
-		}
-		if (map->theScreenMap[tile_topleft_y+1][tile_topleft_x+1] == 1)
-		{
-			proceed=true;
-			reference[j].Set((tile_topleft_x+1)*TILE_SIZE+LEFT_BORDER,(tile_topleft_y+1)*TILE_SIZE+BOTTOM_BORDER);
-			j++;
-		}
-	}
-
-	if(proceed)
-	{
-		for(int i=0;i<j;++i)
-		{
-			//if((pos - reference[i]).Length() < TILE_SIZE)
-			if(abs(reference[i].x-x_offset-pos.x)<TILE_SIZE-2 && abs(reference[i].y-y_offset-pos.y)<TILE_SIZE-2)
-			{
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 bool myApplication::LoadTGA(TextureImage *texture, char *filename) // Loads A TGA File Into Memory

@@ -148,6 +148,21 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					temp->active=true;
 					return;
 					break;
+				case M_SUPER_AOE:
+					if(temp->timeRef==-1)
+					{
+						temp->timeRef=timer->insertNewTime(1000);
+					}
+					else
+					{
+						timer->resetTime(temp->timeRef);
+						timer->changeLimit(temp->timeRef,1000);
+					}
+					timer->resetTime(coolRef);
+					timer->changeLimit(coolRef,500);
+					temp->active=true;
+					return;
+					break;
 				case WALLOFCOIN:
 					if(temp->timeRef==-1)
 					{
@@ -252,7 +267,18 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			break;
 		case RANGEAOE:
 			timer->resetTime(coolRef);
-			timer->changeLimit(coolRef,1000);
+			timer->changeLimit(coolRef,750);
+			temp2.timeRef=timer->insertNewTime(1000);
+			
+			temp2.skillSprite.LoadTGA("Images/player.tga");
+			temp2.skillSprite.ImageInit(4,4);
+			temp2.skillSprite.changeVariation(2);
+			temp2.skillSprite.changeSubImage(0);
+			temp2.skillSprite.Stop=false;
+			break;
+		case M_SUPER_AOE:
+			timer->resetTime(coolRef);
+			timer->changeLimit(coolRef,500);
 			temp2.timeRef=timer->insertNewTime(1000);
 			
 			temp2.skillSprite.LoadTGA("Images/player.tga");
@@ -263,7 +289,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			break;
 		case WALLOFCOIN:
 			timer->resetTime(coolRef);
-			timer->changeLimit(coolRef,4000);
+			timer->changeLimit(coolRef,3000);
 			temp2.timeRef=timer->insertNewTime(50);
 			temp2.skillSprite.LoadTGA("Images/player.tga");
 			temp2.skillSprite.ImageInit(4,4);
@@ -551,6 +577,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						if(physics::testCol(skillObj,mobObj))
 						{
 							//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
+							enemy->setStats(0,enemy->getStats(0)-5);
 							temp->SkillPhase=2;
 							moveon=true;
 						}
@@ -650,7 +677,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 									temp2.skillSprite.Stop=false;
 									temp3.push_back(temp2);
 									noEmpty=true;
-									cout<<"push back\n";
 								}
 							}
 							else
@@ -671,8 +697,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								temp2.skillSprite.changeSubImage(0);
 								temp2.skillSprite.Stop=false;
 								temp3.push_back(temp2);
-								//data.push_back(temp2);
-									cout<<"push back\n";
 							}
 						}
 					}
@@ -680,16 +704,185 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					temp->SkillPhase=0;
 					}
 					break;
-				case -1:
+				case -1://mini particles
 					if(timer->testTime(temp->timeRef))
 					{
 						temp->SkillPhase=0;
 						temp->active=false;
-						cout<<"stop\n";
 					}
 					else
 					{	
-						cout<<"moving\n";
+						skillObj.size.Set(16,16);
+						for(vector<MobInfo*>::iterator it=enemies.begin();it!=enemies.end();++it)
+						{
+							MobInfo* enemy=*it;
+							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+							if(physics::testCol(skillObj,mobObj))
+							{
+								//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
+								enemy->setStats(0,enemy->getStats(0)-1);
+								temp->SkillPhase=0;
+								temp->active=false;
+							}
+						}
+						temp->Pos=temp->Pos+temp->Dir*timer->getDelta()*250;
+					}
+					break;
+				}
+				break;
+				case M_SUPER_AOE:
+				switch(temp->SkillPhase)
+				{
+				case 1://attack duration
+					{
+						bool up,down,left,right;
+						physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+						if(physics::testCol(skillObj,mobObj))
+						{
+							//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
+							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-5);
+							temp->SkillPhase=2;
+						}
+						else
+						{
+							if(timer->testTime(temp->timeRef))
+							{
+								temp->SkillPhase=2;
+								timer->changeLimit(temp->timeRef,500);
+							}
+							up=down=left=right=false;
+							if(temp->Dir.y<0)
+							{
+								up=true;
+							}
+							else if(temp->Dir.y>0)
+							{
+								down=true;
+							}
+							if(temp->Dir.x<0)
+							{
+								left=true;
+							}
+							else if(temp->Dir.x>0)
+							{
+								right=true;
+							}
+							if(timer->testTime(temp->timeRef))
+							{
+								temp->SkillPhase=2;
+								timer->changeLimit(temp->timeRef,500);
+							}
+							else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
+							{
+								temp->SkillPhase=2;
+								timer->changeLimit(temp->timeRef,1000);
+							}
+							else//move the bullet
+							{
+								temp->Pos=temp->Pos+temp->Dir*timer->getDelta()*500;
+							}
+						}
+					}
+					break;
+				case 2://explosion
+					{
+						bool noEmpty=false;
+						for(int p=-1;p<2;++p)
+						{
+							for(int o=-1;o<2;++o)
+							{
+								if(!noEmpty)
+								{
+									bool carryon=false;
+									for(vector<SkillData>::iterator it=data.begin();it!=data.end();++it)
+									{
+										SkillData* temp2=&*it;
+										if(!temp2->active&&!carryon)
+										{
+											mvcTime* timer=mvcTime::getInstance();
+											temp2->active=true;
+											temp2->rend=true;
+											temp2->SkillPhase=-1;
+											temp2->Pos=temp->Pos+Vector3D(16,16);
+											temp2->Dir=Vector3D(p,o);
+											temp2->Dir.normalizeVector3D();
+											temp2->ID=temp->ID;
+											if(temp->timeRef==-1)
+											{
+												temp->timeRef=timer->insertNewTime(1000);
+											}
+											else
+											{
+												timer->resetTime(temp2->timeRef);
+												timer->changeLimit(temp2->timeRef,1000);
+												timer->setActive(true,temp2->timeRef);
+											}
+											carryon=true;
+										}
+									}
+									if(!carryon)
+									{
+										SkillData temp2;
+										temp2.timeRef=timer->insertNewTime(1000);
+										temp2.active=true;
+										temp2.rend=true;
+										temp2.SkillPhase=-1;
+										temp2.Pos=temp->Pos;
+										temp2.Dir=Vector3D(p,o);
+										temp2.Dir.normalizeVector3D();
+										temp2.ID=temp->ID;
+
+										temp2.skillSprite.LoadTGA("Images/player.tga");
+										temp2.skillSprite.ImageInit(4,4);
+										temp2.skillSprite.changeVariation(2);
+										temp2.skillSprite.changeSubImage(0);
+										temp2.skillSprite.Stop=false;
+										temp3.push_back(temp2);
+										noEmpty=true;
+									}
+								}
+								else
+								{
+									SkillData temp2;
+									temp2.timeRef=timer->insertNewTime(1000);
+									temp2.active=true;
+									temp2.rend=true;
+									temp2.SkillPhase=-1;
+									temp2.Pos=temp->Pos;
+									temp2.Dir=Vector3D(p,o);
+									temp2.Dir.normalizeVector3D();
+									temp2.ID=temp->ID;
+
+									temp2.skillSprite.LoadTGA("Images/player.tga");
+									temp2.skillSprite.ImageInit(4,4);
+									temp2.skillSprite.changeVariation(2);
+									temp2.skillSprite.changeSubImage(0);
+									temp2.skillSprite.Stop=false;
+									temp3.push_back(temp2);
+								}
+							}
+						}
+						temp->active=false;
+						temp->SkillPhase=0;
+					}
+					break;
+				case -1://mini particles
+					if(timer->testTime(temp->timeRef))
+					{
+						temp->SkillPhase=0;
+						temp->active=false;
+					}
+					else
+					{	
+						skillObj.size.Set(16,16);
+						physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+						if(physics::testCol(skillObj,mobObj))
+						{
+							//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
+							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-1);
+							temp->SkillPhase=0;
+							temp->active=false;
+						}
 						temp->Pos=temp->Pos+temp->Dir*timer->getDelta()*250;
 					}
 					break;
@@ -996,6 +1189,7 @@ void Skills::render()
 				}
 				break;
 			case RANGEAOE:
+			case M_SUPER_AOE:
 				switch(temp.SkillPhase)
 				{
 				case 1:
@@ -1004,7 +1198,7 @@ void Skills::render()
 					break;
 				case -1:
 					glTranslatef(temp.Pos.x,temp.Pos.y,0);
-					glScalef(32,32,0);
+					glScalef(16,16,0);
 					break;
 				case 2:
 					moveon=false;
