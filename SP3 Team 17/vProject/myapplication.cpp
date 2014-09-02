@@ -444,10 +444,8 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 	case ' ':
 		if (programInit)
 		{
-			gameStart = true;
-			gamePause = false;
-			setting = false;
-			pause = false;
+			gameStart = allowGamePause = true;
+			gamePause = setting = pause = false;
 		}
 		break;
 
@@ -1673,7 +1671,7 @@ void myApplication::renderTutorial()
 	glDisable(GL_BLEND);
 	glPopMatrix();
 
-	/****************************************************************************************************
+	 /****************************************************************************************************
 	   Dialogue (Tutorial) Transition Update
 	 ****************************************************************************************************/
 	//Stacey Tutorial Dialogue (3)
