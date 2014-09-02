@@ -100,7 +100,7 @@ private:
 	//Scenes
 	bool gameStart, gamePause, startDialogue2, bFlash;
 	bool setting, pause, soundinit;
-	bool trigger8, trigger9;
+	bool trigger8, trigger9, allowGamePause;
 	void renderStartScene();
 	float dTrans1, dTrans2, dTrans3, dTrans4, dTrans5, dTrans6, dTrans7, dTrans8, dTrans9;
 	int counterFlash, counterTime;

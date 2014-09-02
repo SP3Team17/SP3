@@ -13,9 +13,8 @@ myApplication::myApplication()
 	bGameOver = heroInit = bComplete = programInit
     = stopMovement = gameStart = startDialogue2 
 	= bFlash = gamePause = bTutorial = tutorialEnd
-	= trigger8 = trigger9 = false;
-	setting = pause = false;
-	soundinit = false;
+	= trigger8 = trigger9 = setting = pause = soundinit
+	= allowGamePause = false;
 
 	counterFlash = counterTime = 0;
 
@@ -85,7 +84,8 @@ void myApplication::Update(void)
 {
 	//Update Time
 	mvcTime* timer=mvcTime::getInstance();
-		timer->updateTime();
+	timer->updateTime();
+
 	if ((timeGetTime()-timelastcall)>1000.f/frequency)
 	{
 		//Calculate the framerate
@@ -460,7 +460,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 	//Pause the game
 	case 27:
-		if (gameStart && programInit)
+		if (gameStart && programInit && allowGamePause)
 		{
 			gamePause = !gamePause;
 			pause = true;
@@ -858,8 +858,7 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 				if (theUI->getStartButton()->hover)
 					programInit = true;
 
-
-				if(pause == true)
+				if (pause == true)
 				{
 					//Resume Game
 					if (theUI->getPauseButton(0)->hover && !setting)
@@ -1620,7 +1619,6 @@ void myApplication::renderStartScene()
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;
-			setting = pause = true;
 		}
 	}	
 }
@@ -1738,6 +1736,7 @@ void myApplication::renderTutorial()
 		if (dTrans9 == -600)
 		{
 			bTutorial = gamePause = setting = pause = false;
+			allowGamePause = true;
 		}
 	}
 }
