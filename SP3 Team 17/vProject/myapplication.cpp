@@ -15,12 +15,15 @@ myApplication::myApplication()
 	= bFlash = gamePause = bTutorial = tutorialEnd
 	= trigger8 = trigger9 = false;
 	setting = pause = false;
+	soundinit = false;
 
 	counterFlash = counterTime = 0;
 
 	dTrans7 = dTrans8 = dTrans9 = 
 	dTrans1 = dTrans3 = dTrans5 = -600;
 	dTrans2 = dTrans4 = dTrans6 = 610;
+
+	theSound = new Sound;
 }
 
 //Destructor
@@ -82,11 +85,10 @@ void myApplication::Update(void)
 {
 	//Update Time
 	mvcTime* timer=mvcTime::getInstance();
-	timer->updateTime();
 	if ((timeGetTime()-timelastcall)>1000.f/frequency)
 	{
+		timer->updateTime();
 		//Calculate the framerate
-		calculateFPS();
 
 		timelastcall=timeGetTime();
 
@@ -245,7 +247,8 @@ void myApplication::renderScene(void)
 
 	glLoadIdentity();
 	theCamera->Update();
-
+	
+		calculateFPS();
 	//Enable 2D text display and HUD
 	theCamera->SetHUD(true);
 
@@ -254,13 +257,20 @@ void myApplication::renderScene(void)
 		renderStartScene();
 
 	//Render Start Screen
-	if (!programInit)
+	if (!programInit)//this one for sound only, feel free to merge with original when you are done.
+	{	if(!soundinit)
+		{
+			theSound->PlayMusic(SOUND_BGM, true, false);
+			soundinit = true;
+		}
+	}
+	/*if (!programInit)
 	{
 		if (!startButton->hover)
-			startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+			startButton->Render(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
 		else
-			startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-	}
+			startButton->Render(true, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, 0);
+	}*/
 
 
 	//remove to put back the start screen
@@ -452,7 +462,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 	//Pause the game
 	case 27:
-		if (gameStart && programInit)
+		//if (gameStart && programInit)
 			gamePause = !gamePause;
 			pause = true;
 			setting = false;
@@ -642,7 +652,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 					}
 				}
 			}
-		}
+		;}
 		break;
 
 	//Load Level 3
@@ -1958,7 +1968,7 @@ void myApplication::drawFPS()
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		//Print the FPS to the window
 		glColor3f(0.0f, 1.0f, 0.0f);
-		printw (490, 27.0, 0, "FPS: %4.2f", mvcTime::getInstance()->getFPS());
+		printw (490, 27.0, 0, "FPS: %4.2f", fps);
 		glColor3f(1.0f, 1.0f, 1.0f);
 	glPopAttrib();
 }

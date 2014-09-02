@@ -27,6 +27,7 @@
 #include "physics.h"
 
 #include "UI.h"
+#include "Sound.h"
 
 //Mouse Info
 typedef struct {
@@ -76,6 +77,7 @@ private:
 
 	//ryan testing stuff
 	CUI* theUI;
+	Sound* theSound;
 	//end of ryan testing stuff
 
 	//Camera
@@ -97,7 +99,7 @@ private:
 
 	//Scenes
 	bool gameStart, gamePause, startDialogue2, bFlash;
-	bool setting, pause;
+	bool setting, pause, soundinit;
 	bool trigger8, trigger9;
 	void renderStartScene();
 	float dTrans1, dTrans2, dTrans3, dTrans4, dTrans5, dTrans6, dTrans7, dTrans8, dTrans9;
