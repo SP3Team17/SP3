@@ -74,14 +74,15 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 				switch(ID)
 				{
 				case ATTACK:
+					temp->Pos=temp->Pos+temp->Dir*TILE_SIZE+Vector3D(16,16);
 					if(temp->timeRef==-1)
 					{
-						temp->timeRef=timer->insertNewTime(1000);
+						temp->timeRef=timer->insertNewTime(0);
 					}
 					else
 					{
 						timer->resetTime(temp->timeRef);
-						timer->changeLimit(temp->timeRef,1000);
+						timer->changeLimit(temp->timeRef,0);
 					}
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
@@ -89,6 +90,7 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					return true;
 					break;
 				case MOB_MELEE:
+					temp->Pos=temp->Pos+temp->Dir*TILE_SIZE*0.5;
 					if(temp->timeRef==-1)
 					{
 						temp->timeRef=timer->insertNewTime(250);
@@ -194,17 +196,18 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					return true;
 					break;
 				case MOB_CLEAVE:
+					temp->Pos=temp->Pos+temp->Dir*TILE_SIZE+Vector3D(16,16);
 					if(temp->timeRef==-1)
 					{
-						temp->timeRef=timer->insertNewTime(1000);
+						temp->timeRef=timer->insertNewTime(0);
 					}
 					else
 					{
 						timer->resetTime(temp->timeRef);
-						timer->changeLimit(temp->timeRef,1000);
+						timer->changeLimit(temp->timeRef,0);
 					}
 					timer->resetTime(coolRef);
-					timer->changeLimit(coolRef,1250);
+					timer->changeLimit(coolRef,750);
 					temp->active=true;
 					return true;
 					break;
@@ -222,8 +225,9 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 		switch(ID)
 		{
 		case ATTACK:
+			temp2.Pos=temp2.Pos+temp2.Dir*TILE_SIZE+Vector3D(16,16);
 			timer->resetTime(coolRef);
-			temp2.timeRef=timer->insertNewTime(1000);
+			temp2.timeRef=timer->insertNewTime(0);
 			timer->changeLimit(coolRef,750);
 			temp2.skillSprite.LoadTGA("Images/player.tga");
 
@@ -233,6 +237,7 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			temp2.skillSprite.Stop=false;
 			break;
 		case MOB_MELEE:
+			temp2.Pos=temp2.Pos+temp2.Dir*TILE_SIZE;
 			timer->resetTime(coolRef);
 			temp2.timeRef=timer->insertNewTime(250);
 			timer->changeLimit(coolRef,2000);
@@ -298,9 +303,10 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			temp2.skillSprite.Stop=false;
 			break;
 		case MOB_CLEAVE:
+			temp2.Pos=temp2.Pos+temp2.Dir*TILE_SIZE+Vector3D(16,16);
 			timer->resetTime(coolRef);
-			timer->changeLimit(coolRef,1250);
-			temp2.timeRef=timer->insertNewTime(1000);
+			temp2.timeRef=timer->insertNewTime(0);
+			timer->changeLimit(coolRef,750);
 			temp2.skillSprite.LoadTGA("Images/player.tga");
 
 			temp2.skillSprite.ImageInit(4,4);
@@ -372,82 +378,206 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 			switch(temp->ID)
 			{
 			case ATTACK:
-				temp->Pos=Pos;
 				switch(temp->SkillPhase)
 				{
-				case 1://attack duration
-					for(vector<MobInfo*>::iterator it=enemies.begin();it!=enemies.end();++it)
+				case 1://pre attack (spawn additional attack points
 					{
-						MobInfo* enemy=*it;
-						if((enemy->getPos()-temp->Pos).dotVector3D(temp->Dir)>0&&enemy->active)
+						misc=false;
+						int counter=-1;
+						timer->changeLimit(temp->timeRef,500);
+						for(vector<SkillData>::iterator it2=data.begin();it2!=data.end();++it2)
 						{
+							SkillData* temp2=&*it2;
+							if(!temp2->active&&!misc)
+							{
+								temp2->active=true;
+								if(temp->Dir.x<0.4&&temp->Dir.x>-0.4)
+								{
+									temp2->Pos=temp->Pos-Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+								}
+								else if(temp->Dir.y<0.4&&temp->Dir.y>-0.4)
+								{
+									temp2->Pos=temp->Pos-Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+								}
+								else
+								{
+									temp2->Pos=temp->Pos-Vector3D(-temp->Dir.x*32,temp->Dir.y*32)*counter;
+								}
+								temp2->SkillPhase=2;
+								temp2->ID=ATTACK;
+								timer->resetTime(temp2->timeRef);
+								timer->changeLimit(temp2->timeRef,500);
+								counter++;
+								cout<<counter<<" ";
+								if(counter==2)
+								{
+									misc=true;
+								}
+							}
+						}
+						while(counter!=2&&!misc)
+						{
+							SkillData temp2;
+							temp2.active=true;
+							temp2.Pos=temp->Pos;
+							if(temp->Dir.x<0.4&&temp->Dir.x>-0.4)
+							{
+								temp2.Pos=temp2.Pos+Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+							}
+							else if(temp->Dir.y<0.4&&temp->Dir.y>-0.4)
+							{
+								temp2.Pos=temp2.Pos+Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+							}
+							else
+							{
+								temp2.Pos=temp2.Pos+Vector3D(-temp->Dir.x*32,temp->Dir.y*32)*counter;
+							}
+							temp2.SkillPhase=2;
+							temp2.timeRef=timer->insertNewTime(500);
+							temp2.ID=ATTACK;
+							temp3.push_back(temp2);
+							counter++;
+							cout<<counter<<" ";
+						}
+						cout<<"\n";
+						temp->SkillPhase=0;
+						temp->active=false;
+					}
+					break;
+				case 2://attack
+					{
+						for(vector<MobInfo*>::iterator it=enemies.begin();it!=enemies.end();++it)
+						{
+							MobInfo* enemy=*it;
 							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 							skillObj.pos.Set(temp->Pos.x,temp->Pos.y);
-							skillObj.size.Set(3*TILE_SIZE,3*TILE_SIZE);
+							skillObj.size.Set(TILE_SIZE,TILE_SIZE);
 							if(physics::testCol(skillObj,mobObj))
 							{
 								enemy->dealDam(Hero->getAttributes()->getAttack(),1.2);
-								temp->SkillPhase=3;
+								temp->SkillPhase=4;
 							}
 						}
 
 					}
 					if(timer->testTime(temp->timeRef))
 					{
-						temp->SkillPhase=2;
+						temp->SkillPhase=3;
 						timer->changeLimit(temp->timeRef,250);
 					}
 					break;
-				case 2://cooldown
+				case 3://cool
 					if(timer->testTime(temp->timeRef))
 					{
 						temp->SkillPhase=0;
 						temp->active=false;
 					}
 					break;
-				case 3://attacked enemy
+				case 4://attacked
 					if(timer->testTime(temp->timeRef))
 					{
-						temp->SkillPhase=2;
+						temp->SkillPhase=3;
 						timer->changeLimit(temp->timeRef,250);
 					}
 					break;
 				}
 				break;
 			case MOB_CLEAVE:
-				//temp->Pos=Pos;
 				switch(temp->SkillPhase)
 				{
-				case 1://attack duration
-					if((Hero->GetPos()-temp->Pos).dotVector3D(temp->Dir)>0)
+				case 1://pre attack (spawn additional attack points
+					{
+						misc=false;
+						int counter=-1;
+						timer->changeLimit(temp->timeRef,500);
+						for(vector<SkillData>::iterator it2=data.begin();it2!=data.end();++it2)
+						{
+							SkillData* temp2=&*it2;
+							if(!temp2->active&&!misc)
+							{
+								temp2->active=true;
+								if(temp->Dir.x<0.4&&temp->Dir.x>-0.4)
+								{
+									temp2->Pos=temp->Pos-Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+								}
+								else if(temp->Dir.y<0.4&&temp->Dir.y>-0.4)
+								{
+									temp2->Pos=temp->Pos-Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+								}
+								else
+								{
+									temp2->Pos=temp->Pos-Vector3D(-temp->Dir.x*32,temp->Dir.y*32)*counter;
+								}
+								temp2->SkillPhase=2;
+								temp2->ID=MOB_CLEAVE;
+								timer->resetTime(temp2->timeRef);
+								timer->changeLimit(temp2->timeRef,500);
+								counter++;
+								cout<<counter<<" ";
+								if(counter==2)
+								{
+									misc=true;
+								}
+							}
+						}
+						while(counter!=2&&!misc)
+						{
+							SkillData temp2;
+							temp2.active=true;
+							temp2.Pos=temp->Pos;
+							if(temp->Dir.x<0.4&&temp->Dir.x>-0.4)
+							{
+								temp2.Pos=temp2.Pos+Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+							}
+							else if(temp->Dir.y<0.4&&temp->Dir.y>-0.4)
+							{
+								temp2.Pos=temp2.Pos+Vector3D(temp->Dir.y*32,temp->Dir.x*32)*counter;
+							}
+							else
+							{
+								temp2.Pos=temp2.Pos+Vector3D(-temp->Dir.x*32,temp->Dir.y*32)*counter;
+							}
+							temp2.SkillPhase=2;
+							temp2.timeRef=timer->insertNewTime(500);
+							temp2.ID=ATTACK;
+							temp3.push_back(temp2);
+							counter++;
+							cout<<counter<<" ";
+						}
+						cout<<"\n";
+						temp->SkillPhase=0;
+						temp->active=false;
+					}
+					break;
+				case 2://attack
 					{
 						physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 						skillObj.pos.Set(temp->Pos.x,temp->Pos.y);
-						skillObj.size.Set(3*TILE_SIZE,3*TILE_SIZE);
+						skillObj.size.Set(TILE_SIZE,TILE_SIZE);
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->damagePlayer(80);
-							temp->SkillPhase=3;
+							Hero->damagePlayer(70);
+							temp->SkillPhase=4;
 						}
-					}
 
+					}
 					if(timer->testTime(temp->timeRef))
 					{
-						temp->SkillPhase=2;
+						temp->SkillPhase=3;
 						timer->changeLimit(temp->timeRef,250);
 					}
 					break;
-				case 2://cooldown
+				case 3://cool
 					if(timer->testTime(temp->timeRef))
 					{
 						temp->SkillPhase=0;
 						temp->active=false;
 					}
 					break;
-				case 3://attacked enemy
+				case 4://attacked
 					if(timer->testTime(temp->timeRef))
 					{
-						temp->SkillPhase=2;
+						temp->SkillPhase=3;
 						timer->changeLimit(temp->timeRef,250);
 					}
 					break;
@@ -1167,99 +1297,100 @@ void Skills::render()
 		if(temp.active&&temp.rend)
 		{
 			glPushMatrix();
-			switch(temp.ID)
-			{
-			case ATTACK:
-			case MOB_CLEAVE:
-				switch(temp.SkillPhase)
+				switch(temp.ID)
 				{
-				case 1:
-					glColor3f(1,1,1);
-					break;
-				case 2:
-				case 3:
-					glColor3f(0,1,0);
-					break;
-				}
-				glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
-				glScalef(64+(64*abs(temp.Dir.y)),64+(64*abs(temp.Dir.x)),1);
-				break;
-			case MOB_MELEE:
-				switch(temp.SkillPhase)				
-				{
-				case 1:
-					return;
-					break;
-				case 3:
-				case 4:
-					glColor3f(0,1,0);
-					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
-					glScalef(32,32,1);
-					break;
-				case 2:
-					glColor3f(1,1,1);
-					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
-					glScalef(32,32,1);
-					break;
-				}
-				break;
-			case RANGE:
-				switch(temp.SkillPhase)
-				{
-				case 1:
-					glColor3f(1,0,0);
-				case 3:
-				case 2:
-					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
-					glScalef(32,32,0);
-					break;
-				}
-				break;
-			case MOB_RANGE:
-				switch(temp.SkillPhase)
-				{
-				case 1:
-					glColor3f(1,0,0);
-				case 3:
-				case 2:
-					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
-					glScalef(32,32,0);
-					break;
-				}
-				break;
-			case WALLOFCOIN:
-			case MOB_LINE:
-				switch(temp.SkillPhase)
-				{
-				default:
-					moveon=false;
-				case -1:
+				case ATTACK:
+				case MOB_CLEAVE:
+					switch(temp.SkillPhase)
+					{
+					case 1:
+					case 2:
+						glColor3f(1,1,1);
+						break;
+					case 3:
+					case 4:
+						glColor3f(0,1,0);
+						break;
+					}
 					glTranslatef(temp.Pos.x,temp.Pos.y,0);
-					glScalef(32,32,0);
+					glScalef(TILE_SIZE,TILE_SIZE,1);
 					break;
+				case MOB_MELEE:
+					switch(temp.SkillPhase)				
+					{
+					case 1:
+						return;
+						break;
+					case 3:
+					case 4:
+						glColor3f(0,1,0);
+						glTranslatef(temp.Pos.x,temp.Pos.y,0);
+						glScalef(32,32,1);
+						break;
+					case 2:
+						glColor3f(1,1,1);
+						glTranslatef(temp.Pos.x,temp.Pos.y,0);
+						glScalef(32,32,1);
+						break;
+					}
+					break;
+				case RANGE:
+					switch(temp.SkillPhase)
+					{
+					case 1:
+						glColor3f(1,0,0);
+					case 3:
+					case 2:
+						glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
+						glScalef(32,32,0);
+						break;
+					}
+					break;
+				case MOB_RANGE:
+					switch(temp.SkillPhase)
+					{
+					case 1:
+						glColor3f(1,0,0);
+					case 3:
+					case 2:
+						glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
+						glScalef(32,32,0);
+						break;
+					}
+					break;
+				case WALLOFCOIN:
+				case MOB_LINE:
+					switch(temp.SkillPhase)
+					{
+					default:
+						moveon=false;
+					case -1:
+						glTranslatef(temp.Pos.x,temp.Pos.y,0);
+						glScalef(32,32,0);
+						break;
+					}
+					break;
+				case RANGEAOE:
+				case M_SUPER_AOE:
+					switch(temp.SkillPhase)
+					{
+					case 1:
+						glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
+						glScalef(32,32,0);
+						break;
+					case -1:
+						glTranslatef(temp.Pos.x,temp.Pos.y,0);
+						glScalef(16,16,0);
+						break;
+					case 2:
+						moveon=false;
+						break;
+					}
 				}
-				break;
-			case RANGEAOE:
-			case M_SUPER_AOE:
-				switch(temp.SkillPhase)
+				//if(moveon)
 				{
-				case 1:
-					glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
-					glScalef(32,32,0);
-					break;
-				case -1:
-					glTranslatef(temp.Pos.x,temp.Pos.y,0);
-					glScalef(16,16,0);
-					break;
-				case 2:
-					moveon=false;
-					break;
+					temp.skillSprite.render();
 				}
-			}
-			if(moveon)
-			{
-				temp.skillSprite.render();
-			}
 			glPopMatrix();
 			glColor3f(1,1,1);
 		}

@@ -39,6 +39,8 @@ public:
 	//Invincible State
 	bool invinc;
 
+	void update();
+
 	Sprite playerSprite;
 
 	//Get Active State

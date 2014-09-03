@@ -91,6 +91,16 @@ CAttributes* CPlayerInfo::getAttributes()
    Draw the hero
  ****************************************************************************************************/
 void CPlayerInfo::RenderHero() {
+	playerSprite.update();
+	glPushMatrix();
+		glTranslatef(pos.x+TILE_SIZE*0.5, pos.y+TILE_SIZE*0.5, 0);
+		glScalef(TILE_SIZE,TILE_SIZE,1);
+		playerSprite.render();
+	glPopMatrix();
+}
+
+void CPlayerInfo::update()
+{
 	mvcTime* timer=mvcTime::getInstance();
 	if(playerInventory->invincRef!=-1)
 	{
@@ -99,12 +109,6 @@ void CPlayerInfo::RenderHero() {
 			invinc=false;
 		}
 	}
-	playerSprite.update();
-	glPushMatrix();
-		glTranslatef(pos.x+TILE_SIZE*0.5, pos.y+TILE_SIZE*0.5, 0);
-		glScalef(TILE_SIZE,TILE_SIZE,1);
-		playerSprite.render();
-	glPopMatrix();
 }
 
 //Set Both Position

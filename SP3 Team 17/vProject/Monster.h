@@ -20,7 +20,8 @@ public:
 	void update(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map);//should call ai to do stuff
 
 	TextureImage MobTex;
-
+	
+	int ID;//for csv loading
 	Sprite mobSprite;
 
 	bool dead;

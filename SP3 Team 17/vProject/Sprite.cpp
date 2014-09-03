@@ -26,6 +26,7 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 		CurSubImage = 0;
 		ratio_x = 1.0f / SubImage;
 		ratio_y = 1.0f / ImageVar;
+		AnimationInvert=false;
 
 	return true;
 }
@@ -33,6 +34,10 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 void Sprite::changeStop(bool nstop)
 {
 	Stop=nstop;
+}
+void Sprite::SetAnimationInvert(bool AnimationInvert)
+{
+	this->AnimationInvert=AnimationInvert;
 }
 
 void Sprite::render()
@@ -43,20 +48,38 @@ void Sprite::render()
 	
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBindTexture(GL_TEXTURE_2D, Images.texID);
-
-		glBegin (GL_TRIANGLE_STRIP);
-			glTexCoord2f(ratio_x * CurSubImage, ratio_y * CurrentVar);
-			glVertex3f(-0.5, 0.5, 0);
+		if(AnimationInvert)
+		{
+			glBegin (GL_TRIANGLE_STRIP);
+				glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * CurrentVar);
+				glVertex3f(-0.5, 0.5, 0);
 		
-			glTexCoord2f(ratio_x * CurSubImage, ratio_y * (CurrentVar+1));
-			glVertex3f(-0.5,-0.5,0);
+				glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * (CurrentVar+1));
+				glVertex3f(-0.5,-0.5,0);
 
-			glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * CurrentVar);
-			glVertex3f(0.5,0.5,0);
+				glTexCoord2f(ratio_x * CurSubImage, ratio_y * CurrentVar);
+				glVertex3f(0.5,0.5,0);
 
-			glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * (CurrentVar+1));
-			glVertex3f(0.5,-0.5,0);
-		glEnd();
+				glTexCoord2f(ratio_x * CurSubImage, ratio_y * (CurrentVar+1));
+				glVertex3f(0.5,-0.5,0);
+			glEnd();
+		}
+		else
+		{
+			glBegin (GL_TRIANGLE_STRIP);
+				glTexCoord2f(ratio_x * CurSubImage, ratio_y * CurrentVar);
+				glVertex3f(-0.5, 0.5, 0);
+		
+				glTexCoord2f(ratio_x * CurSubImage, ratio_y * (CurrentVar+1));
+				glVertex3f(-0.5,-0.5,0);
+
+				glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * CurrentVar);
+				glVertex3f(0.5,0.5,0);
+
+				glTexCoord2f(ratio_x * (CurSubImage + 1), ratio_y * (CurrentVar+1));
+				glVertex3f(0.5,-0.5,0);
+			glEnd();
+		}
 
 		glDisable( GL_BLEND );
 		glDisable( GL_TEXTURE_2D );

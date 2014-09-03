@@ -103,6 +103,7 @@ void myApplication::Update(void)
 				if(temp->active)
 					MobNo++;
 			}
+			theHero->update();
 			if(MobNo==0)
 			{
 				currentLevel++;
@@ -157,10 +158,10 @@ void myApplication::HeroUpdate()
 	//Check if the user is standing still
 	bMoving = false;
 	//Check Collision of the hero before moving Up
-	if (!physics::testColMap(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
+	//Do not allow movement when stopMovement is true
+	if((myKeys['w'] || myKeys['W']) && !stopMovement)
 	{
-		//Do not allow movement when stopMovement is true
-		if((myKeys['w'] || myKeys['W']) && !stopMovement)
+		if (!physics::testColMap(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
 		{
 			moveMeUpDown(true, timer->getDelta());
 			bMoving = true;
@@ -170,10 +171,10 @@ void myApplication::HeroUpdate()
 	}
 
 	//Check Collision of the hero before moving down
-	if (!physics::testColMap(theHero->GetPos()+Vector3D(0,5,0), false, true, false, false, theMap,mapOffset_x,mapOffset_y))
+	//Do not allow movement when stopMovement is true
+	if((myKeys['s'] || myKeys['S']) && !stopMovement)
 	{
-		//Do not allow movement when stopMovement is true
-		if((myKeys['s'] || myKeys['S']) && !stopMovement)
+		if (!physics::testColMap(theHero->GetPos()+Vector3D(0,5,0), false, true, false, false, theMap,mapOffset_x,mapOffset_y))
 		{
 			moveMeUpDown(false, timer->getDelta());
 			bMoving = true;
@@ -184,10 +185,10 @@ void myApplication::HeroUpdate()
 	//Check Collision of the hero before moving left
 	Vector3D posL; //Fixes the Collision 
 	posL.Set(theHero->GetPos().x-7, theHero->GetPos().y); //Buffer of 5
-	if (!physics::testColMap(posL, false, false, true, false, theMap,mapOffset_x,mapOffset_y))
+	//Do not allow movement when stopMovement is true
+	if((myKeys['a'] || myKeys['A']) && !stopMovement)
 	{
-		//Do not allow movement when stopMovement is true
-		if((myKeys['a'] || myKeys['A']) && !stopMovement)
+		if (!physics::testColMap(posL, false, false, true, false, theMap,mapOffset_x,mapOffset_y))
 		{
 			moveMeLeftRight(true, timer->getDelta());
 			bMoving = true;
@@ -199,10 +200,10 @@ void myApplication::HeroUpdate()
 	//Check Collision of the hero before moving right
 	Vector3D posR; //Fixes the Collision 
 	posR.Set(theHero->GetPos().x+7, theHero->GetPos().y); //Buffer of 5
-	if (!physics::testColMap(posR, false, false, false, true, theMap,mapOffset_x,mapOffset_y))
+	//Do not allow movement when stopMovement is true
+	if((myKeys['d'] || myKeys['D']) && !stopMovement)
 	{
-		//Do not allow movement when stopMovement is true
-		if((myKeys['d'] || myKeys['D']) && !stopMovement)
+		if (!physics::testColMap(posR, false, false, false, true, theMap,mapOffset_x,mapOffset_y))
 		{
 			moveMeLeftRight(false, timer->getDelta());
 			bMoving = true;
@@ -1323,8 +1324,9 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=COIN_RANGED;
 						//set the monster type here
-						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
-						temp3->mobSprite.ImageInit(4,4);
+						temp3->mobSprite.LoadTGA("Images/moneynote.tga");
+						temp3->mobSprite.ImageInit(8,1);
+						temp3->mobSprite.changeStop(false);
 						temp3->stats.setStats(0,50);
 						temp3->stats.setStats(1,50);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
@@ -1350,8 +1352,9 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=COIN_MELEE;
 						//set the monster type here
-						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
-						temp3->mobSprite.ImageInit(4,4);
+						temp3->mobSprite.LoadTGA("Images/moneynote.tga");
+						temp3->mobSprite.ImageInit(8,1);
+						temp3->mobSprite.changeStop(false);
 						temp3->stats.setStats(0,80);
 						temp3->stats.setStats(1,80);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));

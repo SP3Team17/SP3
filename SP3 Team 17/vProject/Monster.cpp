@@ -439,12 +439,31 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 						}
 					}
 				}
+				break;
+			case COIN_MELEE:
+			case COIN_RANGED:
+				if(dirMoved.x>0)
+				{
+					mobSprite.SetAnimationInvert(true);
+					mobSprite.changeStop(false);
+				}
+				else
+				{
+					mobSprite.SetAnimationInvert(false);
+					mobSprite.changeStop(false);
+				}
 			}
 		}
 		else
 		{
+			switch(ID)
+			{
+			case FIEND_CLEAVE:
+			case FIEND_RANGED:
 				mobSprite.changeSubImage(0);
 				mobSprite.changeStop(true);
+				break;
+			}
 		}
 			
 	}
