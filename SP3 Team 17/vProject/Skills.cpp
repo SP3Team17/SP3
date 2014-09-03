@@ -53,7 +53,7 @@ Skills::~Skills(void)
 {
 }
 
-void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
+bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 {
 	if(!cool)
 	{	
@@ -86,7 +86,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case MOB_MELEE:
 					if(temp->timeRef==-1)
@@ -101,7 +101,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,2000);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case RANGE:
 					if(temp->timeRef==-1)
@@ -116,7 +116,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case MOB_RANGE:
 					if(temp->timeRef==-1)
@@ -131,7 +131,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case RANGEAOE:
 					if(temp->timeRef==-1)
@@ -146,7 +146,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case M_SUPER_AOE:
 					if(temp->timeRef==-1)
@@ -161,7 +161,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,500);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case WALLOFCOIN:
 					if(temp->timeRef==-1)
@@ -174,9 +174,9 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 						timer->changeLimit(temp->timeRef,50);
 					}
 					timer->resetTime(coolRef);
-					timer->changeLimit(coolRef,4000);
+					timer->changeLimit(coolRef,1000);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case MOB_LINE:
 					if(temp->timeRef==-1)
@@ -191,7 +191,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,4000);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				case MOB_CLEAVE:
 					if(temp->timeRef==-1)
@@ -206,7 +206,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,1250);
 					temp->active=true;
-					return;
+					return true;
 					break;
 				}
 				temp->active=true;
@@ -289,7 +289,7 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			break;
 		case WALLOFCOIN:
 			timer->resetTime(coolRef);
-			timer->changeLimit(coolRef,3000);
+			timer->changeLimit(coolRef,1000);
 			temp2.timeRef=timer->insertNewTime(50);
 			temp2.skillSprite.LoadTGA("Images/player.tga");
 			temp2.skillSprite.ImageInit(4,4);
@@ -321,8 +321,9 @@ void Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 		}
 		temp2.active=true;
 		data.push_back(temp2);
+		return true;
 	}
-
+	return false;
 }
 
 void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map)
@@ -385,7 +386,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							skillObj.size.Set(3*TILE_SIZE,3*TILE_SIZE);
 							if(physics::testCol(skillObj,mobObj))
 							{
-								enemy->setStats(0,enemy->getStats(0)-5);
+								enemy->dealDam(Hero->getAttributes()->getAttack(),1.2);
 								temp->SkillPhase=3;
 							}
 						}
@@ -425,7 +426,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						skillObj.size.Set(3*TILE_SIZE,3*TILE_SIZE);
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-2);
+							Hero->damagePlayer(80);
 							temp->SkillPhase=3;
 						}
 					}
@@ -469,7 +470,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						skillObj.pos.Set(temp->Pos.x,temp->Pos.y);
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-5);
+							Hero->damagePlayer(40);
 							temp->SkillPhase=4;
 						}
 						if(timer->testTime(temp->timeRef))
@@ -508,7 +509,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 						if(physics::testCol(skillObj,mobObj))
 						{
-							enemy->setStats(0,enemy->getStats(0)-5);
+							enemy->dealDam(Hero->getAttributes()->getAttack(),0.5);
 							temp->SkillPhase=2;
 							moveon=true;
 						}
@@ -576,8 +577,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 						if(physics::testCol(skillObj,mobObj))
 						{
-							//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
-							enemy->setStats(0,enemy->getStats(0)-5);
+							enemy->dealDam(Hero->getAttributes()->getAttack(),0.7);
 							temp->SkillPhase=2;
 							moveon=true;
 						}
@@ -710,6 +710,11 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						temp->SkillPhase=0;
 						temp->active=false;
 					}
+					else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
+					{
+						temp->SkillPhase=0;
+						temp->active=false;
+					}
 					else
 					{	
 						skillObj.size.Set(16,16);
@@ -720,7 +725,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							if(physics::testCol(skillObj,mobObj))
 							{
 								//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
-								enemy->setStats(0,enemy->getStats(0)-1);
+								enemy->dealDam(Hero->getAttributes()->getAttack(),0.1);
 								temp->SkillPhase=0;
 								temp->active=false;
 							}
@@ -731,16 +736,33 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 				}
 				break;
 				case M_SUPER_AOE:
+				bool up,down,left,right;
+				up=down=left=right=false;
+				if(temp->Dir.y<0)
+				{
+					up=true;
+				}
+				else if(temp->Dir.y>0)
+				{
+					down=true;
+				}
+				if(temp->Dir.x<0)
+				{
+					left=true;
+				}
+				else if(temp->Dir.x>0)
+				{
+					right=true;
+				}
 				switch(temp->SkillPhase)
 				{
 				case 1://attack duration
 					{
-						bool up,down,left,right;
 						physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 						if(physics::testCol(skillObj,mobObj))
 						{
 							//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
-							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-5);
+							Hero->damagePlayer(140);
 							temp->SkillPhase=2;
 						}
 						else
@@ -749,23 +771,6 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							{
 								temp->SkillPhase=2;
 								timer->changeLimit(temp->timeRef,500);
-							}
-							up=down=left=right=false;
-							if(temp->Dir.y<0)
-							{
-								up=true;
-							}
-							else if(temp->Dir.y>0)
-							{
-								down=true;
-							}
-							if(temp->Dir.x<0)
-							{
-								left=true;
-							}
-							else if(temp->Dir.x>0)
-							{
-								right=true;
 							}
 							if(timer->testTime(temp->timeRef))
 							{
@@ -872,6 +877,11 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						temp->SkillPhase=0;
 						temp->active=false;
 					}
+					else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
+					{
+						temp->SkillPhase=0;
+						temp->active=false;
+					}
 					else
 					{	
 						skillObj.size.Set(16,16);
@@ -879,7 +889,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						if(physics::testCol(skillObj,mobObj))
 						{
 							//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
-							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-1);
+							Hero->damagePlayer(60);
 							temp->SkillPhase=0;
 							temp->active=false;
 						}
@@ -899,7 +909,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-5);
+							Hero->damagePlayer(30);
 							temp->SkillPhase=2;
 							moveon=true;
 						}
@@ -954,6 +964,23 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 				}
 				break;
 			case MOB_LINE:
+				up=down=left=right=false;
+				if(temp->Dir.y<0)
+				{
+					up=true;
+				}
+				else if(temp->Dir.y>0)
+				{
+					down=true;
+				}
+				if(temp->Dir.x<0)
+				{
+					left=true;
+				}
+				else if(temp->Dir.x>0)
+				{
+					right=true;
+				}
 				switch(temp->SkillPhase)
 				{
 				default:
@@ -989,9 +1016,15 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								temp2.ID=MOB_LINE;
 								temp3.push_back(temp2);
 							}
+							if(physics::testColMap(temp->Pos,up,down,left,right,&map,offset_x,offset_y))
+							{
+								temp->SkillPhase=0;
+								temp->active=false;
+							}
 						}
 						else
 						{
+							temp->SkillPhase=0;
 							temp->active=false;
 						}
 					}
@@ -1001,7 +1034,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-1);
+							Hero->damagePlayer(20);
 						}
 						if(timer->testTime(temp->timeRef))
 						{
@@ -1012,6 +1045,23 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 				}
 				break;
 				case WALLOFCOIN:
+				up=down=left=right=false;
+				if(temp->Dir.y<0)
+				{
+					up=true;
+				}
+				else if(temp->Dir.y>0)
+				{
+					down=true;
+				}
+				if(temp->Dir.x<0)
+				{
+					left=true;
+				}
+				else if(temp->Dir.x>0)
+				{
+					right=true;
+				}
 				switch(temp->SkillPhase)
 				{
 				default:
@@ -1080,6 +1130,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						}
 						else
 						{
+							temp->SkillPhase=0;
 							temp->active=false;
 						}
 					}
@@ -1088,7 +1139,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 					if(physics::testCol(skillObj,mobObj))
 					{
-						Hero->getAttributes()->setHp(Hero->getAttributes()->getHp()-1);
+						Hero->damagePlayer(40);
 					}
 					if(timer->testTime(temp->timeRef))
 					{

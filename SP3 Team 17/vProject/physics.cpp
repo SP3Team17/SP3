@@ -105,7 +105,7 @@ bool physics::testColMap(Vector3D pos,
 	}
 	return false;
 }
-#include <iostream>
+
 bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> wallList,int offset_x,int offset_y)
 {
 	Vector3D w0=((end+pos)*0.5);
@@ -116,9 +116,10 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 	//int j=0;
 	for(vector<physicObj*>::iterator it=wallList.begin();it!=wallList.end();++it)
 	{
+		int dist=31;
 		physicObj* temp=*it;
 		//if((temp->pos-pos).GetMagnitudeSquare()<(pos-end).Length())
-		//if(abs(temp->pos.x-w0.x)<abs(length*NP.x)||abs(temp->pos.y-w0.y)<abs(length*NP.y))
+		//if(abs(temp->pos.x-w0.x)<abs(length)||abs(temp->pos.y-w0.y)<abs(length))
 		{
 			//j++;
 			Vector3D b1=temp->pos-Vector3D(offset_x-TILE_SIZE/2,offset_y-TILE_SIZE/2);
@@ -128,29 +129,22 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 			}
 			Vector3D N(NP.y,-NP.x,0);
 			N.normalizeVector3D();
-			if(abs((w0-b1).dotVector3D(N))<32)
+			if(abs((w0-b1).dotVector3D(N))<40)//longest possible side for both wall and tile
 			{
 				if(abs((w0-b1).dotVector3D(NP))<(pos-end).Length()*0.5+16)
 				{
-					//cout<<p<<" "<<j<<"\n";
 					return true;
 				}
 			}
 			if(abs((w0-b1).dotVector3D(NP))<(pos-end).Length()*0.5+16)
 			{
-				if(abs((w0-b1).dotVector3D(N))<32)
+				if(abs((w0-b1).dotVector3D(N))<40)
 				{
-					//cout<<p<<" "<<j<<"\n";
 					return true;
 				}
 			}
 		}
-		//else
-		{
-			//p++;
-		}
 	}
-	//cout<<p<<" "<<j<<"\n";
 	return false;
 }
 

@@ -93,3 +93,8 @@ void MobInfo::init(Vector3D pos,MobType type)
 		break;
 	}
 }
+
+void MobInfo::dealDam(int atk,float multiplier)
+{
+	MStats.health=MStats.health-atk*multiplier;
+}

@@ -28,6 +28,7 @@ public:
 	void init(Vector3D pos,MobType type);
 	bool active;
 	MobType type;
+	void dealDam(int atk,float muliplier);
 private:
 	struct mobStats
 	{

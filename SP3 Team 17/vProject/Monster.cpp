@@ -8,6 +8,9 @@ Monster::Monster(void)
 	timeRef=-1;
 	AIstates.patrolState=MonsterAI::MOVETO1;
 	AIstates.currentState=MonsterAI::IDLE;
+	AIstates.atkState=MonsterAI::SKILL1;
+	AIstates.attackCounter=0;
+	AIstates.attackIndex=-1;
 	rend=true;
 }
 
@@ -90,7 +93,7 @@ void Monster::patrol(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 					timer->changeLimit(timeRef,1000);
 				}
 			}
-			else if(physics::testColLineMap(stats.getPos()+Vector3D(16,16),AIstates.point1,wallList,offset_x,offset_y))//no clear path
+			else if(physics::testColLineMap(stats.getPos(),AIstates.point1,wallList,offset_x,offset_y))//no clear path
 			{
 				if(AIstates.HeroPoints.size()>0)
 				{
@@ -138,7 +141,7 @@ void Monster::patrol(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 					timer->changeLimit(timeRef,1000);
 				}
 			}
-			else if(physics::testColLineMap(stats.getPos()+Vector3D(16,16),AIstates.point2,wallList,offset_x,offset_y))//no clear path
+			else if(physics::testColLineMap(stats.getPos(),AIstates.point2,wallList,offset_x,offset_y))//no clear path
 			{
 
 				if(AIstates.HeroPoints.size()>0)
@@ -177,197 +180,80 @@ void Monster::patrol(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 	}
 }
 
+void Monster::mobAttacks(int detection, float moveSpd,Skills::SkillType castSkill,std::vector<physicObj*> wallList,float offset_x,float offset_y)
+{
+	CPlayerInfo* Hero=CPlayerInfo::getInstance();
+	mvcTime* timer=mvcTime::getInstance();
+	float dt=timer->getDelta();
+	if((Hero->GetPos()-this->stats.getPos()).Length()>detection)
+	{
+		AIstates.currentState=MonsterAI::MOVETOATTACK;
+		Vector3D dir=Hero->GetPos()-stats.getPos();
+		dir.normalizeVector3D();
+		AIstates.HeroPoints.back()=Hero->GetPos();
+		if(!physics::testColLineMap(*(AIstates.HeroPoints.end()-2),*(AIstates.HeroPoints.end()-1),wallList,offset_x,offset_y))
+		{
+			stats.setPos(stats.getPos()+dir*moveSpd*dt);
+		}
+		else
+		{
+			AIstates.HeroPoints.pop_back();
+			AIstates.HeroPoints.push_back(stats.getPos());
+			AIstates.HeroPoints.push_back(Hero->GetPos());
+			stats.setPos(stats.getPos()+dir*100*dt);
+		}
+	}
+	else
+	{
+		AIstates.currentState=MonsterAI::ATTACK;
+		Vector3D dir=Hero->GetPos()-stats.getPos();
+		dir.normalizeVector3D();
+		skillList.procSkills(stats.getPos(),dir,castSkill);
+	}
+}
+
 void Monster::attack(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map)
 {
 	CPlayerInfo* Hero=CPlayerInfo::getInstance();
 	mvcTime* timer=mvcTime::getInstance();
+	if(!(AIstates.HeroPoints.size()>0))
+	{
+		switch(AIstates.patrolState)
+		{
+		case MonsterAI::MOVETO1:
+			AIstates.HeroPoints.push_back(AIstates.point1);
+			AIstates.HeroPoints.push_back(stats.getPos());
+			AIstates.HeroPoints.push_back(Hero->GetPos());
+			break;
+		case MonsterAI::MOVETO2:
+			AIstates.HeroPoints.push_back(AIstates.point2);
+			AIstates.HeroPoints.push_back(stats.getPos());
+			AIstates.HeroPoints.push_back(Hero->GetPos());
+			break;
+		}
+	}
+	AIstates.HeroPoints.back()=Hero->GetPos();
+	if(physics::testColLineMap(*(AIstates.HeroPoints.end()-2),*(AIstates.HeroPoints.end()-1),wallList,offset_x,offset_y))
+	{
+		AIstates.HeroPoints.pop_back();
+		AIstates.HeroPoints.push_back(stats.getPos());
+		AIstates.HeroPoints.push_back(Hero->GetPos());
+	}
 	switch(stats.type)
 	{
 	case DEFAULT:
-		if((Hero->GetPos()-this->stats.getPos()).Length()>TILE_SIZE*4)
-		{
-			AIstates.currentState=MonsterAI::MOVETOATTACK;
-			if(!(AIstates.HeroPoints.size()>0))
-			{
-				switch(AIstates.patrolState)
-				{
-				case MonsterAI::MOVETO1:
-					AIstates.HeroPoints.push_back(AIstates.point1);
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					break;
-				case MonsterAI::MOVETO2:
-					AIstates.HeroPoints.push_back(AIstates.point2);
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					break;
-				}
-			}
-			else
-			{
-				Vector3D dir=Hero->GetPos()-stats.getPos();
-				dir.normalizeVector3D();
-				AIstates.HeroPoints.back()=Hero->GetPos();
-				if(!physics::testColLineMap(*(AIstates.HeroPoints.end()-2),stats.getPos()+dir*100*dt+Vector3D(16,16),wallList,offset_x,offset_y))
-				{
-					stats.setPos(stats.getPos()+dir*100*dt);
-				}
-				else
-				{
-					AIstates.HeroPoints.pop_back();
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					stats.setPos(stats.getPos()+dir*100*dt);
-				}
-			}
-		}
-		else
-		{
-			AIstates.currentState=MonsterAI::ATTACK;
-			Vector3D dir=Hero->GetPos()-stats.getPos();
-			dir.normalizeVector3D();
-			skillList.procSkills(stats.getPos(),dir,Skills::WALLOFCOIN);
-		}
+		mobAttacks(TILE_SIZE*4,100,Skills::WALLOFCOIN,wallList,offset_x,offset_y);
 		break;
 		case FIEND_RANGED:
-		if((Hero->GetPos()-this->stats.getPos()).Length()>TILE_SIZE*4)
-		{
-			AIstates.currentState=MonsterAI::MOVETOATTACK;
-			if(!(AIstates.HeroPoints.size()>0))
-			{
-				switch(AIstates.patrolState)
-				{
-				case MonsterAI::MOVETO1:
-					AIstates.HeroPoints.push_back(AIstates.point1);
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					break;
-				case MonsterAI::MOVETO2:
-					AIstates.HeroPoints.push_back(AIstates.point2);
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					break;
-				}
-			}
-			else
-			{
-				Vector3D dir=Hero->GetPos()-stats.getPos();
-				dir.normalizeVector3D();
-				AIstates.HeroPoints.back()=Hero->GetPos();
-				if(!physics::testColLineMap(*(AIstates.HeroPoints.end()-2),stats.getPos()+dir*100*dt+Vector3D(16,16),wallList,offset_x,offset_y))
-				{
-					stats.setPos(stats.getPos()+dir*100*dt);
-				}
-				else
-				{
-					AIstates.HeroPoints.pop_back();
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					stats.setPos(stats.getPos()+dir*100*dt);
-				}
-			}
-		}
-		else
-		{
-			AIstates.currentState=MonsterAI::ATTACK;
-			Vector3D dir=Hero->GetPos()-stats.getPos();
-			dir.normalizeVector3D();
-			skillList.procSkills(stats.getPos(),dir,Skills::MOB_LINE);
-		}
+		mobAttacks(TILE_SIZE*4,100,Skills::MOB_LINE,wallList,offset_x,offset_y);
 		break;
 	case COIN_RANGED:
-		if((Hero->GetPos()-this->stats.getPos()).Length()>TILE_SIZE*6)
-		{
-			AIstates.currentState=MonsterAI::MOVETOATTACK;
-			if(!(AIstates.HeroPoints.size()>0))
-			{
-				switch(AIstates.patrolState)
-				{
-				case MonsterAI::MOVETO1:
-					AIstates.HeroPoints.push_back(AIstates.point1);
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					break;
-				case MonsterAI::MOVETO2:
-					AIstates.HeroPoints.push_back(AIstates.point2);
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					break;
-				}
-			}
-			else
-			{
-				Vector3D dir=Hero->GetPos()-stats.getPos();
-				dir.normalizeVector3D();
-				AIstates.HeroPoints.back()=Hero->GetPos();
-				if(!physics::testColLineMap(*(AIstates.HeroPoints.end()-2),stats.getPos()+dir*100*dt+Vector3D(16,16),wallList,offset_x,offset_y))
-				{
-					stats.setPos(stats.getPos()+dir*100*dt);
-				}
-				else
-				{
-					AIstates.HeroPoints.pop_back();
-					AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-					AIstates.HeroPoints.push_back(Hero->GetPos());
-					stats.setPos(stats.getPos()+dir*100*dt);
-				}
-			}
-		}
-		else
-		{
-			AIstates.currentState=MonsterAI::ATTACK;
-			Vector3D dir=Hero->GetPos()-stats.getPos();
-			dir.normalizeVector3D();
-			skillList.procSkills(stats.getPos(),dir,Skills::MOB_RANGE);//change to mob_ranged
-		}
+		mobAttacks(TILE_SIZE*6,100,Skills::MOB_RANGE,wallList,offset_x,offset_y);
 		break;
 	case COIN_MELEE:
 		if(timer->getTimeInterval(this->skillList.coolRef)>1000||!skillList.cool)
 		{
-			if((Hero->GetPos()+Vector3D(16,16)-this->stats.getPos()).Length()>TILE_SIZE*1.5)
-			{
-				AIstates.currentState=MonsterAI::MOVETOATTACK;
-				if(!(AIstates.HeroPoints.size()>0))
-				{
-					switch(AIstates.patrolState)
-					{
-					case MonsterAI::MOVETO1:
-						AIstates.HeroPoints.push_back(AIstates.point1);
-						AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-						AIstates.HeroPoints.push_back(Hero->GetPos());
-						break;
-					case MonsterAI::MOVETO2:
-						AIstates.HeroPoints.push_back(AIstates.point2);
-						AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-						AIstates.HeroPoints.push_back(Hero->GetPos());
-						break;
-					}
-				}
-				else
-				{
-					Vector3D dir=Hero->GetPos()-stats.getPos();
-					dir.normalizeVector3D();
-					AIstates.HeroPoints.back()=Hero->GetPos();
-					if(!physics::testColLineMap(*(AIstates.HeroPoints.end()-2),stats.getPos()+dir*100*dt+Vector3D(16,16),wallList,offset_x,offset_y))
-					{
-						stats.setPos(stats.getPos()+dir*120*dt);
-					}
-					else
-					{
-						AIstates.HeroPoints.pop_back();
-						AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-						AIstates.HeroPoints.push_back(Hero->GetPos());
-						stats.setPos(stats.getPos()+dir*120*dt);
-					}
-				}
-			}
-			else
-			{
-				AIstates.currentState=MonsterAI::ATTACK;
-				Vector3D dir=Hero->GetPos()-stats.getPos();
-				dir.normalizeVector3D();
-				skillList.procSkills(stats.getPos()+dir*16-Vector3D(16,16),dir,Skills::MOB_MELEE);
-			}
+			mobAttacks(TILE_SIZE*1.5,120,Skills::MOB_MELEE,wallList,offset_x,offset_y);
 			break;
 		}
 		break;
@@ -376,50 +262,7 @@ void Monster::attack(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 		{
 			if(timer->getTimeInterval(this->skillList.coolRef)>1000||!skillList.cool)
 			{
-				if((Hero->GetPos()+Vector3D(16,16)-this->stats.getPos()).Length()>TILE_SIZE*1.5)
-				{
-					AIstates.currentState=MonsterAI::MOVETOATTACK;
-					if(!(AIstates.HeroPoints.size()>0))
-					{
-						switch(AIstates.patrolState)
-						{
-						case MonsterAI::MOVETO1:
-							AIstates.HeroPoints.push_back(AIstates.point1);
-							AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-							AIstates.HeroPoints.push_back(Hero->GetPos());
-							break;
-						case MonsterAI::MOVETO2:
-							AIstates.HeroPoints.push_back(AIstates.point2);
-							AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-							AIstates.HeroPoints.push_back(Hero->GetPos());
-							break;
-						}
-					}
-					else
-					{
-						Vector3D dir=Hero->GetPos()-stats.getPos();
-						dir.normalizeVector3D();
-						AIstates.HeroPoints.back()=Hero->GetPos();
-						if(!physics::testColLineMap(*(AIstates.HeroPoints.end()-2),stats.getPos()+dir*100*dt+Vector3D(16,16),wallList,offset_x,offset_y))
-						{
-							stats.setPos(stats.getPos()+dir*120*dt);
-						}
-						else
-						{
-							AIstates.HeroPoints.pop_back();
-							AIstates.HeroPoints.push_back(stats.getPos()-Vector3D(16,16));
-							AIstates.HeroPoints.push_back(Hero->GetPos());
-							stats.setPos(stats.getPos()+dir*120*dt);
-						}
-					}
-				}
-				else
-				{
-					AIstates.currentState=MonsterAI::ATTACK;
-					Vector3D dir=Hero->GetPos()-stats.getPos();
-					dir.normalizeVector3D();
-					skillList.procSkills(stats.getPos()+dir*16-Vector3D(16,16),dir,Skills::MOB_CLEAVE);
-				}
+				mobAttacks(TILE_SIZE*1.5,120,Skills::MOB_CLEAVE,wallList,offset_x,offset_y);
 				break;
 			}
 		}
@@ -429,7 +272,53 @@ void Monster::attack(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 			{
 				AIstates.attackIndex=timer->insertNewTime(2000);
 			}
-			//if(
+			switch(AIstates.currentState)
+			{
+			case MonsterAI::ATTACK:
+				switch(AIstates.atkState)
+				{
+				case MonsterAI::SKILL1:
+					if(AIstates.attackCounter>8)
+					{
+						AIstates.currentState=MonsterAI::IDLE;
+						timer->resetTime(AIstates.attackIndex);
+						timer->changeLimit(AIstates.attackIndex,2000);
+						AIstates.atkState=MonsterAI::SKILL2;
+						AIstates.attackCounter=0;
+					}
+					else
+					{
+						Vector3D dir=Hero->GetPos()-stats.getPos();
+						dir.normalizeVector3D();
+						if(skillList.procSkills(stats.getPos(),dir,Skills::M_SUPER_AOE))
+							AIstates.attackCounter++;
+					}
+					break;
+				case MonsterAI::SKILL2:
+					if(AIstates.attackCounter>4)
+					{
+						AIstates.currentState=MonsterAI::IDLE;
+						timer->resetTime(AIstates.attackIndex);
+						timer->changeLimit(AIstates.attackIndex,5000);
+						AIstates.atkState=MonsterAI::SKILL1;
+						AIstates.attackCounter=0;
+					}
+					else
+					{
+						Vector3D dir=Hero->GetPos()-stats.getPos();
+						dir.normalizeVector3D();
+						if(skillList.procSkills(stats.getPos(),dir,Skills::WALLOFCOIN))
+							AIstates.attackCounter++;
+					}				
+					break;
+				}
+				break;
+			case MonsterAI::IDLE:
+				if(timer->testTime(AIstates.attackIndex))
+				{
+					AIstates.currentState=MonsterAI::ATTACK;
+				}
+			}
 	}
 }
 
@@ -456,10 +345,10 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 	{
 		stats.active=false;
 	}
-	///*else if(!(stats.getPos().x<LEFT_BORDER+TILE_SIZE*0.5||stats.getPos().x>MAP_SCREEN_WIDTH+TILE_SIZE*2))
-	//{
+	/*else if(!(stats.getPos().x<LEFT_BORDER+TILE_SIZE*0.5||stats.getPos().x>MAP_SCREEN_WIDTH+TILE_SIZE*2))
+	{
 
-	//}*/
+	}*/
 	else
 	{
 		if(stats.active)//set the render option for if the enemy is within the borders
@@ -485,7 +374,7 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 		{
 			if((Hero->GetPos()-this->stats.getPos()).Length()<TILE_SIZE*8)
 			{
-				if(physics::testColLineMap(stats.getPos()+Vector3D(16,16),Hero->GetPos(),wallList,offset_x,offset_y))
+				if(physics::testColLineMap(stats.getPos(),Hero->GetPos(),wallList,offset_x,offset_y))
 				{//cannot see and continue patrol
 					patrol(dt,enemies,wallList,offset_x,offset_y,map);
 				}
@@ -499,7 +388,7 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 				patrol(dt,enemies,wallList,offset_x,offset_y,map);
 			}
 		}
-		else
+		else//boss does not have a patrol state just attack
 		{
 			attack(dt,enemies,wallList,offset_x,offset_y,map);
 		}
@@ -509,7 +398,6 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 
 void Monster::render()
 {
-
 	if(AIstates.HeroPoints.size()>0)
 	{
 		for(vector<Vector3D>::iterator it=AIstates.HeroPoints.begin();it!=--AIstates.HeroPoints.end();++it)

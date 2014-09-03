@@ -41,7 +41,7 @@ public:
 	~Skills(void);	
 	void Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,float offset_x,float offset_y,CMap map);//,player* hero
 	void render();
-	void procSkills(Vector3D pos,Vector3D Dir,SkillType ID);
+	bool procSkills(Vector3D pos,Vector3D Dir,SkillType ID);
 	TextureImage skillTex[TOTAL];
 	int coolRef;
 	bool cool;

@@ -125,6 +125,7 @@ private:
 	void menuSequence();
 	void renderTutorial();
 
+	void RenderMiniMap(CMap* map);
 
 	//Movement
 	bool jump, bLeft, bRight, bMoving;

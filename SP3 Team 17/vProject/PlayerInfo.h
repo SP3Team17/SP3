@@ -111,6 +111,8 @@ public:
 					   const int topBorder, const int bottomBorder, 
 					   float timeDiff,
 					   int& mapOffset_x, int& mapOffset_y);
+	void damagePlayer(int damageAmt);
+
 };
 
 #endif

@@ -29,6 +29,7 @@ public:
 private:
 	void patrol(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map);
 	void attack(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map);
+	void mobAttacks(int detection, float moveSpd,Skills::SkillType castSkill,std::vector<physicObj*> wallList,float offset_x,float offset_y);
 	bool rend;
 	int timeRef;
 	float offset_x,offset_y,Poffset_x,Poffset_y;

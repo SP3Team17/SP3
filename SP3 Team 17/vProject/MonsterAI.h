@@ -27,7 +27,6 @@ public:
 	{
 		SKILL1=0,
 		SKILL2,
-		REST,
 	};
 	//pathing* getPath(void);
 	int attackIndex;//for timer reference(boss)
@@ -37,15 +36,7 @@ public:
 	Vector3D point2;
 	State currentState;
 	patrolSS patrolState;
+	attackState atkState;
 	//void calPath(Vector3D pos,Vector3D target)//CMap is a singleton
-	MonsterAI(void)
-	{
-		attackIndex=-1;
-		attackCounter=0;
-	}
-	~MonsterAI(void)
-	{
-
-	}
 };
 #endif 

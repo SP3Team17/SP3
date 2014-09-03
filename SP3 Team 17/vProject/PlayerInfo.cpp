@@ -345,3 +345,13 @@ void CPlayerInfo::ConstrainHero(const int leftBorder, const int rightBorder,
 	}
 }
 
+void CPlayerInfo::damagePlayer(int damage)
+{
+	short def = playerAttributes->getDefense()*0.5;
+	int damageDealt=damage-((rand()%(def)+def*0.5));
+	if(damageDealt<=0)
+	{
+		damageDealt=1;
+	}
+	playerAttributes->setHp(playerAttributes->getHp()-damageDealt);
+}

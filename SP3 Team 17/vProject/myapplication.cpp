@@ -298,6 +298,10 @@ void myApplication::renderScene(void)
 
 		theUI->renderBackpanel();
 		RenderMapBorder();
+		glPushMatrix();
+			glTranslatef(RESOLUTION_WIDTH*0.8,RESOLUTION_HEIGHT*0.8,0);
+			RenderMiniMap(theMap);
+		glPopMatrix();
 	}
 	
 	//Game is Paused
@@ -1254,8 +1258,8 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=COIN_MELEE;
 						//set the monster type here
-						temp3->stats.setStats(0,50);
-						temp3->stats.setStats(1,50);
+						temp3->stats.setStats(0,80);
+						temp3->stats.setStats(1,80);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 						temp3->ID=current;
@@ -1279,8 +1283,8 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=FIEND_CLEAVE;
 						//set the monster type here
-						temp3->stats.setStats(0,50);
-						temp3->stats.setStats(1,50);
+						temp3->stats.setStats(0,200);
+						temp3->stats.setStats(1,200);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 						temp3->ID=current;
@@ -1304,14 +1308,26 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=FIEND_RANGED;
 						//set the monster type here
-						temp3->stats.setStats(0,50);
-						temp3->stats.setStats(1,50);
+						temp3->stats.setStats(0,150);
+						temp3->stats.setStats(1,150);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 						temp3->ID=current;
 						infoList.push_back(&temp3->stats);
 						mobList.push_back(temp3);
 					}
+					break;
+				case 5:
+					temp3=new Monster;
+					temp3->stats.type=BOSS;
+					//set the monster type here
+					temp3->stats.setStats(0,500);
+					temp3->stats.setStats(1,500);
+					temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
+					temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
+					temp3->ID=current;
+					infoList.push_back(&temp3->stats);
+					mobList.push_back(temp3);
 					break;
 				}
 				break;
@@ -1993,6 +2009,145 @@ void myApplication::RenderTileMap(CMap* map) {
 		}
 	}
 
+	glPopMatrix();
+}
+
+void myApplication::RenderMiniMap(CMap* map) {
+	glPushMatrix();
+	int miniTileSize=2;
+	int yStart=-10;
+	int renderExtraY=0;
+	if(yStart+tileOffset_y<0)
+	{
+		yStart=-tileOffset_y;
+	}
+	renderExtraY=20+yStart;
+	int xStart=-10;
+	int renderExtraX=0;
+	if(xStart+tileOffset_x<0)
+	{
+		xStart=-tileOffset_x;
+	}
+	renderExtraX=20+xStart;
+	//Loop through column
+	for(int i = yStart; i < map->getNumOfTiles_ScreenHeight()+renderExtraY; ++i)
+	{
+		//Loop through row
+		for(int k = xStart; k < map->getNumOfTiles_ScreenWidth()+1+renderExtraX; ++k)
+		{
+			bool stop=false;
+			//if we have reached the right side of the Map, then do not display the extra column of tiles.
+			if ((tileOffset_x+k) >= map->getNumOfTiles_MapWidth())
+				stop=true;
+
+			//if we have reached the top side of the Map, then do not display the extra row of tiles.
+			if ((tileOffset_y+i) >= map->getNumOfTiles_MapHeight())
+				stop=true;
+
+			if(!stop)
+			{
+				//Wall texture
+				if (map->theScreenMap[tileOffset_y+i][tileOffset_x+k] == 1)
+				{
+					glColor3f(0,0,0);
+				}
+				else
+				{
+					glColor3f(1,1,1);
+				}
+				glPushMatrix();
+					glTranslatef((k-xStart)*miniTileSize, (i-yStart)*miniTileSize, 0);
+					//glEnable(GL_TEXTURE_2D);
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					//glBindTexture(GL_TEXTURE_2D, TileMapTexture[map->theScreenMap[tileOffset_y+i][tileOffset_x+k]].texID);
+					glBegin(GL_QUADS);
+						glTexCoord2f(0,1); glVertex2f(0,0);
+						glTexCoord2f(0,0); glVertex2f(0,miniTileSize);
+						glTexCoord2f(1,0); glVertex2f(miniTileSize,miniTileSize);
+						glTexCoord2f(1,1); glVertex2f(miniTileSize,0);
+					glEnd();
+					glDisable(GL_BLEND);
+					//glDisable(GL_TEXTURE_2D);
+				glPopMatrix();
+			}
+			else
+			{
+				glColor3f(0,0,0);
+				glPushMatrix();
+					glTranslatef((k-xStart)*miniTileSize, (i-yStart)*miniTileSize, 0);
+					//glEnable(GL_TEXTURE_2D);
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					//glBindTexture(GL_TEXTURE_2D, TileMapTexture[map->theScreenMap[tileOffset_y+i][tileOffset_x+k]].texID);
+					glBegin(GL_QUADS);
+						glTexCoord2f(0,1); glVertex2f(0,0);
+						glTexCoord2f(0,0); glVertex2f(0,miniTileSize);
+						glTexCoord2f(1,0); glVertex2f(miniTileSize,miniTileSize);
+						glTexCoord2f(1,1); glVertex2f(miniTileSize,0);
+					glEnd();
+					glDisable(GL_BLEND);
+					//glDisable(GL_TEXTURE_2D);
+				glPopMatrix();
+
+			}
+		}
+	}
+	int miniOffset_y=yStart+tileOffset_y;
+	int miniOffset_x=xStart+tileOffset_x;
+	glColor3f(1,0,0);
+	for(vector<MobInfo*>::iterator it=infoList.begin();it!=infoList.end();++it)
+	{
+		bool stop=false;
+		MobInfo* temp=*it;
+		if(temp->active)
+		{
+			float MxTranslate=(((temp->getPos().x-LEFT_BORDER+mapFineOffset_x)/32)+tileOffset_x-miniOffset_x)*2;
+			float MyTranslate=(((temp->getPos().y-BOTTOM_BORDER+mapFineOffset_y)/32)+tileOffset_y-miniOffset_y)*2;
+			if(MyTranslate/2>map->getNumOfTiles_ScreenHeight()+renderExtraY+tileOffset_y-1||MyTranslate/2<0)
+				stop=true;
+			else if(MxTranslate/2>map->getNumOfTiles_ScreenWidth()+renderExtraX+tileOffset_x-6||MxTranslate/2<0)
+				stop=true;
+
+			if(!stop)
+			{
+				glPushMatrix();
+					glTranslatef(MxTranslate,MyTranslate,0);
+					//glEnable(GL_TEXTURE_2D);
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					//glBindTexture(GL_TEXTURE_2D, TileMapTexture[map->theScreenMap[tileOffset_y+i][tileOffset_x+k]].texID);
+					glBegin(GL_QUADS);
+						glTexCoord2f(0,1); glVertex2f(0,0);
+						glTexCoord2f(0,0); glVertex2f(0,miniTileSize);
+						glTexCoord2f(1,0); glVertex2f(miniTileSize,miniTileSize);
+						glTexCoord2f(1,1); glVertex2f(miniTileSize,0);
+					glEnd();
+					glDisable(GL_BLEND);
+					//glDisable(GL_TEXTURE_2D);
+				glPopMatrix();
+			}
+		}
+	}
+	float xTranslate=(((theHero->GetPos().x-LEFT_BORDER)/32)+tileOffset_x-miniOffset_x)*2;
+	float yTranslate=(((theHero->GetPos().y-BOTTOM_BORDER)/32)+tileOffset_y-miniOffset_y)*2;
+	glColor3f(0,0.6,1);
+	glPushMatrix();
+		glTranslatef(xTranslate,yTranslate,0);
+		//glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glBindTexture(GL_TEXTURE_2D, TileMapTexture[map->theScreenMap[tileOffset_y+i][tileOffset_x+k]].texID);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0,1); glVertex2f(0,0);
+			glTexCoord2f(0,0); glVertex2f(0,miniTileSize);
+			glTexCoord2f(1,0); glVertex2f(miniTileSize,miniTileSize);
+			glTexCoord2f(1,1); glVertex2f(miniTileSize,0);
+		glEnd();
+		glDisable(GL_BLEND);
+		//glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+	glColor3f(1,1,1);
 	glPopMatrix();
 }
 
