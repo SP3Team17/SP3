@@ -122,7 +122,7 @@ bool physics::testColLineMap(Vector3D pos,Vector3D end,std::vector<physicObj*> w
 		//if(abs(temp->pos.x-w0.x)<abs(length)||abs(temp->pos.y-w0.y)<abs(length))
 		{
 			//j++;
-			Vector3D b1=temp->pos-Vector3D(offset_x-TILE_SIZE/2,offset_y-TILE_SIZE/2);
+			Vector3D b1=temp->pos-Vector3D(offset_x-TILE_SIZE*0.5,offset_y-TILE_SIZE*0.5);
 			if((w0-b1).dotVector3D(NP)<0)
 			{
 				NP=Vector3D(-NP.x,-NP.y,-NP.z);

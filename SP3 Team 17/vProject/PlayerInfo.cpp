@@ -1,6 +1,7 @@
 #include "PlayerInfo.h"
 #include <iostream>
 #include <GL/glut.h>
+#include "MVCtime.h"
 
 CPlayerInfo* CPlayerInfo::instance = NULL;
 
@@ -92,6 +93,14 @@ CAttributes* CPlayerInfo::getAttributes()
    Draw the hero
  ****************************************************************************************************/
 void CPlayerInfo::RenderHero() {
+	mvcTime* timer=mvcTime::getInstance();
+	if(playerInventory->invincRef!=-1)
+	{
+		if(timer->testTime(playerInventory->invincRef))
+		{
+			invinc=false;
+		}
+	}
 	glPushMatrix();
 	glTranslatef(pos.x, pos.y, 0);
 	glEnable(GL_TEXTURE_2D);
@@ -347,11 +356,14 @@ void CPlayerInfo::ConstrainHero(const int leftBorder, const int rightBorder,
 
 void CPlayerInfo::damagePlayer(int damage)
 {
-	short def = playerAttributes->getDefense()*0.5;
-	int damageDealt=damage-((rand()%(def)+def*0.5));
-	if(damageDealt<=0)
+	if(!invinc)
 	{
-		damageDealt=1;
+		short def = playerAttributes->getDefense()*0.5;
+		int damageDealt=damage-((rand()%(def)+def*0.5));
+		if(damageDealt<=0)
+		{
+			damageDealt=1;
+		}
+		playerAttributes->setHp(playerAttributes->getHp()-damageDealt);
 	}
-	playerAttributes->setHp(playerAttributes->getHp()-damageDealt);
 }

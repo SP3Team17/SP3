@@ -84,7 +84,8 @@ void myApplication::Update(void)
 {
 	//Update Time
 	mvcTime* timer=mvcTime::getInstance();
-	timer->updateTime();
+	
+		timer->updateTime();
 
 	if ((timeGetTime()-timelastcall)>1000.f/frequency)
 	{
@@ -95,6 +96,18 @@ void myApplication::Update(void)
 		//Update Function
 		if (gameStart && !gamePause)
 		{
+			int MobNo=0;
+			for(vector<MobInfo*>::iterator it=infoList.begin();it!=infoList.end();++it)
+			{
+				MobInfo* temp=*it;
+				if(temp->active)
+					MobNo++;
+			}
+			if(MobNo==0)
+			{
+				currentLevel++;
+				changeLevel(currentLevel);
+			}
 			//Check for Game Over
 			if (theHero->getAttributes()->getHp() <= 0)
 				bGameOver = true;
@@ -140,13 +153,14 @@ void myApplication::Update(void)
 void myApplication::HeroUpdate()
 {
 	Vector3D temp;
+	mvcTime* timer=mvcTime::getInstance();
 	//Check Collision of the hero before moving Up
 	if (!physics::testColMap(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
 	{
 		//Do not allow movement when stopMovement is true
 		if((myKeys['w'] || myKeys['W']) && !stopMovement)
 		{
-			moveMeUpDown(true, 1.0f);
+			moveMeUpDown(true, timer->getDelta());
 			bMoving = true;
 			temp.y=-1;
 		}
@@ -162,7 +176,7 @@ void myApplication::HeroUpdate()
 		//Do not allow movement when stopMovement is true
 		if((myKeys['s'] || myKeys['S']) && !stopMovement)
 		{
-			moveMeUpDown(false, 1.0f);
+			moveMeUpDown(false, timer->getDelta());
 			bMoving = true;
 			temp.y=1;
 		}
@@ -180,7 +194,7 @@ void myApplication::HeroUpdate()
 		//Do not allow movement when stopMovement is true
 		if((myKeys['a'] || myKeys['A']) && !stopMovement)
 		{
-			moveMeLeftRight(true, 1.0f);
+			moveMeLeftRight(true, timer->getDelta());
 			bMoving = true;
 			temp.x=-1;
 		}
@@ -198,7 +212,7 @@ void myApplication::HeroUpdate()
 		//Do not allow movement when stopMovement is true
 		if((myKeys['d'] || myKeys['D']) && !stopMovement)
 		{
-			moveMeLeftRight(false, 1.0f);
+			moveMeLeftRight(false, timer->getDelta());
 			bMoving = true;
 			temp.x=1;
 		}
@@ -447,7 +461,6 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				gamePause = true;
 
 			theShop->open = !theShop->open;
-
 			//Reset Text Toggling
 			theShop->healthBought = theShop->invincBought = theShop->NotEnoughCredits =
 			theShop->levelBought = theShop->armorBought = false;
@@ -461,10 +474,26 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		{
 			//Stop movement when Inventory is open
 			if (theHero->getInventory()->open)
+			{
 				gamePause = false;
+				if(theHero->getInventory()->invincUsed)
+				{
+					mvcTime* timer=mvcTime::getInstance();
+					if(theHero->getInventory()->invincRef==-1)
+					{
+						theHero->getInventory()->invincRef=timer->insertNewTime(3000);
+					}
+					else
+					{
+						timer->changeLimit(theHero->getInventory()->invincRef,3000);
+						timer->resetTime(theHero->getInventory()->invincRef);
+					}
+				}
+			}
 			else
+			{
 				gamePause = true;
-
+			}
 			theHero->getInventory()->open = !theHero->getInventory()->open;
 
 			//Reset booleans
@@ -486,7 +515,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				//Re-Init Map
 				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
 				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-				theMap->LoadMap("MapDesign.csv");
+				theMap->LoadMap("MapDesign1.csv");
 				processTiles();
 
 				//Set Level to 1
@@ -706,7 +735,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				//Re-Init Map
 				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
 				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-				theMap->LoadMap("MapDesign.csv");
+				theMap->LoadMap("MapDesign1.csv");
 
 				//Set Level to 3
 				currentLevel = 3;
@@ -907,6 +936,23 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGEAOE);
 		break;
 	}
+}
+
+void myApplication::changeLevel(short nlevel)
+{
+	if(nlevel>0&&nlevel<4)
+	{
+		currentLevel=nlevel;
+	}
+	heroInit = false;
+
+	//Re-Init Map
+	mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
+	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
+	char* test=new char;
+	sprintf(test,"MapDesign%d.csv",nlevel);
+	theMap->LoadMap(test);
+	processTiles();
 }
 
 void myApplication::KeyboardUp(unsigned char key, int x, int y)
@@ -1114,7 +1160,7 @@ bool myApplication::Init(void)
 	//Set up Map
 	theMap = CMap::getInstance();
 	theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-	theMap->LoadMap("mapDesign.csv");
+	theMap->LoadMap("mapDesign1.csv");
 	//theMap->LoadMap("test.csv");
 
 	processTiles();
@@ -1342,7 +1388,7 @@ void myApplication::moveMeUpDown(bool mode, float timeDiff)
 	//Down
 	if (mode)
 	{
-		theHero->SetPosY(theHero->GetPos().y-(int)(5.0f * timeDiff));
+		theHero->SetPosY(theHero->GetPos().y-(int)(200.0f * timeDiff));
 
 		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
 		if (theHero->GetAnimationCounter()==0)
@@ -1352,7 +1398,7 @@ void myApplication::moveMeUpDown(bool mode, float timeDiff)
 	//Up
 	else
 	{
-		theHero->SetPosY(theHero->GetPos().y+(int)(5.0f * timeDiff));
+		theHero->SetPosY(theHero->GetPos().y+(int)(200.0f * timeDiff));
 
 		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
 		if (theHero->GetAnimationCounter()==0)
@@ -1368,7 +1414,7 @@ void myApplication::moveMeLeftRight(bool mode, float timeDiff)
 		bLeft = true;
 		bRight = false;
 
-		theHero->SetPosX(theHero->GetPos().x - (int) (5.0f * timeDiff));
+		theHero->SetPosX(theHero->GetPos().x - (int) (200.0f * timeDiff));
 
 		theHero->SetAnimationInvert(true);
 		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
@@ -1382,7 +1428,7 @@ void myApplication::moveMeLeftRight(bool mode, float timeDiff)
 		bLeft = false;
 		bRight = true;
 
-		theHero->SetPosX(theHero->GetPos().x + (int) (5.0f * timeDiff));
+		theHero->SetPosX(theHero->GetPos().x + (int) (200.0f * timeDiff));
 
 		theHero->SetAnimationInvert(false);
 		theHero->SetAnimationCounter(theHero->GetAnimationCounter()+1);
@@ -1425,12 +1471,12 @@ void myApplication::DisplayText()
 				printw (790.0, 410.0, 0, "Exp To Next Level: -");
 
 			//Print Skills
-			printw (790.0, 500.0, 0, "(Z) -> Skill 1");
-			printw (790.0, 530.0, 0, "(X) -> Skill 2");
+			printw (790.0, 500.0, 0, "Z: Skill 1");
+			printw (790.0, 530.0, 0, "X: Skill 2");
 
 			//Print Skills
-			printw (790.0, 590.0, 0, "(U) -> Open Shop");
-			printw (790.0, 620.0, 0, "(I) -> Open Inventory");
+			printw (790.0, 590.0, 0, "U: Open Shop");
+			printw (790.0, 620.0, 0, "I:  Open Inventory");
 		}
 
 		//Render Inventory Info

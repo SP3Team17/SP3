@@ -1,4 +1,5 @@
 #include "Inventory.h"
+#include "MVCtime.h"
 
 CInventory* CInventory::instance = NULL;
 
@@ -16,6 +17,8 @@ CInventory::CInventory()
 	{
 		itemsArray[i] = new CGoodies; //GOODIE_NONE
 	}
+
+	invincRef=-1;
 
 	//Pointer to a font style..
 	//Fonts supported by GLUT are: GLUT_BITMAP_8_BY_13, 
@@ -242,7 +245,6 @@ void CInventory::deleteItem(CGoodies *item)
 					{
 						//Decrease Amount
 						--invinc;
-		
 						//Last item removed, set slot to empty
 						if (invinc == 0)
 							itemsArray[i]->SetType(CGoodies::GOODIE_NONE);
@@ -348,6 +350,7 @@ void CInventory::DisplayInfo()
 	{
 		printw (501, posY+(40*INVENTORY_VARIETY)+50, 0, "You've successfully consumed an Invincible Pill!");
 		printw (501, posY+(40*INVENTORY_VARIETY)+80, 0, "You're now temporarily immune to enemies' attacks!");
+		tempPlayer->invinc=true;
 	}
 }
 

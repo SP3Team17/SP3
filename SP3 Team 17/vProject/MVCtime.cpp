@@ -52,6 +52,7 @@ mvcTime::mvcTime()
 {
 	frameCount=currentTime=previousTime=timeInterval=dtPTime=dt=0;
 	fps=0.0f;
+	previousTime=timeGetTime();
 }
 
 void mvcTime::init()

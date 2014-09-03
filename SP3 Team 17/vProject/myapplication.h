@@ -199,6 +199,8 @@ private:
 
 	//Loads A TGA File Into Memory
 	bool myApplication::LoadTGA(TextureImage *texture, char *filename);
+
+	void changeLevel(short nlevel);
 };
 
 #endif

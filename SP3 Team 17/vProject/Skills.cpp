@@ -379,7 +379,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					for(vector<MobInfo*>::iterator it=enemies.begin();it!=enemies.end();++it)
 					{
 						MobInfo* enemy=*it;
-						if((enemy->getPos()-temp->Pos).dotVector3D(temp->Dir)>0)
+						if((enemy->getPos()-temp->Pos).dotVector3D(temp->Dir)>0&&enemy->active)
 						{
 							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 							skillObj.pos.Set(temp->Pos.x,temp->Pos.y);
@@ -507,7 +507,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					{
 						MobInfo* enemy=*it;
 						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
-						if(physics::testCol(skillObj,mobObj))
+						if(physics::testCol(skillObj,mobObj)&&enemy->active)
 						{
 							enemy->dealDam(Hero->getAttributes()->getAttack(),0.5);
 							temp->SkillPhase=2;
@@ -575,7 +575,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					{
 						MobInfo* enemy=*it;
 						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
-						if(physics::testCol(skillObj,mobObj))
+						if(physics::testCol(skillObj,mobObj)&&enemy->active)
 						{
 							enemy->dealDam(Hero->getAttributes()->getAttack(),0.7);
 							temp->SkillPhase=2;
@@ -722,7 +722,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						{
 							MobInfo* enemy=*it;
 							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
-							if(physics::testCol(skillObj,mobObj))
+							if(physics::testCol(skillObj,mobObj)&&enemy->active)
 							{
 								//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
 								enemy->dealDam(Hero->getAttributes()->getAttack(),0.1);

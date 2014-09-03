@@ -20,6 +20,7 @@ private:
 	CPlayerInfo* tempPlayer;
 
 public:
+	int invincRef;
 	static CInventory* getInstance();
 	CInventory();
 	~CInventory();
