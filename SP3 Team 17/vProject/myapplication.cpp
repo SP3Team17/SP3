@@ -154,6 +154,8 @@ void myApplication::HeroUpdate()
 {
 	Vector3D temp;
 	mvcTime* timer=mvcTime::getInstance();
+	//Check if the user is standing still
+	bMoving = false;
 	//Check Collision of the hero before moving Up
 	if (!physics::testColMap(theHero->GetPos()-Vector3D(0,5,0), true, false, false, false, theMap,mapOffset_x,mapOffset_y))
 	{
@@ -165,9 +167,6 @@ void myApplication::HeroUpdate()
 			temp.y=-1;
 		}
 
-		//Check if the user is standing still
-		else
-			bMoving = false;
 	}
 
 	//Check Collision of the hero before moving down
@@ -180,10 +179,6 @@ void myApplication::HeroUpdate()
 			bMoving = true;
 			temp.y=1;
 		}
-
-		//Check if the user is standing still
-		else
-			bMoving = false;
 	}
 
 	//Check Collision of the hero before moving left
@@ -199,9 +194,6 @@ void myApplication::HeroUpdate()
 			temp.x=-1;
 		}
 
-		//Check if the user is standing still
-		else
-			bMoving = false;
 	}
 
 	//Check Collision of the hero before moving right
@@ -217,9 +209,11 @@ void myApplication::HeroUpdate()
 			temp.x=1;
 		}
 		
-		//Check if the user is standing still
-		else
-			bMoving = false;
+	}
+	if(!bMoving)
+	{
+		theHero->playerSprite.changeSubImage(0);
+		theHero->playerSprite.changeStop(true);
 	}
 	if(temp.Length()!=0)
 		theHero->setDir(temp);
@@ -1188,7 +1182,9 @@ bool myApplication::Init(void)
 	//Create Hero
 	theHero = CPlayerInfo::getInstance();
 	theHero->Init();
-	LoadTGA(&(theHero->HeroTexture[0]), "images/keldeo.tga");
+	theHero->playerSprite.LoadTGA("images/player.tga");
+
+	theHero->playerSprite.ImageInit(4,4);
 
 	//Inventory Texture
 	LoadTGA(&(theHero->getInventory()->Inventory[0]), "images/placeholderInventory.tga");
@@ -1257,12 +1253,6 @@ bool myApplication::Init(void)
 	return true;
 }
 
-void myApplication::moveMeJump()
-{
-	if (theHero->isOnGround())
-		theHero->SetToJumpUpwards(true);
-}
-
 bool myApplication::processTiles()
 {
 	int theNumOfTiles_MapHeight=theMap->getNumOfTiles_MapHeight();
@@ -1321,6 +1311,8 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=COIN_RANGED;
 						//set the monster type here
+						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
+						temp3->mobSprite.ImageInit(4,4);
 						temp3->stats.setStats(0,50);
 						temp3->stats.setStats(1,50);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
@@ -1346,6 +1338,8 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=COIN_MELEE;
 						//set the monster type here
+						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
+						temp3->mobSprite.ImageInit(4,4);
 						temp3->stats.setStats(0,80);
 						temp3->stats.setStats(1,80);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
@@ -1371,6 +1365,8 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=FIEND_CLEAVE;
 						//set the monster type here
+						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
+						temp3->mobSprite.ImageInit(4,4);
 						temp3->stats.setStats(0,200);
 						temp3->stats.setStats(1,200);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
@@ -1396,6 +1392,8 @@ bool myApplication::processTiles()
 						temp3=new Monster;
 						temp3->stats.type=FIEND_RANGED;
 						//set the monster type here
+						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
+						temp3->mobSprite.ImageInit(4,4);
 						temp3->stats.setStats(0,150);
 						temp3->stats.setStats(1,150);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
@@ -1409,6 +1407,8 @@ bool myApplication::processTiles()
 					temp3=new Monster;
 					temp3->stats.type=BOSS;
 					//set the monster type here
+					temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
+						temp3->mobSprite.ImageInit(4,4);
 					temp3->stats.setStats(0,500);
 					temp3->stats.setStats(1,500);
 					temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
@@ -1431,20 +1431,18 @@ void myApplication::moveMeUpDown(bool mode, float timeDiff)
 	if (mode)
 	{
 		theHero->SetPosY(theHero->GetPos().y-(int)(200.0f * timeDiff));
+		theHero->playerSprite.changeStop(false);
+		theHero->playerSprite.changeVariation(0);
 
-		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
-		if (theHero->GetAnimationCounter()==0)
-			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
 	}
 
 	//Up
 	else
 	{
 		theHero->SetPosY(theHero->GetPos().y+(int)(200.0f * timeDiff));
+		theHero->playerSprite.changeStop(false);
+		theHero->playerSprite.changeVariation(3);
 
-		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
-		if (theHero->GetAnimationCounter()==0)
-			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
 	}
 }
 
@@ -1457,11 +1455,8 @@ void myApplication::moveMeLeftRight(bool mode, float timeDiff)
 		bRight = false;
 
 		theHero->SetPosX(theHero->GetPos().x - (int) (200.0f * timeDiff));
-
-		theHero->SetAnimationInvert(true);
-		theHero->SetAnimationCounter(theHero->GetAnimationCounter()-1);
-		if (theHero->GetAnimationCounter()==0)
-			theHero->SetAnimationCounter(SPRITE_FRAMES_PLAYER-1);
+		theHero->playerSprite.changeStop(false);
+		theHero->playerSprite.changeVariation(2);
 	}
 
 	//Right
@@ -1471,11 +1466,9 @@ void myApplication::moveMeLeftRight(bool mode, float timeDiff)
 		bRight = true;
 
 		theHero->SetPosX(theHero->GetPos().x + (int) (200.0f * timeDiff));
+		theHero->playerSprite.changeStop(false);
+		theHero->playerSprite.changeVariation(1);
 
-		theHero->SetAnimationInvert(false);
-		theHero->SetAnimationCounter(theHero->GetAnimationCounter()+1);
-		if (theHero->GetAnimationCounter() > SPRITE_FRAMES_PLAYER)
-			theHero->SetAnimationCounter(0);
 	}
 }
 

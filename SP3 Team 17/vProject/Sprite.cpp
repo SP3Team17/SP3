@@ -30,6 +30,11 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 	return true;
 }
 
+void Sprite::changeStop(bool nstop)
+{
+	Stop=nstop;
+}
+
 void Sprite::render()
 {
 	glPushMatrix();
@@ -174,10 +179,6 @@ void Sprite::changeSubImage(int newSub)
 
 void Sprite::update(void)
 {
-	//call upon animation fuction here
-	//animation();
-	//What else do i need to add in here??
-	//Check for hero & monster movt?
 	if(!Stop)
 	{
 		CurSubImage++;

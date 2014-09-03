@@ -330,6 +330,8 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 	Poffset_y=this->offset_y;
 	Poffset_x=this->offset_x;
 
+	mobSprite.update();
+
 	mvcTime* timer=mvcTime::getInstance();
 
 	this->offset_x=offset_x;
@@ -370,6 +372,7 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 	}
 	if(stats.active)
 	{
+		Vector3D prevLoc=stats.getPos();
 		if(stats.type!=BOSS)
 		{
 			if((Hero->GetPos()-this->stats.getPos()).Length()<TILE_SIZE*8)
@@ -392,6 +395,51 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 		{
 			attack(dt,enemies,wallList,offset_x,offset_y,map);
 		}
+		Vector3D newLoc=stats.getPos();
+		Vector3D dirMoved=newLoc-prevLoc;
+		if(newLoc.x!=prevLoc.x&&newLoc.y!=prevLoc.y)
+		{
+			dirMoved.normalizeVector3D();
+			switch(ID)
+			{
+			case FIEND_CLEAVE:
+			case FIEND_RANGED:
+				if(abs(dirMoved.x)>abs(dirMoved.y))
+				{
+					if(dirMoved.x>0)
+					{
+						this->mobSprite.changeVariation(1);
+						mobSprite.changeStop(false);
+					}
+					else
+					{
+						this->mobSprite.changeVariation(2);
+						mobSprite.changeStop(false);
+					}
+				}
+				else
+				{
+					if(dirMoved.y!=0)//means that there is some movement
+					{
+						if(dirMoved.y>0)
+						{
+							this->mobSprite.changeVariation(3);
+							mobSprite.changeStop(false);
+						}
+						else
+						{
+							this->mobSprite.changeVariation(0);
+							mobSprite.changeStop(false);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+				mobSprite.changeSubImage(0);
+				mobSprite.changeStop(true);
+		}
 			
 	}
 }
@@ -411,7 +459,7 @@ void Monster::render()
 	}
 	if(stats.active&&rend)
 	{
-		glEnable(GL_TEXTURE_2D);
+		/*glEnable(GL_TEXTURE_2D);
 		glEnable(GL_BLEND);
 		glBindTexture(GL_TEXTURE_2D,MobTex.texID);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -434,7 +482,13 @@ void Monster::render()
 			glEnd();
 		glPopMatrix();
 		glDisable(GL_BLEND);
-		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_TEXTURE_2D)*/;
+	glPushMatrix();
+			glTranslatef(stats.getPos().x,stats.getPos().y,0);
+			glScalef(32,32,0);
+			mobSprite.render();
+
+	glPopMatrix();
 		glColor3f(1,1,1);
 	}
 		skillList.render();

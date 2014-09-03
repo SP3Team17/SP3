@@ -8,8 +8,6 @@ CPlayerInfo* CPlayerInfo::instance = NULL;
 CPlayerInfo::CPlayerInfo() 
 	: active(true)
 	, invinc(false)
-	, jumpspeed(0)
-	, heroAnimationCounter(0)
 {
 	//Init C.Classes
 	playerExp = CExpSystem::getInstance();
@@ -42,7 +40,6 @@ void CPlayerInfo::Init()
 {
 	//Init Variables
 	pos.Set(100,400);
-	hero_inMidAir_Up = hero_inMidAir_Down = heroAnimationInvert = false;
 
 	//Set Player Attributes (Level / Hp / Attack / Defense)
 	playerAttributes->Set(1, MAX_PLAYER_HP * HP_MULTIPLIER, -1, -1);
@@ -101,85 +98,12 @@ void CPlayerInfo::RenderHero() {
 			invinc=false;
 		}
 	}
+	playerSprite.update();
 	glPushMatrix();
-	glTranslatef(pos.x, pos.y, 0);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindTexture(GL_TEXTURE_2D, HeroTexture[0].texID);
-
-	glBegin(GL_QUADS);
-
-		float ratio = 1/SPRITE_FRAMES_PLAYER;
-		if (!heroAnimationInvert)
-		{
-			glTexCoord2f(ratio * heroAnimationCounter,1); glVertex2f(0,0);
-			glTexCoord2f(ratio * heroAnimationCounter,0); glVertex2f(0,TILE_SIZE);
-			glTexCoord2f(ratio * heroAnimationCounter + ratio,0); glVertex2f(TILE_SIZE,TILE_SIZE);
-			glTexCoord2f(ratio * heroAnimationCounter + ratio,1); glVertex2f(TILE_SIZE,0);
-		}
-		else
-		{
-			glTexCoord2f(ratio * heroAnimationCounter + ratio,1); glVertex2f(0,0);
-			glTexCoord2f(ratio * heroAnimationCounter + ratio,0); glVertex2f(0,TILE_SIZE);
-			glTexCoord2f(ratio * heroAnimationCounter,0); glVertex2f(TILE_SIZE,TILE_SIZE);
-			glTexCoord2f(ratio * heroAnimationCounter,1); glVertex2f(TILE_SIZE,0);
-		}
-	glEnd();
-
-	glDisable( GL_BLEND );
-	glDisable( GL_TEXTURE_2D );
+		glTranslatef(pos.x+TILE_SIZE*0.5, pos.y+TILE_SIZE*0.5, 0);
+		glScalef(TILE_SIZE,TILE_SIZE,1);
+		playerSprite.render();
 	glPopMatrix();
-}
-
-//Returns true if the player is on ground
-bool CPlayerInfo::isOnGround()
-{
-	if (!hero_inMidAir_Up && !hero_inMidAir_Down)
-		return true;
-
-	return false;
-}
-
-//Returns true if the player is jumping upwards
-bool CPlayerInfo::isJumpUpwards()
-{
-	if (hero_inMidAir_Up && !hero_inMidAir_Down)
-		return true;
-
-	return false;
-}
-
-//Returns true if the player is on freefall
-bool CPlayerInfo::isFreeFall()
-{
-	if (!hero_inMidAir_Up && hero_inMidAir_Down)
-		return true;
-
-	return false;
-}
-
-//Set the player's status to free fall mode
-void CPlayerInfo::SetOnFreeFall(bool isOnFreeFall)
-{
-	if (isOnFreeFall)
-	{
-		hero_inMidAir_Up = false;
-		hero_inMidAir_Down = true;
-		jumpspeed = 0;
-	}
-}
-
-//Set the player to jumping upwards
-void CPlayerInfo::SetToJumpUpwards(bool isOnJumpUpwards)
-{
-	if (isOnJumpUpwards)
-	{
-		hero_inMidAir_Up = true;
-		hero_inMidAir_Down = false;
-		jumpspeed = 15;
-	}
 }
 
 //Set Both Position
@@ -200,12 +124,6 @@ void CPlayerInfo::SetPosY(int pos_y)
 	pos.y = pos_y;
 }
 
-//Set Jumpspeed of the player
-void CPlayerInfo::SetJumpspeed(int jumpspeed)
-{
-	this->jumpspeed = jumpspeed;
-}
-
 Vector3D CPlayerInfo::getDir()
 {
 	return dir;
@@ -216,65 +134,10 @@ void CPlayerInfo::setDir(Vector3D dir)
 	this->dir=dir;
 }
 
-//Stop the player's movement
-void CPlayerInfo::SetToStop()
-{
-	hero_inMidAir_Up = false;
-	hero_inMidAir_Down = false;
-	jumpspeed = 0;
-}
-
 //Get position of the player
 Vector3D CPlayerInfo::GetPos()
 {
 	return pos;
-}
-
-//Get Jumpspeed of the player
-int CPlayerInfo::GetJumpspeed()
-{
-	return jumpspeed;
-}
-
-//Update Jump Upwards
-void CPlayerInfo::UpdateJumpUpwards()
-{
-	pos.y -= jumpspeed;
-	jumpspeed -= 1;
-	if (jumpspeed == 0)
-	{
-		hero_inMidAir_Up = false;
-		hero_inMidAir_Down = true;
-	}
-}
-
-//Update FreeFall
-void CPlayerInfo::UpdateFreeFall()
-{
-	pos.y += jumpspeed;
-	jumpspeed += 1;
-}
-
-//Set Animation Invert status of the player
-void CPlayerInfo::SetAnimationInvert(bool heroAnimationInvert)
-{
-	this->heroAnimationInvert = heroAnimationInvert;
-}
-//Get Animation Invert status of the player
-bool CPlayerInfo::GetAnimationInvert()
-{
-	return heroAnimationInvert;
-}
-
-//Set Animation Counter of the player
-void CPlayerInfo::SetAnimationCounter(int heroAnimationCounter)
-{
-	this->heroAnimationCounter = heroAnimationCounter;
-}
-//Get Animation Counter of the player
-int CPlayerInfo::GetAnimationCounter()
-{
-	return heroAnimationCounter;
 }
 
 //Constrain the position of the Hero to within the border
@@ -365,5 +228,16 @@ void CPlayerInfo::damagePlayer(int damage)
 			damageDealt=1;
 		}
 		playerAttributes->setHp(playerAttributes->getHp()-damageDealt);
+		invinc=true;
+		mvcTime* timer=mvcTime::getInstance();
+		if(playerInventory->invincRef!=-1)
+		{
+			timer->resetTime(playerInventory->invincRef);
+			timer->changeLimit(playerInventory->invincRef,100);
+		}
+		else
+		{
+			playerInventory->invincRef=timer->insertNewTime(100);
+		}
 	}
 }

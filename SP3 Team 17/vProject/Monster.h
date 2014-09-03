@@ -5,6 +5,7 @@
 #include "Skills.h"
 #include "PlayerInfo.h"
 #include "MVCtime.h"
+#include "Sprite.h"
 
 #ifndef MONSTER_H
 #define MONSTER_H
@@ -19,6 +20,8 @@ public:
 	void update(float dt,std::vector<MobInfo*> enemies,std::vector<physicObj*> wallList,float offset_x,float offset_y,CMap map);//should call ai to do stuff
 
 	TextureImage MobTex;
+
+	Sprite mobSprite;
 
 	//void OnDeath(map World,ItemFactory spawner)//spawns items
 

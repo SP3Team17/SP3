@@ -8,6 +8,7 @@
 #include "Inventory.h"
 #include "ExpSystem.h"
 #include "Attributes.h"
+#include "Sprite.h"
 
 //Class Composition Prototype
 class CExpSystem;
@@ -25,11 +26,6 @@ private:
 	//Hero's information
 	Vector3D pos;
 	Vector3D dir;
-	int jumpspeed;
-	bool hero_inMidAir_Up;
-	bool hero_inMidAir_Down;
-	bool heroAnimationInvert;
-	int heroAnimationCounter;
 
 	//Class Composition
 	CInventory* playerInventory;
@@ -42,6 +38,8 @@ public:
 
 	//Invincible State
 	bool invinc;
+
+	Sprite playerSprite;
 
 	//Get Active State
 	bool GetActive();
@@ -61,18 +59,6 @@ public:
 
 	//Initialise this class instance
 	void Init();
-	//Returns true if the player is on ground
-	bool isOnGround();
-	//Returns true if the player is jumping upwards
-	bool isJumpUpwards();
-	//Returns true if the player is on freefall
-	bool isFreeFall();
-	//Set the player's status to free fall mode
-	void SetOnFreeFall(bool isOnFreeFall);
-	//Set the player to jumping upwards
-	void SetToJumpUpwards(bool isOnJumpUpwards);
-	//Stop the player's movement
-	void SetToStop();
 	//Set both Position
 	void SetPos(int posX, int posY);
 	//Set position x of the player
@@ -84,22 +70,6 @@ public:
 
 	//Get position of the player
 	Vector3D GetPos();
-	//Get Jumpspeed of the player
-	int GetJumpspeed();
-
-	//Update Jump Upwards
-	void UpdateJumpUpwards();
-	//Update FreeFall
-	void UpdateFreeFall();
-
-	//Set Animation Invert status of the player
-	void SetAnimationInvert(bool heroAnimationInvert);
-	//Get Animation Invert status of the player
-	bool GetAnimationInvert();
-	//Set Animation Counter of the player
-	void SetAnimationCounter(int heroAnimationCounter);
-	//Get Animation Counter of the player
-	int GetAnimationCounter();
 
 	//Get Functions for Composition Classes
 	CInventory* getInventory();
