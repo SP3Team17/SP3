@@ -10,6 +10,7 @@ Sound * Sound::s_pInstance = NULL;
 Sound::Sound()
 : theSoundEngine(NULL)
 , Sound_1(NULL)
+, Sound_2(NULL)
 {
 	Init();
 }
@@ -46,9 +47,60 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 			}*/
 			break;
 		case SOUND_DIALOGUE:
+			if (Sound_1 == NULL)
+				Sound_1 = theSoundEngine ->play2D("media/Constancy Part Two.mp3", loop, false);
+			else if (Sound_1 -> isFinished() == true)
+				Sound_1 = NULL;
+			break;
+		case SOUND_LEVEL1:
+			if (Sound_1 == NULL)
+				Sound_1 = theSoundEngine ->play2D("media/04 - KYOUKETSU.mp3", loop, false);
+			else if (Sound_1 -> isFinished() == true)
+				Sound_1 = NULL;
+			break;
+		case SOUND_LEVEL2:
+			if (Sound_1 == NULL)
+				Sound_1 = theSoundEngine ->play2D("media/14 - FIRST DUNGEON", loop, false);
+			else if (Sound_1 -> isFinished() == true)
+				Sound_1 = NULL;
+			break;
+		case SOUND_CLICK:
+			if (Sound_2 == NULL)
+				Sound_2 = theSoundEngine ->play2D("media/Button-SoundBible.com-1420500901.mp3", loop, false);
+			else if (Sound_2 -> isFinished() == true)
+				Sound_2 = NULL;
+			break;
+		case SOUND_HOVER:
+			if (Sound_2 == NULL)
+				Sound_2 = theSoundEngine ->play2D("media/Button_Press_2-Marianne_Gagnon-1415267358.mp3", loop, false);
+			else if (Sound_2 -> isFinished() == true)
+				Sound_2 = NULL;
 			break;
 	}
 }
+
+void Sound::Stop()
+{
+	theSoundEngine -> stopAllSounds();
+}
+
+void Sound::Mute(bool mutedOn )
+{
+	if(mutedOn == false)
+	{
+		theSoundEngine -> setSoundVolume(1.0f);
+		mutedOn = true;
+	}
+	else if(mutedOn == true)
+	{
+		theSoundEngine -> setSoundVolume(0.0f);
+		mutedOn = false;
+	}
+}
+
+//void Sound::Pause()
+//{
+//}
 
 //void Sound::SoundSelector(SoundNormalMode mode)
 //{

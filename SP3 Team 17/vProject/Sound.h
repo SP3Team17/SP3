@@ -27,6 +27,8 @@ public:
 
 	bool Init();
 	void PlayMusic (theSongList type, bool loop, bool paused);
+	void Stop();
+	void Mute(bool mutedOn);
 	static Sound* getInstance();
 	void drop();
 
@@ -53,7 +55,7 @@ private:
 
 	ISoundEngine* theSoundEngine;
 	ISound* Sound_1;
+	ISound* Sound_2;
 	//More Sounds etc: ISound* Sound_2;
 
-	//SoundNormalMode mode;
 };

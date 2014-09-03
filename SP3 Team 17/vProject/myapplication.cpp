@@ -269,7 +269,15 @@ void myApplication::renderScene(void)
 
 	//Game has yet to start
 	if (!gameStart && programInit)
+	{
 		renderStartScene();
+		if(!soundinit)
+		{
+			theSound->Stop();
+			theSound->PlayMusic(SOUND_DIALOGUE, true, false);
+			soundinit = true;
+		}
+	}
 
 	//Render Start Screen
 	if (!programInit)//this one for sound only, feel free to merge with original when you are done.
@@ -429,6 +437,13 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		{
 			gameStart = allowGamePause = true;
 			gamePause = setting = pause = false;
+			soundinit = false;
+			if(!soundinit)
+			{
+				theSound->Stop();
+				theSound->PlayMusic(SOUND_LEVEL1, true, false);
+				soundinit = true;
+			}
 		}
 		break;
 
@@ -1008,14 +1023,18 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					exit(0);
 
 				//Initiate Program if user clicks Start
-				if (theUI->getStartButton()->hover)
+				if (theUI->getStartButton()->hover && !programInit)
+				{
 					programInit = true;
+					soundinit = false;
+				}
 
 				if (pause == true)
 				{
 					//Resume Game
 					if (theUI->getPauseButton(0)->hover && !setting)
 					{
+						theSound->PlayMusic(SOUND_CLICK, false, false);
 						gamePause = false;
 						pause = false;
 					}
@@ -1023,27 +1042,48 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					//Enter Settings
 					if (theUI->getPauseButton(1)->hover)
 					{
+						theSound->PlayMusic(SOUND_CLICK, false, false);
 						setting = true;
 						pause = false;
 					}
 
 					//Exit Program
 					if (theUI->getPauseButton(2)->hover)
+					{
+						theSound->PlayMusic(SOUND_CLICK, false, false);
 						exit(0);
+					}
 				}
 				if(setting == true)
 				{
 					//sound1
-					//if (theUI->getSettingButton(0)->hover)
+					if (theUI->getSettingButton(0)->hover)
+					{
+						theSound->PlayMusic(SOUND_CLICK, false, false);
 						//gamePause = false;
+						if(muteOn == false)
+						{
+							theSound->Mute(true);
+							muteOn = true;
+						}
+						else if(muteOn == true)
+						{
+							theSound->Mute(false);
+							muteOn = false;
+						}
+					}
 
 					//sound2
-				//	if (theUI->getSettingButton(1)->hover)
+					if (theUI->getSettingButton(1)->hover)
+					{
+						theSound->PlayMusic(SOUND_CLICK, false, false);
 						//setting = true;
+					}
 
 					//back
 					if (theUI->getSettingButton(2)->hover)
 					{
+						theSound->PlayMusic(SOUND_CLICK, false, false);
 						pause = true;
 						setting = false;
 						//menuSequence();
@@ -1165,6 +1205,8 @@ bool myApplication::Init(void)
 
 	processTiles();
 	
+	muteOn = false;
+
 	//Set up Border
 	theBorder = new CMap;
 	theBorder->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
@@ -1787,6 +1829,13 @@ void myApplication::renderStartScene()
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;
+			soundinit = false;
+			if(!soundinit)
+			{
+				theSound->Stop();
+				theSound->PlayMusic(SOUND_LEVEL1, true, false);
+				soundinit = true;
+			}
 		}
 	}	
 }

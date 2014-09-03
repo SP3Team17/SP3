@@ -61,6 +61,7 @@ public:
 
 private:
 	
+	bool muteOn;
 	static myApplication *s_pInstance;
 
 	//kennard testing stuff
