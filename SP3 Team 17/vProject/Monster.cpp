@@ -2,6 +2,7 @@
 #include "physics.h"
 
 Monster::Monster(void)
+	: dead(false)
 {
 	offset_x=offset_y=0;
 	Poffset_x=Poffset_y=0;
@@ -13,7 +14,6 @@ Monster::Monster(void)
 	AIstates.attackIndex=-1;
 	rend=true;
 }
-
 
 Monster::~Monster(void)
 {
@@ -346,6 +346,12 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 	if(stats.getStats(0)<=0)//hp smaller then 0
 	{
 		stats.active=false;
+		if (!dead)
+		{
+			CPlayerInfo::getInstance()->getExp()->setExp(CPlayerInfo::getInstance()->getExp()->getExp() + 50000);
+			CPlayerInfo::getInstance()->getAttributes()->setAGC(CPlayerInfo::getInstance()->getAttributes()->getAGC() + 500);
+			dead = true;
+		}
 	}
 	/*else if(!(stats.getPos().x<LEFT_BORDER+TILE_SIZE*0.5||stats.getPos().x>MAP_SCREEN_WIDTH+TILE_SIZE*2))
 	{
