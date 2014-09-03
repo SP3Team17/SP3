@@ -45,10 +45,11 @@ void CPlayerInfo::Init()
 	hero_inMidAir_Up = hero_inMidAir_Down = heroAnimationInvert = false;
 
 	//Set Player Attributes (Level / Hp / Attack / Defense)
-	playerAttributes->Set(1, MAX_PLAYER_HP * HP_MULTIPLIER, -1, -1);
+	playerAttributes->Set(playerAttributes->getLevel(), MAX_PLAYER_HP * HP_MULTIPLIER, -1, -1);
+	playerAttributes->setAGC(0);
 
 	//Re-Init Random IVs
-	playerAttributes->ReIVs();
+//	playerAttributes->ReIVs();
 }
 
 CPlayerInfo* CPlayerInfo::getInstance()

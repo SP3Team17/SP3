@@ -535,6 +535,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 				//Set Level to 1
 				currentLevel = 1;
+
+				//Reset player exp
+				theHero->getExp()->setExp(0);
 			}
 			//Item in slot 1 used
 			if (theHero->getInventory()->open)
@@ -644,6 +647,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 				//Set Level to 2
 				currentLevel = 2;
+
+				//Reset player exp
+				theHero->getExp()->setExp(0);
 			}
 
 			//Item in slot 2 used
@@ -1020,7 +1026,13 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 				//Exit program upon mouse click
 				//when game is over
 				if (bGameOver)
-					exit(0);
+				{
+					bGameOver = false;
+					changeLevel(1);
+
+					//Re-Set Player EXP
+					theHero->getExp()->setExp(0);
+				}
 
 				//Initiate Program if user clicks Start
 				if (theUI->getStartButton()->hover && !programInit)
