@@ -1829,13 +1829,13 @@ void myApplication::renderStartScene()
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;
-			soundinit = false;
+			/*soundinit = false;
 			if(!soundinit)
 			{
 				theSound->Stop();
 				theSound->PlayMusic(SOUND_LEVEL1, true, false);
 				soundinit = true;
-			}
+			}*/
 		}
 	}	
 }
