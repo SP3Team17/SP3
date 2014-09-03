@@ -20,9 +20,8 @@ public:
 
 	TextureImage MobTex;
 
-	//void OnDeath(map World,ItemFactory spawner)//spawns items
-
 	int ID;//for csv loading
+	bool dead;
 
 	MobInfo stats;
 	MonsterAI AIstates;
