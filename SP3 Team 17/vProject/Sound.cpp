@@ -53,10 +53,6 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 					Sound_1 -> drop();
 					Sound_1 = NULL;
 				}
-				/*if (!paused)
-				{
-					Sound_1 -> stop();
-				}*/
 			}
 			break;
 		case SOUND_DIALOGUE:
