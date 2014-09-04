@@ -3,7 +3,7 @@
 CAttributes* CAttributes::instance = NULL;
 
 CAttributes::CAttributes() 
-	: level(1), hp(0), attack(0), defense(0), AGC(STARTING_AGC)
+	: level(30), hp(0), attack(0), defense(0), AGC(STARTING_AGC)
 	, baseAtk(150), baseDef(80)
 {
 	//Random Attack IVs

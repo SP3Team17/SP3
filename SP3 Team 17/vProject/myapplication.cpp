@@ -541,6 +541,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 				//Reset player exp
 				theHero->getExp()->setExp(0);
+
+				//Reset player level
+				theHero->getAttributes()->setLevel(1);
 			}
 			//Item in slot 1 used
 			if (theHero->getInventory()->open)
@@ -1041,6 +1044,12 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 
 					//Re-Set Player EXP
 					theHero->getExp()->setExp(0);
+
+					//Reset player level
+					theHero->getAttributes()->setLevel(1);
+
+					//Re IVs
+					theHero->getAttributes()->ReIVs();
 				}
 
 				//Initiate Program if user clicks Start
@@ -1369,8 +1378,8 @@ bool myApplication::processTiles()
 						temp3->mobSprite.LoadTGA("Images/moneynote.tga");
 						temp3->mobSprite.ImageInit(8,1);
 						temp3->mobSprite.changeStop(false);
-						temp3->stats.setStats(0,80);
-						temp3->stats.setStats(1,80);
+						temp3->stats.setStats(0,500);
+						temp3->stats.setStats(1,500);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 						temp3->ID=current;
@@ -1396,8 +1405,8 @@ bool myApplication::processTiles()
 						//set the monster type here
 						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
 						temp3->mobSprite.ImageInit(4,4);
-						temp3->stats.setStats(0,200);
-						temp3->stats.setStats(1,200);
+						temp3->stats.setStats(0,800);
+						temp3->stats.setStats(1,800);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 						temp3->ID=current;
@@ -1423,8 +1432,8 @@ bool myApplication::processTiles()
 						//set the monster type here
 						temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
 						temp3->mobSprite.ImageInit(4,4);
-						temp3->stats.setStats(0,150);
-						temp3->stats.setStats(1,150);
+						temp3->stats.setStats(0,700);
+						temp3->stats.setStats(1,700);
 						temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 						temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 						temp3->ID=current;
