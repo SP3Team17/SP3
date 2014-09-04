@@ -52,7 +52,7 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 				Sound_1 = theSoundEngine ->play2D("media/Constancy Part Two.mp3", loop, false);
 			else if (Sound_1 -> isFinished() == true)
 			{
-				Sound_1 -> drop();
+				Sound_1 ->drop();
 				Sound_1 = NULL;
 			}
 			break;
@@ -61,7 +61,8 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 				Sound_1 = theSoundEngine ->play2D("media/04 - KYOUKETSU.mp3", loop, false);
 			else if (Sound_1 -> isFinished() == true)
 			{
-				Sound_1 -> drop();
+				Sound_1 ->drop();
+
 				Sound_1 = NULL;
 			}
 			break;
@@ -70,7 +71,8 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 				Sound_1 = theSoundEngine ->play2D("media/14 - FIRST DUNGEON.mp3", loop, false);
 			else if (Sound_1 -> isFinished() == true)
 			{
-				Sound_1 -> drop();
+				Sound_1 ->drop();
+
 				Sound_1 = NULL;
 			}
 			break;
@@ -79,7 +81,8 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 				Sound_1 = theSoundEngine ->play2D("media/10 - KENKA JOUTOU.mp3", loop, false);
 			else if (Sound_1 -> isFinished() == true)
 			{
-				Sound_1 -> drop();
+				Sound_1 ->drop();
+
 				Sound_1 = NULL;
 			}
 			break;
@@ -88,7 +91,8 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 				Sound_2 = theSoundEngine ->play2D("media/Laser_Shoot2.wav", loop, false);
 			else if (Sound_2 -> isFinished() == true)
 			{
-				Sound_2 -> drop();
+				Sound_2 ->drop();
+
 				Sound_2 = NULL;
 			}
 			break;
@@ -98,6 +102,7 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 			else if (Sound_2 -> isFinished() == true)
 			{
 				Sound_2 -> drop();
+
 				Sound_2 = NULL;
 			}
 			break;
@@ -107,6 +112,7 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 			else if (Sound_2 -> isFinished() == true)
 			{
 				Sound_2 -> drop();
+
 				Sound_2 = NULL;
 			}
 			break;

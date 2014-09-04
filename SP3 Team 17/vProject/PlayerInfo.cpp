@@ -43,7 +43,6 @@ void CPlayerInfo::Init()
 
 	//Set Player Attributes (Level / Hp / Attack / Defense)
 	playerAttributes->Set(playerAttributes->getLevel(), MAX_PLAYER_HP * HP_MULTIPLIER, -1, -1);
-	playerAttributes->setAGC(0);
 
 	//Re-Init Random IVs
 //	playerAttributes->ReIVs();

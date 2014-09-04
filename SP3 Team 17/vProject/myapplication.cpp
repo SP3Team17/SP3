@@ -544,6 +544,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 
 				//Reset player level
 				theHero->getAttributes()->setLevel(1);
+
+				//Reset Player AGC
+				theHero->getAttributes()->setAGC(0);
 			}
 			//Item in slot 1 used
 			if (theHero->getInventory()->open)
@@ -648,8 +651,11 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				
 				changeLevel(2);
 
-				//Reset player exp
+				//Reset Player Exp
 				theHero->getExp()->setExp(0);
+
+				//Reset Player AGC
+				theHero->getAttributes()->setAGC(0);
 			}
 
 			//Item in slot 2 used

@@ -142,6 +142,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 						timer->resetTime(temp->timeRef);
 						timer->changeLimit(temp->timeRef,1000);
 					}
+					temp->skillSprite.LoadTGA("images/coin.tga");
+					temp->skillSprite.ImageInit(1,1);
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
@@ -177,6 +179,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					}
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,500);
+					temp->skillSprite.LoadTGA("images/coin.tga");
+					temp->skillSprite.ImageInit(1,1);
 					temp->active=true;
 					return true;
 					break;
@@ -192,6 +196,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					}
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,1000);
+					temp->skillSprite.LoadTGA("images/coin.tga");
+					temp->skillSprite.ImageInit(1,1);
 					temp->active=true;
 					return true;
 					break;
@@ -207,6 +213,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					}
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,4000);
+					temp->skillSprite.LoadTGA("images/coin.tga");
+					temp->skillSprite.ImageInit(1,1);
 					temp->active=true;
 					return true;
 					break;
@@ -278,11 +286,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			timer->changeLimit(coolRef,1000);
 			temp2.timeRef=timer->insertNewTime(1000);
 			
-			temp2.skillSprite.LoadTGA("Images/player.tga");
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+			temp2.skillSprite.LoadTGA("images/coin.tga");
+			temp2.skillSprite.ImageInit(1,1);
 			break;
 		case RANGEAOE:
 			theSfx->PlayMusic(SOUND_SHOT, false, false);
@@ -298,21 +303,16 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			timer->changeLimit(coolRef,500);
 			temp2.timeRef=timer->insertNewTime(1000);
 			
-			temp2.skillSprite.LoadTGA("Images/player.tga");
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+			temp2.skillSprite.LoadTGA("images/coin.tga");
+			temp2.skillSprite.ImageInit(1,1);
 			break;
 		case WALLOFCOIN:
 			timer->resetTime(coolRef);
 			timer->changeLimit(coolRef,1000);
 			temp2.timeRef=timer->insertNewTime(50);
-			temp2.skillSprite.LoadTGA("Images/player.tga");
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+
+			temp2.skillSprite.LoadTGA("images/coin.tga");
+			temp2.skillSprite.ImageInit(1,1);
 			break;
 		case MOB_CLEAVE:
 			temp2.Pos=temp2.Pos+temp2.Dir*TILE_SIZE+Vector3D(16,16);
@@ -328,11 +328,9 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			timer->resetTime(coolRef);
 			timer->changeLimit(coolRef,4000);
 			temp2.timeRef=timer->insertNewTime(50);
-			temp2.skillSprite.LoadTGA("Images/player.tga");
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+
+			temp2.skillSprite.LoadTGA("images/coin.tga");
+			temp2.skillSprite.ImageInit(1,1);
 			break;
 		}
 		temp2.active=true;
@@ -688,12 +686,12 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						if(timer->testTime(temp->timeRef))
 						{
 							temp->SkillPhase=2;
-							timer->changeLimit(temp->timeRef,500);
+							timer->changeLimit(temp->timeRef,0);
 						}
 						else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
 						{
 							temp->SkillPhase=2;
-							timer->changeLimit(temp->timeRef,1000);
+							timer->changeLimit(temp->timeRef,0);
 						}
 						else//move the bullet
 						{
@@ -918,17 +916,12 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							if(timer->testTime(temp->timeRef))
 							{
 								temp->SkillPhase=2;
-								timer->changeLimit(temp->timeRef,500);
-							}
-							if(timer->testTime(temp->timeRef))
-							{
-								temp->SkillPhase=2;
-								timer->changeLimit(temp->timeRef,500);
+								timer->changeLimit(temp->timeRef,250);
 							}
 							else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*500,up,down,left,right,&map,offset_x,offset_y))
 							{
 								temp->SkillPhase=2;
-								timer->changeLimit(temp->timeRef,1000);
+								timer->changeLimit(temp->timeRef,500);
 							}
 							else//move the bullet
 							{
@@ -985,11 +978,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 										temp2.Dir.normalizeVector3D();
 										temp2.ID=temp->ID;
 
-										temp2.skillSprite.LoadTGA("Images/player.tga");
-										temp2.skillSprite.ImageInit(4,4);
-										temp2.skillSprite.changeVariation(2);
-										temp2.skillSprite.changeSubImage(0);
-										temp2.skillSprite.Stop=false;
+										temp2.skillSprite.LoadTGA("Images/coin.tga");
+										temp2.skillSprite.ImageInit(1,1);
 										temp3.push_back(temp2);
 										noEmpty=true;
 									}
@@ -1006,11 +996,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 									temp2.Dir.normalizeVector3D();
 									temp2.ID=temp->ID;
 
-									temp2.skillSprite.LoadTGA("Images/player.tga");
-									temp2.skillSprite.ImageInit(4,4);
-									temp2.skillSprite.changeVariation(2);
-									temp2.skillSprite.changeSubImage(0);
-									temp2.skillSprite.Stop=false;
+									temp2.skillSprite.LoadTGA("Images/coin.tga");
+									temp2.skillSprite.ImageInit(1,1);
 									temp3.push_back(temp2);
 								}
 							}
@@ -1059,6 +1046,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						{
 							Hero->damagePlayer(30);
 							temp->SkillPhase=2;
+							timer->changeLimit(temp->timeRef,0);
 							moveon=true;
 						}
 						if(!moveon)
@@ -1088,12 +1076,12 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							if(timer->testTime(temp->timeRef))
 							{
 								temp->SkillPhase=2;
-								timer->changeLimit(temp->timeRef,500);
+								timer->changeLimit(temp->timeRef,0);
 							}
 							else if(physics::testColMap(temp->Pos+temp->Dir*timer->getDelta()*200,up,down,left,right,&map,offset_x,offset_y))
 							{
 								temp->SkillPhase=2;
-								timer->changeLimit(temp->timeRef,1000);
+								timer->changeLimit(temp->timeRef,0);
 							}
 							else//move the bullet
 							{
@@ -1361,9 +1349,9 @@ void Skills::render()
 					switch(temp.SkillPhase)
 					{
 					case 1:
-						glColor3f(1,0,0);
 					case 3:
 					case 2:
+						glColor3f(1,1,1);
 						glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
 						glScalef(32,32,0);
 						break;
@@ -1373,9 +1361,9 @@ void Skills::render()
 					switch(temp.SkillPhase)
 					{
 					case 1:
-						glColor3f(1,0,0);
 					case 3:
 					case 2:
+						glColor3f(1,1,1);
 						glTranslatef(temp.Pos.x+16*(1+temp.Dir.x),temp.Pos.y+16*(1+temp.Dir.y),0);
 						glScalef(32,32,0);
 						break;
