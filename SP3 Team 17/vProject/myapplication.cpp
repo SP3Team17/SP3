@@ -1756,7 +1756,7 @@ void myApplication::renderStartScene()
 	 ****************************************************************************************************/
 	//Patient 1 Trans
 	mvcTime* timer = mvcTime::getInstance();
-	float dt=timer->getDelta();
+	float dt = timer->getDelta();
 
 	//Movement Speed
 	int speed1 = 350;
@@ -1918,13 +1918,19 @@ void myApplication::renderTutorial()
 	 /****************************************************************************************************
 	   Dialogue (Tutorial) Transition Update
 	 ****************************************************************************************************/
+
+	//Set dt
+	float dt = mvcTime::getInstance()->getDelta();
+
+	float speed = 350;
+
 	//Stacey Tutorial Dialogue (3)
 	if (!trigger8 && !trigger9 && !tutorialEnd)
 	{
 		if (dTrans7 >= 0)
 			dTrans7 = 0;
 		else 
-			dTrans7 += 2;
+			dTrans7 += speed*dt;
 	}
 
 	//Stacey Tutorial Dialogue (4)
@@ -1934,7 +1940,7 @@ void myApplication::renderTutorial()
 		if (dTrans7 <= -600)
 			dTrans7 = -600;
 		else
-			dTrans7 -= 2;
+			dTrans7 -= speed*dt;
 
 		//Translate Current Dialogue Forward
 		if (dTrans7 == -600)
@@ -1942,7 +1948,7 @@ void myApplication::renderTutorial()
 			if (dTrans8 >= 0)
 				dTrans8 = 0;
 			else
-				dTrans8 += 2;
+				dTrans8 += speed*dt;
 		}
 	}
 
@@ -1953,7 +1959,7 @@ void myApplication::renderTutorial()
 		if (dTrans8 <= -600)
 			dTrans8 = -600;
 		else
-			dTrans8 -= 2;
+			dTrans8 -= speed*dt;
 
 		//Translate Current Dialogue Forward
 		if (dTrans8 == -600)
@@ -1961,7 +1967,7 @@ void myApplication::renderTutorial()
 			if (dTrans9 >= 0)
 				dTrans9 = 0;
 			else
-				dTrans9 += 2;
+				dTrans9 += speed*dt;
 		}
 	}
 
@@ -1972,7 +1978,7 @@ void myApplication::renderTutorial()
 		if (dTrans9 <= -600)
 			dTrans9 = -600;
 		else
-			dTrans9 -= 2;
+			dTrans9 -= speed*dt;
 
 		//End Tutorial
 		if (dTrans9 == -600)
