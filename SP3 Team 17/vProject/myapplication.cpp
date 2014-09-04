@@ -14,7 +14,7 @@ myApplication::myApplication()
     = stopMovement = gameStart = startDialogue2 
 	= bFlash = gamePause = bTutorial = tutorialEnd
 	= trigger8 = trigger9 = setting = pause = soundinit
-	= allowGamePause = winGame = false;
+	= allowGamePause = winGame = tileInit = false;
 
 	counterFlash = counterTime = 0;
 
@@ -396,7 +396,11 @@ void myApplication::LoadLevel(short level)
 		renderGround();
 
 		//Load Tile Texture
-		LoadTGA(&TileMapTexture[1], "images/tile1.tga");
+		if (!tileInit)
+		{
+			LoadTGA(&TileMapTexture[1], "images/tile1.tga");
+			tileInit = true;
+		}
 
 		//Re-Init Map 
 		RenderTileMap(theMap);
@@ -411,7 +415,11 @@ void myApplication::LoadLevel(short level)
 		renderGround();
 
 		//Load Tile Texture
-		LoadTGA(&TileMapTexture[1], "images/tile2.tga");
+		if (!tileInit)
+		{
+			LoadTGA(&TileMapTexture[1], "images/tile2.tga");
+			tileInit = true;
+		}
 
 		//Re-Init Map 
 		RenderTileMap(theMap);
@@ -425,7 +433,11 @@ void myApplication::LoadLevel(short level)
 		renderGround();
 
 		//Load Tile Texture
-		LoadTGA(&TileMapTexture[1], "images/rocktexture1.tga");
+		if (!tileInit)
+		{
+			LoadTGA(&TileMapTexture[1], "images/rockTexture1.tga");
+			tileInit = true;
+		}
 
 		//Re-Init Map 
 		RenderTileMap(theMap);
@@ -558,6 +570,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				//Trigger Hero Init
 				heroInit = false;
 
+				//Trigger Tile Init
+				tileInit = false;
+
 				changeLevel(1);
 
 				//Reset player exp
@@ -669,6 +684,9 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 			{
 				//Trigger Hero Init
 				heroInit = false;
+
+				//Trigger Tile Init
+				tileInit = false;
 				
 				changeLevel(2);
 
@@ -1069,6 +1087,7 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					if (bGameOver)
 					{
 						bGameOver = false;
+						tileInit = false;
 						changeLevel(1);
 
 						//Reset player exp

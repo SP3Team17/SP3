@@ -39,7 +39,7 @@ int main(int argc, char **argv )
 	glutReshapeFunc(changeSize);
 
 	//Render in Fullscreen
-	glutFullScreen();
+	//glutFullScreen();
 
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(update);
