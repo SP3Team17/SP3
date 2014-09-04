@@ -510,7 +510,14 @@ void Monster::render()
 		glDisable(GL_TEXTURE_2D)*/;
 	glPushMatrix();
 			glTranslatef(stats.getPos().x,stats.getPos().y,0);
-			glScalef(32,32,0);
+			if(stats.type==BOSS)
+			{
+				glScalef(128,128,0);
+			}
+			else
+			{
+				glScalef(32,32,0);
+			}
 			mobSprite.render();
 
 	glPopMatrix();

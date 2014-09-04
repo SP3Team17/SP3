@@ -1439,8 +1439,8 @@ bool myApplication::processTiles()
 					temp3=new Monster;
 					temp3->stats.type=BOSS;
 					//set the monster type here
-					temp3->mobSprite.LoadTGA("Images/fiendsprite.tga");
-						temp3->mobSprite.ImageInit(4,4);
+					temp3->mobSprite.LoadTGA("Images/boss1.tga");
+					temp3->mobSprite.ImageInit(1,1);
 					temp3->stats.setStats(0,500);
 					temp3->stats.setStats(1,500);
 					temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
