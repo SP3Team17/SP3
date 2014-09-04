@@ -2,6 +2,9 @@
 #include <irrKlang.h>
 using namespace irrklang;
 
+#ifndef SOUND_H
+#define SOUND_H
+
 	enum theSongList
 	{
 		SOUND_NONE = 0,
@@ -59,3 +62,5 @@ private:
 	//More Sounds etc: ISound* Sound_2;
 
 };
+
+#endif

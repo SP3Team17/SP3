@@ -961,6 +961,23 @@ void myApplication::changeLevel(short nlevel)
 		currentLevel=nlevel;
 	}
 	heroInit = false;
+	
+	switch (nlevel)
+	{
+		case 1:
+			theSound->Stop();
+			theSound->PlayMusic(SOUND_LEVEL1, true, false);
+			break;
+		case 2:
+			theSound->Stop();
+			theSound->PlayMusic(SOUND_LEVEL2, true, false);
+			break;
+		case 3:
+			theSound->Stop();
+			theSound->PlayMusic(SOUND_BOSS, true, false);
+			break;
+
+	}
 
 	//Re-Init Map
 	mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;

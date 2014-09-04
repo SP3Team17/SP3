@@ -1,5 +1,4 @@
-#ifndef SKILLS_H
-#define SKILLS_H
+
 
 #include "vector3D.h"
 #include <vector>
@@ -8,6 +7,10 @@
 #include "Sprite.h"
 #include "physics.h"
 #include "Map.h"
+#include "Sound.h"
+
+#ifndef SKILLS_H
+#define SKILLS_H
 
 class Skills
 {
@@ -46,6 +49,7 @@ public:
 	int coolRef;
 	bool cool;
 private:
+	Sound* theSfx;
 	float offset_x,offset_y,Poffset_x,Poffset_y;
 	std::vector<SkillData> data;
 	int SkillLevel;

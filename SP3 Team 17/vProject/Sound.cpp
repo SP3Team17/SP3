@@ -1,5 +1,3 @@
-#ifndef SOUND_H
-#define SOUND_H
 
 #include "Sound.h"
 #include <iostream>
@@ -60,9 +58,21 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 			break;
 		case SOUND_LEVEL2:
 			if (Sound_1 == NULL)
-				Sound_1 = theSoundEngine ->play2D("media/14 - FIRST DUNGEON", loop, false);
+				Sound_1 = theSoundEngine ->play2D("media/14 - FIRST DUNGEON.mp3", loop, false);
 			else if (Sound_1 -> isFinished() == true)
 				Sound_1 = NULL;
+			break;
+		case SOUND_BOSS:
+			if (Sound_1 == NULL)
+				Sound_1 = theSoundEngine ->play2D("media/10 - KENKA JOUTOU.mp3", loop, false);
+			else if (Sound_1 -> isFinished() == true)
+				Sound_1 = NULL;
+			break;
+		case SOUND_SHOT:
+			if (Sound_2 == NULL)
+				Sound_2 = theSoundEngine ->play2D("media/Laser_Shoot2.mp3", loop, false);
+			else if (Sound_2 -> isFinished() == true)
+				Sound_2 = NULL;
 			break;
 		case SOUND_CLICK:
 			if (Sound_2 == NULL)
@@ -116,4 +126,3 @@ void Sound::Mute(bool mutedOn )
 //			break;
 //	}
 //}
-#endif
