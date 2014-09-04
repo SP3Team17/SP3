@@ -70,7 +70,7 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 			break;
 		case SOUND_SHOT:
 			if (Sound_2 == NULL)
-				Sound_2 = theSoundEngine ->play2D("media/Laser_Shoot2.mp3", loop, false);
+				Sound_2 = theSoundEngine ->play2D("media/Laser_Shoot2.wav", loop, false);
 			else if (Sound_2 -> isFinished() == true)
 				Sound_2 = NULL;
 			break;
