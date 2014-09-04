@@ -298,10 +298,14 @@ void myApplication::renderScene(void)
 		//Load Level 1
 		if (currentLevel == 1)
 			LoadLevel(1);
-
+		
 		//Load Level 2
 		else if (currentLevel == 2)
 			LoadLevel(2);
+
+		//Load Level 2
+		else if (currentLevel == 3)
+			LoadLevel(3);
 
 		for(vector<Monster*>::iterator it=mobList.begin();it!=mobList.end();++it)
 		{
@@ -387,6 +391,17 @@ void myApplication::LoadLevel(short level)
 
 	//Load Level 2
 	else if (level == 2)
+	{
+		RenderBackground();
+		renderGround();
+
+		//Re-Init Map 
+		RenderTileMap(theMap);
+
+		RenderHpBar();
+	}
+
+	else if (level == 3)
 	{
 		RenderBackground();
 		renderGround();
@@ -522,14 +537,7 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				//Trigger Hero Init
 				heroInit = false;
 
-				//Re-Init Map
-				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
-				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-				theMap->LoadMap("MapDesign1.csv");
-				processTiles();
-
-				//Set Level to 1
-				currentLevel = 1;
+				changeLevel(1);
 
 				//Reset player exp
 				theHero->getExp()->setExp(0);
@@ -634,14 +642,8 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 			{
 				//Trigger Hero Init
 				heroInit = false;
-				//Re-Init Map
-				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
-				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-				theMap->LoadMap("MapDesign2.csv");
-				processTiles();
-
-				//Set Level to 2
-				currentLevel = 2;
+				
+				changeLevel(2);
 
 				//Reset player exp
 				theHero->getExp()->setExp(0);
@@ -748,13 +750,8 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				//Trigger Hero Init
 				heroInit = false;
 
-				//Re-Init Map
-				mapOffset_x = mapOffset_y = tileOffset_x = tileOffset_y = mapFineOffset_x = mapFineOffset_y = 0;
-				theMap->Init(MAP_SCREEN_HEIGHT, MAP_SCREEN_WIDTH, RESOLUTION_HEIGHT*2, RESOLUTION_WIDTH*2, TILE_SIZE);
-				theMap->LoadMap("MapDesign1.csv");
-
-				//Set Level to 3
-				currentLevel = 3;
+				
+				changeLevel(3);
 			}
 
 			//Item in slot 3 used

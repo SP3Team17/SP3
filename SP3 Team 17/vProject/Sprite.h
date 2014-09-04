@@ -17,7 +17,7 @@ public:
 	TextureImage Images;
 	// LoadTGA
 	bool Stop;
-	bool ImageInit(int SubImage, int ImageVar);
+	bool ImageInit(int SubImage, int ImageVar,bool loop=true);
 	bool LoadTGA( char *filename);
 	void update(void);
 	void changeVariation(int newVar);
@@ -28,13 +28,16 @@ public:
 	void SetAnimationInvert(bool AnimationInvert);
 	// Get Animation Invert status of the sprite
 	bool GetAnimationInvert(void);
-
+	void Sprite::SetReverse(bool nReverse);
 private:
+	bool reverse;
+	int timeRef;
 	int SubImage; // animation counter
 	int ImageVar; 
 	int CurrentVar;
 	int CurSubImage;
 	float ratio_x;
+	bool loop;
 	float ratio_y;
 	bool AnimationInvert;
 };

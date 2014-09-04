@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "MVCtime.h"
 #include <iostream>
 
 using namespace std;
@@ -7,6 +8,7 @@ using namespace std;
 
 Sprite::Sprite()
 {
+	timeRef=mvcTime::getInstance()->insertNewTime(40);
 }
 
 Sprite::~Sprite()
@@ -14,7 +16,7 @@ Sprite::~Sprite()
 
 }
 
-bool Sprite::ImageInit(int SubImage, int ImageVar)
+bool Sprite::ImageInit(int SubImage, int ImageVar,bool loop)
 {
 
 		//Load Textures
@@ -27,7 +29,8 @@ bool Sprite::ImageInit(int SubImage, int ImageVar)
 		ratio_x = 1.0f / SubImage;
 		ratio_y = 1.0f / ImageVar;
 		AnimationInvert=false;
-
+		reverse=false;
+		this->loop=loop;
 	return true;
 }
 
@@ -38,6 +41,20 @@ void Sprite::changeStop(bool nstop)
 void Sprite::SetAnimationInvert(bool AnimationInvert)
 {
 	this->AnimationInvert=AnimationInvert;
+}
+
+void Sprite::SetReverse(bool nReverse)
+{
+	this->reverse=nReverse;
+	switch(reverse)
+	{
+	case true:
+		CurSubImage=SubImage-1;
+			break;
+	case false:
+		CurSubImage=0;
+		break;
+	}
 }
 
 void Sprite::render()
@@ -204,8 +221,31 @@ void Sprite::update(void)
 {
 	if(!Stop)
 	{
-		CurSubImage++;
-		if(CurSubImage>SubImage-1)
-			CurSubImage=0;
+		if(mvcTime::getInstance()->testTime(timeRef))
+		{
+			if(!reverse)
+			{
+				CurSubImage++;
+				if(CurSubImage>SubImage-1)
+				{
+					if(loop)
+						CurSubImage=0;
+					else
+						CurSubImage--;
+				}
+			}
+			else
+			{
+				CurSubImage--;
+				if(CurSubImage<0)
+				{
+					if(loop)
+						CurSubImage=SubImage-1;
+					else
+						CurSubImage++;
+				}
+
+			}
+		}
 	}
 }

@@ -87,6 +87,9 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
+					temp->skillSprite.LoadTGA("images/melee.tga");
+					temp->skillSprite.ImageInit(8,1,false);
+					temp->skillSprite.changeStop(false);
 					return true;
 					break;
 				case MOB_MELEE:
@@ -103,6 +106,9 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,2000);
 					temp->active=true;
+					temp->skillSprite.LoadTGA("images/melee.tga");
+					temp->skillSprite.ImageInit(8,1,false);
+					temp->skillSprite.changeStop(false);
 					return true;
 					break;
 				case RANGE:
@@ -118,6 +124,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
+					temp->skillSprite.LoadTGA("images/coin.tga");
+					temp->skillSprite.ImageInit(1,1);
 					return true;
 					break;
 				case MOB_RANGE:
@@ -150,6 +158,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
+					temp->skillSprite.LoadTGA("images/sample_bullets.tga");
+					temp->skillSprite.ImageInit(1,1);
 					return true;
 					break;
 				case M_SUPER_AOE:
@@ -213,6 +223,9 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 					timer->resetTime(coolRef);
 					timer->changeLimit(coolRef,750);
 					temp->active=true;
+					temp->skillSprite.LoadTGA("images/melee.tga");
+					temp->skillSprite.ImageInit(8,1,false);
+					temp->skillSprite.changeStop(false);
 					return true;
 					break;
 				}
@@ -233,35 +246,28 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			timer->resetTime(coolRef);
 			temp2.timeRef=timer->insertNewTime(0);
 			timer->changeLimit(coolRef,750);
-			temp2.skillSprite.LoadTGA("Images/player.tga");
 
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+			temp2.skillSprite.LoadTGA("images/melee.tga");
+			temp2.skillSprite.ImageInit(8,1,false);
+			temp2.skillSprite.changeStop(false);
 			break;
 		case MOB_MELEE:
 			temp2.Pos=temp2.Pos+temp2.Dir*TILE_SIZE;
 			timer->resetTime(coolRef);
 			temp2.timeRef=timer->insertNewTime(250);
 			timer->changeLimit(coolRef,2000);
-			temp2.skillSprite.LoadTGA("Images/player.tga");
 
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+			temp2.skillSprite.LoadTGA("images/melee.tga");
+			temp2.skillSprite.ImageInit(8,1,false);
+			temp2.skillSprite.changeStop(false);
 			break;
 		case RANGE:
 			timer->resetTime(coolRef);
 			timer->changeLimit(coolRef,1000);
 			temp2.timeRef=timer->insertNewTime(1000);
 			
-			temp2.skillSprite.LoadTGA("Images/player.tga");
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+			temp2.skillSprite.LoadTGA("images/coin.tga");
+			temp2.skillSprite.ImageInit(1,1);
 			break;
 		case MOB_RANGE:
 			timer->resetTime(coolRef);
@@ -276,11 +282,8 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			timer->changeLimit(coolRef,750);
 			temp2.timeRef=timer->insertNewTime(1000);
 			
-			temp2.skillSprite.LoadTGA("Images/player.tga");
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+			temp2.skillSprite.LoadTGA("images/sample_bullets.tga");
+			temp2.skillSprite.ImageInit(1,1);
 			break;
 		case M_SUPER_AOE:
 			timer->resetTime(coolRef);
@@ -305,12 +308,10 @@ bool Skills::procSkills(Vector3D pos,Vector3D Dir,SkillType ID)
 			timer->resetTime(coolRef);
 			temp2.timeRef=timer->insertNewTime(0);
 			timer->changeLimit(coolRef,750);
-			temp2.skillSprite.LoadTGA("Images/player.tga");
 
-			temp2.skillSprite.ImageInit(4,4);
-			temp2.skillSprite.changeVariation(2);
-			temp2.skillSprite.changeSubImage(0);
-			temp2.skillSprite.Stop=false;
+			temp2.skillSprite.LoadTGA("images/melee.tga");
+			temp2.skillSprite.ImageInit(8,1,false);
+			temp2.skillSprite.changeStop(false);
 			break;
 		case MOB_LINE:
 			timer->resetTime(coolRef);
@@ -406,7 +407,9 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								timer->resetTime(temp2->timeRef);
 								timer->changeLimit(temp2->timeRef,500);
 								counter++;
-								cout<<counter<<" ";
+								temp2->skillSprite.LoadTGA("images/melee.tga");
+								temp2->skillSprite.ImageInit(8,1,false);
+								temp2->skillSprite.changeStop(false);
 								if(counter==2)
 								{
 									misc=true;
@@ -433,11 +436,12 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							temp2.SkillPhase=2;
 							temp2.timeRef=timer->insertNewTime(500);
 							temp2.ID=ATTACK;
+							temp2.skillSprite.LoadTGA("images/melee.tga");
+							temp2.skillSprite.ImageInit(8,1,false);
+							temp2.skillSprite.changeStop(false);
 							temp3.push_back(temp2);
 							counter++;
-							cout<<counter<<" ";
 						}
-						cout<<"\n";
 						temp->SkillPhase=0;
 						temp->active=false;
 					}
@@ -511,7 +515,9 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								timer->resetTime(temp2->timeRef);
 								timer->changeLimit(temp2->timeRef,500);
 								counter++;
-								cout<<counter<<" ";
+								temp2->skillSprite.LoadTGA("images/melee.tga");
+								temp2->skillSprite.ImageInit(8,1,false);
+								temp2->skillSprite.changeStop(false);
 								if(counter==2)
 								{
 									misc=true;
@@ -540,7 +546,9 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							temp2.ID=ATTACK;
 							temp3.push_back(temp2);
 							counter++;
-							cout<<counter<<" ";
+							temp2.skillSprite.LoadTGA("images/melee.tga");
+							temp2.skillSprite.ImageInit(8,1,false);
+							temp2.skillSprite.changeStop(false);
 						}
 						cout<<"\n";
 						temp->SkillPhase=0;
@@ -783,6 +791,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 											timer->changeLimit(temp2->timeRef,1000);
 											timer->setActive(true,temp2->timeRef);
 										}
+										temp2->skillSprite.LoadTGA("images/sample_bullets.tga");
+										temp2->skillSprite.ImageInit(1,1);
 										carryon=true;
 									}
 								}
@@ -797,9 +807,9 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 									temp2.Dir=Vector3D(p,o);
 									temp2.Dir.normalizeVector3D();
 									temp2.ID=temp->ID;
-
-									temp2.skillSprite.LoadTGA("Images/player.tga");
-									temp2.skillSprite.ImageInit(4,4);
+									
+									temp2.skillSprite.LoadTGA("images/sample_bullets.tga");
+									temp2.skillSprite.ImageInit(1,1);
 									temp2.skillSprite.changeVariation(2);
 									temp2.skillSprite.changeSubImage(0);
 									temp2.skillSprite.Stop=false;
@@ -818,9 +828,9 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								temp2.Dir=Vector3D(p,o);
 								temp2.Dir.normalizeVector3D();
 								temp2.ID=temp->ID;
-
-								temp2.skillSprite.LoadTGA("Images/player.tga");
-								temp2.skillSprite.ImageInit(4,4);
+								
+								temp2.skillSprite.LoadTGA("images/sample_bullets.tga");
+								temp2.skillSprite.ImageInit(1,1);
 								temp2.skillSprite.changeVariation(2);
 								temp2.skillSprite.changeSubImage(0);
 								temp2.skillSprite.Stop=false;
@@ -1127,6 +1137,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 									temp2->ID=MOB_LINE;
 									timer->resetTime(temp2->timeRef);
 									timer->changeLimit(temp2->timeRef,1000);
+									temp2->skillSprite.LoadTGA("images/coin.tga");
+									temp2->skillSprite.ImageInit(1,1);
 									misc=true;
 								}
 							}
@@ -1137,6 +1149,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								temp2.Pos=temp->Pos;
 								temp2.SkillPhase=-1;
 								temp2.timeRef=timer->insertNewTime(1000);
+								temp2.skillSprite.LoadTGA("images/coin.tga");
+								temp2.skillSprite.ImageInit(1,1);
 								temp2.ID=MOB_LINE;
 								temp3.push_back(temp2);
 							}
@@ -1222,6 +1236,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 									timer->resetTime(temp2->timeRef);
 									timer->changeLimit(temp2->timeRef,1000);
 									counter++;
+									temp2->skillSprite.LoadTGA("images/coin.tga");
+									temp2->skillSprite.ImageInit(1,1);
 								}
 								if(counter>=3)
 								{
@@ -1248,6 +1264,8 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 								temp2.SkillPhase=-1;
 								temp2.timeRef=timer->insertNewTime(1000);
 								temp2.ID=WALLOFCOIN;
+								temp2.skillSprite.LoadTGA("images/coin.tga");
+								temp2.skillSprite.ImageInit(1,1);
 								temp3.push_back(temp2);
 								counter++;
 							}
@@ -1299,11 +1317,8 @@ void Skills::render()
 					{
 					case 1:
 					case 2:
-						glColor3f(1,1,1);
-						break;
 					case 3:
-					case 4:
-						glColor3f(0,1,0);
+						glColor3f(1,1,1);
 						break;
 					}
 					glTranslatef(temp.Pos.x,temp.Pos.y,0);
@@ -1317,7 +1332,7 @@ void Skills::render()
 						break;
 					case 3:
 					case 4:
-						glColor3f(0,1,0);
+						glColor3f(1,1,1);
 						glTranslatef(temp.Pos.x,temp.Pos.y,0);
 						glScalef(32,32,1);
 						break;
@@ -1377,8 +1392,63 @@ void Skills::render()
 						moveon=false;
 						break;
 					}
+					if(temp.Dir.y==0)
+					{
+						temp.Dir.y=0.0001;
+					}
+					if(temp.Dir.x==0)
+					{
+						temp.Dir.x=0.0001;
+					}
+					if(temp.Dir.x<0.1&&temp.Dir.x>-0.1)
+					{
+						if(temp.Dir.y>0)
+						{
+							glRotatef(90,0,0,1);
+						}
+						else
+						{
+							glRotatef(270,0,0,1);
+
+						}
+					}
+					else if(temp.Dir.y<0.1&&temp.Dir.y>-0.1)
+					{
+						if(temp.Dir.x>0)
+						{
+							glRotatef(0,0,0,1);
+						}
+						else
+						{
+							glRotatef(180,0,0,1);
+						}
+					}
+					else if(temp.Dir.x>0)
+					{
+						if(temp.Dir.y>0)
+						{
+							glRotatef(atan(temp.Dir.x/temp.Dir.y)/6.248*360,0,0,1);
+						}
+						else
+						{
+							glRotatef(360.f+atan(temp.Dir.x/temp.Dir.y)/6.248*360,0,0,1);
+						}
+					}
+					else
+					{
+						
+						if(temp.Dir.y>0)
+						{
+							glRotatef(180.f+atan(temp.Dir.x/temp.Dir.y)/6.248*360,0,0,1);
+						}
+						else
+						{
+							glRotatef(180.f+atan(temp.Dir.x/temp.Dir.y)/6.248*360,0,0,1);
+						}
+					}
+						
 				}
-				//if(moveon)
+				if(moveon)
 				{
 					temp.skillSprite.render();
 				}
