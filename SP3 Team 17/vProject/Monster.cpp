@@ -406,7 +406,7 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 		if(newLoc.x!=prevLoc.x&&newLoc.y!=prevLoc.y)
 		{
 			dirMoved.normalizeVector3D();
-			switch(ID)
+			switch(stats.type)
 			{
 			case FIEND_CLEAVE:
 			case FIEND_RANGED:
@@ -471,17 +471,6 @@ void Monster::update(float dt,std::vector<MobInfo*> enemies,std::vector<physicOb
 
 void Monster::render()
 {
-	if(AIstates.HeroPoints.size()>0)
-	{
-		for(vector<Vector3D>::iterator it=AIstates.HeroPoints.begin();it!=--AIstates.HeroPoints.end();++it)
-		{
-			Vector3D temp=*(it+1);
-			glBegin(GL_LINES);
-				glVertex3f(temp.x,temp.y,0);
-				glVertex3f(it->x,it->y,0);
-			glEnd();
-		}
-	}
 	if(stats.active&&rend)
 	{
 		/*glEnable(GL_TEXTURE_2D);

@@ -135,10 +135,10 @@
     <ClInclude Include="Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextureImage.h">
+    <ClInclude Include="UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h">
+    <ClInclude Include="TextureImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
