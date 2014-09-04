@@ -552,7 +552,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							}
 							temp2.SkillPhase=2;
 							temp2.timeRef=timer->insertNewTime(500);
-							temp2.ID=ATTACK;
+							temp2.ID=MOB_CLEAVE;
 							temp2.skillSprite.LoadTGA("images/melee.tga");
 							temp2.skillSprite.ImageInit(8,1,false);
 							temp2.skillSprite.changeStop(false);
