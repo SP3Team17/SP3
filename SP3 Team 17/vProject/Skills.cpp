@@ -574,7 +574,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						skillObj.size.Set(TILE_SIZE,TILE_SIZE);
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->damagePlayer(200);
+							Hero->damagePlayer(80);
 							temp->SkillPhase=4;
 						}
 
@@ -618,7 +618,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						skillObj.pos.Set(temp->Pos.x,temp->Pos.y);
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->damagePlayer(40);
+							Hero->damagePlayer(50);
 							temp->SkillPhase=4;
 						}
 						if(timer->testTime(temp->timeRef))
@@ -1060,7 +1060,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						physicObj mobObj(Hero->GetPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->damagePlayer(30);
+							Hero->damagePlayer(80);
 							temp->SkillPhase=2;
 							timer->changeLimit(temp->timeRef,0);
 							moveon=true;
