@@ -89,7 +89,7 @@ private:
 	//Textures
 	TextureImage GameOver[1];
 	TextureImage LevelComplete[1];
-	TextureImage ground[1];
+	TextureImage ground[3];
 	TextureImage PauseTex[1];
 	TextureImage WinScreen[1];
 

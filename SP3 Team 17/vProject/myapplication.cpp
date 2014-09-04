@@ -395,6 +395,9 @@ void myApplication::LoadLevel(short level)
 		RenderBackground();
 		renderGround();
 
+		//Load Tile Texture
+		LoadTGA(&TileMapTexture[1], "images/tile1.tga");
+
 		//Re-Init Map 
 		RenderTileMap(theMap);
 
@@ -407,6 +410,9 @@ void myApplication::LoadLevel(short level)
 		RenderBackground();
 		renderGround();
 
+		//Load Tile Texture
+		LoadTGA(&TileMapTexture[1], "images/tile2.tga");
+
 		//Re-Init Map 
 		RenderTileMap(theMap);
 
@@ -417,6 +423,9 @@ void myApplication::LoadLevel(short level)
 	{
 		RenderBackground();
 		renderGround();
+
+		//Load Tile Texture
+		LoadTGA(&TileMapTexture[1], "images/rocktexture1.tga");
 
 		//Re-Init Map 
 		RenderTileMap(theMap);
@@ -552,10 +561,10 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				changeLevel(1);
 
 				//Reset player exp
-				theHero->getExp()->setExp(0);
+				theHero->getExp()->setExp(43290);
 
 				//Reset player level
-				theHero->getAttributes()->setLevel(1);
+				theHero->getAttributes()->setLevel(30);
 
 				//Reset Player AGC
 				theHero->getAttributes()->setAGC(0);
@@ -663,11 +672,11 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 				
 				changeLevel(2);
 
-				//Reset Player Exp
-				theHero->getExp()->setExp(0);
+				//Reset player exp
+				theHero->getExp()->setExp(43290);
 
-				//Reset Player AGC
-				theHero->getAttributes()->setAGC(0);
+				//Reset player level
+				theHero->getAttributes()->setLevel(30);
 			}
 
 			//Item in slot 2 used
@@ -1062,11 +1071,11 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					bGameOver = false;
 					changeLevel(1);
 
-					//Re-Set Player EXP
-					theHero->getExp()->setExp(0);
+					//Reset player exp
+					theHero->getExp()->setExp(43290);
 
 					//Reset player level
-					theHero->getAttributes()->setLevel(1);
+					theHero->getAttributes()->setLevel(30);
 
 					//Re IVs
 					theHero->getAttributes()->ReIVs();
@@ -1211,7 +1220,9 @@ bool myApplication::Init(void)
 	LoadTGA(&GameOver[0], "images/gameover.tga");
 	LoadTGA(&LevelComplete[0], "images/levelcomplete.tga");
 	LoadTGA(&border[0], "images/border.tga");
-	LoadTGA(&ground[0], "images/ground.tga");
+	LoadTGA(&ground[0], "images/ground1.tga");
+	LoadTGA(&ground[1], "images/ground2.tga");
+	LoadTGA(&ground[2], "images/ground.tga");
 	LoadTGA(&PauseTex[0], "images/gamePause.tga");
 	LoadTGA(&WinScreen[0], "images/winscreen.tga");
 
@@ -2052,7 +2063,7 @@ void myApplication::renderGround()
 	glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glTranslatef(LEFT_BORDER, BOTTOM_BORDER, 0);
-		glBindTexture(GL_TEXTURE_2D, ground[0].texID);
+		glBindTexture(GL_TEXTURE_2D, ground[currentLevel-1].texID);
 		glPushMatrix();
 		int height = 700;
 		int width = 700;
