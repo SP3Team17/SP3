@@ -87,7 +87,7 @@ void myApplication::Update(void)
 	
 		timer->updateTime();
 
-	if ((timeGetTime()-timelastcall)>1000.f/frequency)
+	//if ((timeGetTime()-timelastcall)>1000.f/frequency)
 	{
 		//Calculate the framerate
 
@@ -1438,8 +1438,8 @@ bool myApplication::processTiles()
 					//set the monster type here
 					temp3->mobSprite.LoadTGA("Images/boss1.tga");
 					temp3->mobSprite.ImageInit(1,1);
-					temp3->stats.setStats(0,500);
-					temp3->stats.setStats(1,500);
+					temp3->stats.setStats(0,2500);
+					temp3->stats.setStats(1,2500);
 					temp3->stats.setPos(Vector3D((i)*TILE_SIZE+LEFT_BORDER+16,j*TILE_SIZE+BOTTOM_BORDER+16));
 					temp3->AIstates.point2.Set((i)*TILE_SIZE+LEFT_BORDER,j*TILE_SIZE+BOTTOM_BORDER);
 					temp3->ID=current;
