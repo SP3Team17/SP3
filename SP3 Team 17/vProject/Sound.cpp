@@ -21,12 +21,21 @@ Sound::~Sound()
 	}
 }
 
+Sound* Sound::getInstance()
+{
+	if (s_pInstance == NULL)
+		s_pInstance = new Sound;
+	return s_pInstance;
+}
+
 bool Sound::Init(void)
 {
 	// start the sound engine with default parameters
 	theSoundEngine = createIrrKlangDevice();
 	if (!theSoundEngine)
 		return false; //error starting up sound engine
+
+	mute1 = mute2 = false;
 }
 
 void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
@@ -35,17 +44,20 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 	{
 		case SOUND_BGM:
 		//do stuff
-			if (Sound_1 == NULL)
-				Sound_1 = theSoundEngine ->play2D("media/Lost Frontier.mp3", loop, false);
-			else if (Sound_1 -> isFinished() == true)
+			if (!mute1)
 			{
-				Sound_1 -> drop();
-				Sound_1 = NULL;
+				if (Sound_1 == NULL)
+					Sound_1 = theSoundEngine ->play2D("media/Lost Frontier.mp3", loop, false);
+				else if (Sound_1 -> isFinished() == true)
+				{
+					Sound_1 -> drop();
+					Sound_1 = NULL;
+				}
+				/*if (!paused)
+				{
+					Sound_1 -> stop();
+				}*/
 			}
-			/*if (!paused)
-			{
-				Sound_1 -> stop();
-			}*/
 			break;
 		case SOUND_DIALOGUE:
 			if (Sound_1 == NULL)
@@ -87,36 +99,53 @@ void Sound::PlayMusic(theSongList type, bool loop = false, bool paused = false)
 			}
 			break;
 		case SOUND_SHOT:
-			if (Sound_2 == NULL)
-				Sound_2 = theSoundEngine ->play2D("media/Laser_Shoot2.wav", loop, false);
-			else if (Sound_2 -> isFinished() == true)
+			if (!mute2)
 			{
-				Sound_2 ->drop();
+				if (Sound_2 == NULL)
+					Sound_2 = theSoundEngine ->play2D("media/Laser_Shoot2.wav", loop, false);
+				else if (Sound_2 -> isFinished() == true)
+				{
+					Sound_2 ->drop();
 
-				Sound_2 = NULL;
+					Sound_2 = NULL;
+				}
 			}
 			break;
 		case SOUND_CLICK:
-			if (Sound_2 == NULL)
-				Sound_2 = theSoundEngine ->play2D("media/Button-SoundBible.com-1420500901.mp3", loop, false);
-			else if (Sound_2 -> isFinished() == true)
+			if (!mute2)
 			{
-				Sound_2 -> drop();
+				if (Sound_2 == NULL)
+					Sound_2 = theSoundEngine ->play2D("media/Button-SoundBible.com-1420500901.mp3", loop, false);
+				else if (Sound_2 -> isFinished() == true)
+				{
+					Sound_2 -> drop();
 
-				Sound_2 = NULL;
+					Sound_2 = NULL;
+				}
 			}
 			break;
 		case SOUND_HOVER:
-			if (Sound_2 == NULL)
-				Sound_2 = theSoundEngine ->play2D("media/Button_Press_2-Marianne_Gagnon-1415267358.mp3", loop, false);
-			else if (Sound_2 -> isFinished() == true)
+			if (!mute2)
 			{
-				Sound_2 -> drop();
+				if (Sound_2 == NULL)
+					Sound_2 = theSoundEngine ->play2D("media/Button_Press_2-Marianne_Gagnon-1415267358.mp3", loop, false);
+				else if (Sound_2 -> isFinished() == true)
+				{
+					Sound_2 -> drop();
 
-				Sound_2 = NULL;
+					Sound_2 = NULL;
+				}
 			}
 			break;
 	}
+}
+
+ISound* Sound::getSound(short option)
+{
+	if (option == 1)
+		return Sound_1;
+	else if (option == 2)
+		return Sound_2;
 }
 
 void Sound::Stop()

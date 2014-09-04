@@ -22,7 +22,7 @@ myApplication::myApplication()
 	dTrans1 = dTrans3 = dTrans5 = -600;
 	dTrans2 = dTrans4 = dTrans6 = 610;
 
-	theSound = new Sound;
+	theSound = Sound::getInstance();
 }
 
 //Destructor
@@ -1045,7 +1045,7 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 	switch (button) {
 
 		case GLUT_LEFT_BUTTON:
-
+			{
 			mouseInfo.mLButtonUp = state;
 			mouseInfo.lastX = x;
 			mouseInfo.lastY = y;
@@ -1131,7 +1131,16 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					if (theUI->getSettingButton(1)->hover)
 					{
 						theSound->PlayMusic(SOUND_CLICK, false, false);
-						//setting = true;
+						if(muteSfx == false)
+						{
+							theSound->mute2 = true;
+							muteSfx = true;
+						}
+						else if(muteSfx == true)
+						{
+							theSound->mute2 = false;
+							muteSfx = false;
+						}
 					}
 
 					//back
@@ -1166,7 +1175,7 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					tutorialEnd = true;
 				}
 			}
-
+			}
 			break;
 
 		case GLUT_RIGHT_BUTTON:
@@ -1263,6 +1272,7 @@ bool myApplication::Init(void)
 	processTiles();
 	
 	muteOn = false;
+	muteSfx = false;
 
 	//Set up Border
 	theBorder = new CMap;
@@ -1908,13 +1918,13 @@ void myApplication::renderStartScene()
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;
-			/*soundinit = false;
+			soundinit = false;
 			if(!soundinit)
 			{
 				theSound->Stop();
 				theSound->PlayMusic(SOUND_LEVEL1, true, false);
 				soundinit = true;
-			}*/
+			}
 		}
 	}	
 }
