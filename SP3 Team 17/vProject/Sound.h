@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <irrKlang.h>
+#include <iostream>
 using namespace irrklang;
 
 #ifndef SOUND_H
@@ -34,6 +35,10 @@ public:
 	void Mute(bool mutedOn);
 	static Sound* getInstance();
 	void drop();
+
+	bool mute1, mute2;
+
+	ISound* getSound(short option);
 
 	//SFX?
 	/*enum SoundEffectMode

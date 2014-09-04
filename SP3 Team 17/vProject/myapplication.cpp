@@ -22,7 +22,7 @@ myApplication::myApplication()
 	dTrans1 = dTrans3 = dTrans5 = -600;
 	dTrans2 = dTrans4 = dTrans6 = 610;
 
-	theSound = new Sound;
+	theSound = Sound::getInstance();
 }
 
 //Destructor
@@ -1054,128 +1054,135 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 	switch (button) {
 
 		case GLUT_LEFT_BUTTON:
+			{
+				mouseInfo.mLButtonUp = state;
+				mouseInfo.lastX = x;
+				mouseInfo.lastY = y;
 
-			mouseInfo.mLButtonUp = state;
-			mouseInfo.lastX = x;
-			mouseInfo.lastY = y;
+				cout << "Mouse Clicked!" << endl
+					 << "X: " << x << " | " << "Y: " << y << endl << endl;
 
-			cout << "Mouse Clicked!" << endl
-				 << "X: " << x << " | " << "Y: " << y << endl << endl;
+				if (mouseInfo.mLButtonUp) {
 
-			if (mouseInfo.mLButtonUp) {
-
-				//Exit program upon mouse click
-				//when game is over
-				if (bGameOver)
-				{
-					bGameOver = false;
-					changeLevel(1);
-
-					//Reset player exp
-					theHero->getExp()->setExp(43290);
-
-					//Reset player level
-					theHero->getAttributes()->setLevel(30);
-
-					//Re IVs
-					theHero->getAttributes()->ReIVs();
-				}
-
-				//Exit
-				if (winGame)
-					exit(0);
-
-				//Initiate Program if user clicks Start
-				if (theUI->getStartButton()->hover && !programInit)
-				{
-					programInit = true;
-					soundinit = false;
-				}
-
-				if (pause == true)
-				{
-					//Resume Game
-					if (theUI->getPauseButton(0)->hover && !setting)
+					//Exit program upon mouse click
+					//when game is over
+					if (bGameOver)
 					{
-						theSound->PlayMusic(SOUND_CLICK, false, false);
-						gamePause = false;
-						pause = false;
+						bGameOver = false;
+						changeLevel(1);
+
+						//Reset player exp
+						theHero->getExp()->setExp(43290);
+
+						//Reset player level
+						theHero->getAttributes()->setLevel(30);
+
+						//Re IVs
+						theHero->getAttributes()->ReIVs();
 					}
 
-					//Enter Settings
-					if (theUI->getPauseButton(1)->hover)
-					{
-						theSound->PlayMusic(SOUND_CLICK, false, false);
-						setting = true;
-						pause = false;
-					}
-
-					//Exit Program
-					if (theUI->getPauseButton(2)->hover)
-					{
-						theSound->PlayMusic(SOUND_CLICK, false, false);
+					//Exitf
+					if (winGame)
 						exit(0);
-					}
-				}
-				if(setting == true)
-				{
-					//sound1
-					if (theUI->getSettingButton(0)->hover)
+
+					if(setting && !pause)
 					{
-						theSound->PlayMusic(SOUND_CLICK, false, false);
-						//gamePause = false;
-						if(muteOn == false)
+						//sound1
+						if (theUI->getSettingButton(0)->hover)
 						{
-							theSound->Mute(true);
-							muteOn = true;
+							theSound->PlayMusic(SOUND_CLICK, false, false);
+							//gamePause = false;
+							if(muteOn == false)
+							{
+								theSound->Mute(true);
+								muteOn = true;
+							}
+							else if(muteOn == true)
+							{
+								theSound->Mute(false);
+								muteOn = false;
+							}
 						}
-						else if(muteOn == true)
+
+						//sound2
+						if (theUI->getSettingButton(1)->hover)
 						{
-							theSound->Mute(false);
-							muteOn = false;
+							theSound->PlayMusic(SOUND_CLICK, false, false);
+							if(muteSfx == false)
+							{
+								theSound->mute2 = true;
+								muteSfx = true;
+							}
+							else if(muteSfx == true)
+							{
+								theSound->mute2 = false;
+								muteSfx = false;
+							}
+						}
+
+						//back
+						if (theUI->getSettingButton(2)->hover)
+						{
+							theSound->PlayMusic(SOUND_CLICK, false, false);
+							pause = true;
+							setting = false;
+							//menuSequence();
+						}
+					}
+					else if (pause == true)
+					{
+						//Resume Game
+						if (theUI->getPauseButton(0)->hover && !setting)
+						{
+							theSound->PlayMusic(SOUND_CLICK, false, false);
+							gamePause = false;
+							pause = false;
+						}
+
+						//Enter Settings
+						if (theUI->getPauseButton(1)->hover)
+						{
+							theSound->PlayMusic(SOUND_CLICK, false, false);
+							setting = true;
+							pause = false;
+						}
+
+						//Exit Program
+						if (theUI->getPauseButton(2)->hover)
+						{
+							theSound->PlayMusic(SOUND_CLICK, false, false);
+							exit(0);
 						}
 					}
 
-					//sound2
-					if (theUI->getSettingButton(1)->hover)
+					if (theUI->getStartButton()->hover && !programInit)//Initiate Program if user clicks Start
 					{
-						theSound->PlayMusic(SOUND_CLICK, false, false);
-						//setting = true;
+						programInit = true;
+						soundinit = false;
+					}
+					//Start Dialogue Scene 2
+					if (dTrans4 == 0)
+						startDialogue2 = true;
+
+					//Trigger Dialogue8
+					if (dTrans7 == 0)
+						trigger8 = true;
+
+					//Trigger Dialogue9
+					if (dTrans8 == 0)
+					{
+						trigger8 = false;
+						trigger9 = true;
 					}
 
-					//back
-					if (theUI->getSettingButton(2)->hover)
+					//Remove Dialogue9
+					if (dTrans9 == 0)
 					{
-						theSound->PlayMusic(SOUND_CLICK, false, false);
-						pause = true;
-						setting = false;
-						//menuSequence();
+						trigger9 = false;
+						tutorialEnd = true;
 					}
-				}
-
-				//Start Dialogue Scene 2
-				if (dTrans4 == 0)
-					startDialogue2 = true;
-
-				//Trigger Dialogue8
-				if (dTrans7 == 0)
-					trigger8 = true;
-
-				//Trigger Dialogue9
-				if (dTrans8 == 0)
-				{
-					trigger8 = false;
-					trigger9 = true;
-				}
-
-				//Remove Dialogue9
-				if (dTrans9 == 0)
-				{
-					trigger9 = false;
-					tutorialEnd = true;
 				}
 			}
-
 			break;
 
 		case GLUT_RIGHT_BUTTON:
@@ -1274,6 +1281,7 @@ bool myApplication::Init(void)
 	processTiles();
 	
 	muteOn = false;
+	muteSfx = false;
 
 	//Set up Border
 	theBorder = new CMap;
@@ -1919,13 +1927,13 @@ void myApplication::renderStartScene()
 		{
 			bFlash = false;
 			gamePause = bTutorial = gameStart = true;
-			/*soundinit = false;
+			soundinit = false;
 			if(!soundinit)
 			{
 				theSound->Stop();
 				theSound->PlayMusic(SOUND_LEVEL1, true, false);
 				soundinit = true;
-			}*/
+			}
 		}
 	}	
 }

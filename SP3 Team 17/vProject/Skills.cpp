@@ -24,7 +24,7 @@ Skills::Skills()
 	cool=false;
 	mvcTime* timer=mvcTime::getInstance();
 	coolRef=timer->insertNewTime(1000);
-	theSfx = new Sound;
+	theSfx = Sound::getInstance();
 }
 
 Skills::Skills(SkillType ID)
