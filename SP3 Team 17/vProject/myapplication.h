@@ -91,6 +91,7 @@ private:
 	TextureImage LevelComplete[1];
 	TextureImage ground[1];
 	TextureImage PauseTex[1];
+	TextureImage WinScreen[1];
 
 	//Goodies Factory
 	CGoodiesFactory* theGoodiesFactory;
@@ -115,12 +116,13 @@ private:
 
 	//Std Variables
 	bool bGameOver, bComplete, stopMovement, bTutorial, 
-		 tutorialEnd, programInit;
+		 tutorialEnd, programInit, winGame;
 	int AGCredits;
 
 	//Std Functions
 	void renderComplete();
 	void renderGameOver();
+	void renderWin();
 	void renderGround();
 	void renderPause();
 	void menuSequence();

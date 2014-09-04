@@ -14,7 +14,7 @@ myApplication::myApplication()
     = stopMovement = gameStart = startDialogue2 
 	= bFlash = gamePause = bTutorial = tutorialEnd
 	= trigger8 = trigger9 = setting = pause = soundinit
-	= allowGamePause = false;
+	= allowGamePause = winGame = false;
 
 	counterFlash = counterTime = 0;
 
@@ -94,7 +94,7 @@ void myApplication::Update(void)
 		timelastcall=timeGetTime();
 
 		//Update Function
-		if (gameStart && !gamePause)
+		if (gameStart && !gamePause && !winGame)
 		{
 			int MobNo=0;
 			for(vector<MobInfo*>::iterator it=infoList.begin();it!=infoList.end();++it)
@@ -106,8 +106,16 @@ void myApplication::Update(void)
 			theHero->update();
 			if(MobNo==0)
 			{
-				currentLevel++;
-				changeLevel(currentLevel);
+				if (currentLevel < 3)
+				{
+					currentLevel++;
+					changeLevel(currentLevel);
+				}
+
+				else
+				{
+					winGame = true;
+				}
 			}
 			//Check for Game Over
 			if (theHero->getAttributes()->getHp() <= 0)
@@ -342,6 +350,10 @@ void myApplication::renderScene(void)
 	//Level Complete Screen
 	if (bComplete)
 		renderComplete();
+
+	//Win Game Screen
+	if (winGame)
+		renderWin();
 
 	//Open Shop
 	if (theShop->open)
@@ -951,10 +963,12 @@ void myApplication::KeyboardDown(unsigned char key, int x, int y)
 		break;
 
 	//Skills
-	case 'z':
+	case 'k':
+	case 'K':
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::ATTACK);
 		break;
-	case 'x':
+	case 'l':
+	case 'L':
 		testSkill.procSkills(theHero->GetPos(),theHero->getDir(),Skills::RANGEAOE);
 		break;
 	}
@@ -1057,6 +1071,10 @@ void myApplication::MouseClick(int button, int state, int x, int y)
 					//Re IVs
 					theHero->getAttributes()->ReIVs();
 				}
+
+				//Exit
+				if (winGame)
+					exit(0);
 
 				//Initiate Program if user clicks Start
 				if (theUI->getStartButton()->hover && !programInit)
@@ -1195,6 +1213,7 @@ bool myApplication::Init(void)
 	LoadTGA(&border[0], "images/border.tga");
 	LoadTGA(&ground[0], "images/ground.tga");
 	LoadTGA(&PauseTex[0], "images/gamePause.tga");
+	LoadTGA(&WinScreen[0], "images/winscreen.tga");
 
 	//Dialogue
 	LoadTGA(&dialogueBG[0], "images/dialogueBG.tga");
@@ -1522,7 +1541,7 @@ void myApplication::DisplayText()
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	mvcTime* timer=mvcTime::getInstance();
 		//Do not render these texts over screens
-	    if (!bComplete && !bGameOver && !theShop->open && !theHero->getInventory()->open)
+	    if (!bComplete && !bGameOver && !theShop->open && !theHero->getInventory()->open && !winGame)
 		{
 			//FPS
 			drawFPS();
@@ -1583,6 +1602,29 @@ void myApplication::renderGameOver()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBindTexture(GL_TEXTURE_2D, GameOver[0].texID);
+		glPushMatrix();
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,0); glVertex2f(RESOLUTION_WIDTH,RESOLUTION_HEIGHT);
+				glTexCoord2f(1,1); glVertex2f(RESOLUTION_WIDTH,0);
+				glTexCoord2f(0,1); glVertex2f(0,0);				
+			glEnd();
+		glPopMatrix();
+		glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+}
+
+void myApplication::renderWin()
+{
+	glEnable(GL_TEXTURE_2D);
+
+	//Draw Game Over Scren
+	glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBindTexture(GL_TEXTURE_2D, WinScreen[0].texID);
 		glPushMatrix();
 			glBegin(GL_QUADS);
 				glTexCoord2f(0,0); glVertex2f(0,RESOLUTION_HEIGHT);

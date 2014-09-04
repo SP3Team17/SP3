@@ -463,6 +463,10 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
 							skillObj.pos.Set(temp->Pos.x,temp->Pos.y);
 							skillObj.size.Set(TILE_SIZE,TILE_SIZE);
+							if(enemy->type==BOSS)
+							{
+								physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE*4,TILE_SIZE*4));
+							}
 							if(physics::testCol(skillObj,mobObj))
 							{
 								enemy->dealDam(Hero->getAttributes()->getAttack(),1.2);
@@ -570,7 +574,7 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						skillObj.size.Set(TILE_SIZE,TILE_SIZE);
 						if(physics::testCol(skillObj,mobObj))
 						{
-							Hero->damagePlayer(70);
+							Hero->damagePlayer(200);
 							temp->SkillPhase=4;
 						}
 
@@ -651,6 +655,10 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					{
 						MobInfo* enemy=*it;
 						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+						if(enemy->type==BOSS)
+						{
+							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE*4,TILE_SIZE*4));
+						}
 						if(physics::testCol(skillObj,mobObj)&&enemy->active)
 						{
 							enemy->dealDam(Hero->getAttributes()->getAttack(),0.5);
@@ -719,6 +727,10 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 					{
 						MobInfo* enemy=*it;
 						physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+						if(enemy->type==BOSS)
+						{
+							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE*4,TILE_SIZE*4));
+						}
 						if(physics::testCol(skillObj,mobObj)&&enemy->active)
 						{
 							enemy->dealDam(Hero->getAttributes()->getAttack(),0.7);
@@ -868,6 +880,10 @@ void Skills::Update(std::vector<MobInfo*> enemies,Vector3D Pos,Vector3D Dir,floa
 						{
 							MobInfo* enemy=*it;
 							physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE,TILE_SIZE));
+							if(enemy->type==BOSS)
+							{
+								physicObj mobObj(enemy->getPos(),Vector3D(TILE_SIZE*4,TILE_SIZE*4));
+							}
 							if(physics::testCol(skillObj,mobObj)&&enemy->active)
 							{
 								//temp->Pos=temp->Pos-temp->Dir*16+Vector3D(48,16);
