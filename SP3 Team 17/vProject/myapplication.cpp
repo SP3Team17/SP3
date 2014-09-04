@@ -1588,8 +1588,8 @@ void myApplication::DisplayText()
 				printw (790.0, 410.0, 0, "Exp To Next Level: -");
 
 			//Print Skills
-			printw (790.0, 500.0, 0, "Z: Skill 1");
-			printw (790.0, 530.0, 0, "X: Skill 2");
+			printw (790.0, 500.0, 0, "K: Skill 1");
+			printw (790.0, 530.0, 0, "L: Skill 2");
 
 			//Print Skills
 			printw (790.0, 590.0, 0, "U: Open Shop");
